@@ -1,0 +1,47 @@
+[tool.bandit]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+skip-string-normalization = true
+exclude='''
+/(
+    src/ui/forms
+  | \.venv.*
+  | \venv.*
+)/
+'''
+
+[tool.isort]
+line_length = 100
+profile = 'black'
+sections = 'FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER'
+skip = ['src/ui/forms']
+skip_glob = ['**/.venv*', '**/venv*']
+
+# flake8 not working with pyproject.toml
+#[tool.flake8]
+#max-line-length = 100
+#extend-exclude = 'src/ui/forms,.venv*,venv*,assets,docs,site,__pycache__'
+
+[tool.mypy]
+# Technical notes on exclusions:
+# 1 The regex for all folders needs to be in a one line string.
+# 2 The `.` doesn't need to be escaped. Escape with `\\.` for a fully compatible regex.
+exclude = '^venv*|^.venv*|.git|.eggs|build|dist|.cache|.pytest_cache|.mypy_cache|.vscode|.idea|tasks.py|src/ui/forms'
+python_version = '3.11'
+warn_return_any = true
+warn_unused_configs = true
+# Disable the warning below, from type hinting variables in a function.
+# By default, the bodies of untyped functions are not checked, consider using --check-untyped-defs
+disable_error_code = 'annotation-unchecked'
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = [
+    'invoke', 'factory', 'PySide6', 'semantic_version'
+]
+
+[tool.pytest.ini_options]
+markers = ['pri_1', 'flaky', 'nightly', 'performance', 'manual']
+testpaths = ['tests']
