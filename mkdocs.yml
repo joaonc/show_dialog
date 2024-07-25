@@ -1,4 +1,4 @@
-site_name: Qt Playground
+site_name: Show Dialog
 
 nav:
   - Home:
@@ -57,6 +57,6 @@ plugins:
 
 dev_addr: 127.0.0.1:7007        # Default 8000 may compete with other frameworks
 
-site_url: https://github.com/joaonc/qt_playground
-repo_url: https://github.com/joaonc/qt_playground
+site_url: https://github.com/joaonc/show_dialog
+repo_url: https://github.com/joaonc/show_dialog
 copyright: Copyright &copy; 2024 Joao Coelho

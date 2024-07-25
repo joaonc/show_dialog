@@ -571,7 +571,7 @@ def docs_serve(c):
 @task
 def docs_deploy(c):
     """
-    Publish documentation to GitHub Pages at https://joaonc.github.io/qt_playground
+    Publish documentation to GitHub Pages at https://joaonc.github.io/show_dialog
     """
     c.run('mkdocs gh-deploy')
 
