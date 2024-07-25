@@ -13,8 +13,8 @@ nav:
 
 theme:
   name: material
-  logo: _assets/images/playground_icon.svg
-  favicon: _assets/images/playground_icon.svg
+  logo: _assets/images/window.svg
+  favicon: _assets/images/window.svg
   font:
     text: Arimo                 # Google font, replaces the default Arial
   features:
