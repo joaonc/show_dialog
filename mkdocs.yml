@@ -3,13 +3,7 @@ site_name: Show Dialog
 nav:
   - Home:
       - Introduction: index.md
-      - Distribution: distribution.md
-      - UI: ui.md
-      - Update: update.md
-      - Test: test.md
-      - Release: release.md
-      - Tech stack: tech-stack.md
-      - Learning resources: learning-resources.md
+      - Development: development.md
 
 theme:
   name: material
