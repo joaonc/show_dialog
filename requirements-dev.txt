@@ -26,8 +26,10 @@ colorama==0.4.6
     #   pytest
 distlib==0.3.8
     # via virtualenv
-exceptiongroup==1.2.2
-    # via pytest
+exceptiongroup==1.2.2 ; python_version < "3.11"
+    # via
+    #   -r requirements-dev.in
+    #   pytest
 filelock==3.15.4
     # via virtualenv
 flake8==7.1.0

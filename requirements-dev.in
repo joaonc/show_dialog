@@ -16,6 +16,7 @@ types-pyyaml        # Mypy type hints
 # Test
 pytest              # Test framework
 pytest-qt           # Qt plugin to allow user interaction
+exceptiongroup; python_version < '3.11'  # pytest 8.2+ dependency
 
 # Installer
 pyinstaller         # Installer framework
