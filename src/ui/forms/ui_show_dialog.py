@@ -16,12 +16,16 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QDialog, QSizePolicy, QWidget)
+from . import resources_rc
 
 class Ui_ShowDialog(object):
     def setupUi(self, ShowDialog):
         if not ShowDialog.objectName():
             ShowDialog.setObjectName(u"ShowDialog")
         ShowDialog.resize(400, 300)
+        icon = QIcon()
+        icon.addFile(u":/images/window_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        ShowDialog.setWindowIcon(icon)
 
         self.retranslateUi(ShowDialog)
 
