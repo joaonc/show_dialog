@@ -43,9 +43,15 @@ class Ui_ShowDialog(object):
         self.pass_button = QPushButton(ShowDialog)
         self.pass_button.setObjectName(u"pass_button")
         self.pass_button.setGeometry(QRect(330, 430, 331, 121))
+        icon1 = QIcon()
+        icon1.addFile(u":/images/pass_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.pass_button.setIcon(icon1)
         self.fail_button = QPushButton(ShowDialog)
         self.fail_button.setObjectName(u"fail_button")
         self.fail_button.setGeometry(QRect(30, 430, 271, 121))
+        icon2 = QIcon()
+        icon2.addFile(u":/images/fail_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.fail_button.setIcon(icon2)
 
         self.retranslateUi(ShowDialog)
 
