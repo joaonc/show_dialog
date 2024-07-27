@@ -29,5 +29,5 @@ class Inputs(JSONFileMixin):
     Inputs to the app.
     """
 
-    title: str
-    description: str
+    title: str = ''
+    description: str = ''

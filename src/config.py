@@ -29,18 +29,18 @@ Whether the code is running as an executable bundled by PyInstaller or as normal
 More info at https://pyinstaller.org/en/stable/runtime-information.html
 """
 
-IGNORE_BUNDLED_APP = is_truthy(os.environ.get('QT_PLAYGROUND_IGNORE_BUNDLED_APP', 'False'))
+IGNORE_BUNDLED_APP = is_truthy(os.environ.get('SHOW_DIALOG_IGNORE_BUNDLED_APP', 'False'))
 """
 Ignore ``IS_BUNDLED_APP``, ie, code that is supposed to execute only as a bundled app will run as
 script also.
 
 To be used for debugging purposes.
 
-Set the environment variable ``QT_PLAYGROUND_IGNORE_BUNDLED_APP`` to ``True`` or ``1`` when
+Set the environment variable ``SHOW_DIALOG_IGNORE_BUNDLED_APP`` to ``True`` or ``1`` when
 executing the code as a script. Ignored when running as a bundled app.
 """
 
-IGNORE_UPDATE = is_truthy(os.environ.get('QT_PLAYGROUND_IGNORE_UPDATE', 'False'))
+IGNORE_UPDATE = is_truthy(os.environ.get('SHOW_DIALOG_IGNORE_UPDATE', 'False'))
 """
 Do not perform an app update (and backup), even if one is available.
 
@@ -48,7 +48,7 @@ See also the ``check-update`` and ``check-update-only`` CLI options.
 
 To be used for debugging purposes.
 
-Set the environment variable ``QT_PLAYGROUND_IGNORE_UPDATE`` to ``True`` or ``1``.
+Set the environment variable ``SHOW_DIALOG_IGNORE_UPDATE`` to ``True`` or ``1``.
 """
 
 if IS_BUNDLED_APP:

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from inputs import Inputs
+from src.inputs import Inputs
 
 
 @pytest.fixture

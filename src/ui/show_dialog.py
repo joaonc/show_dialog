@@ -8,12 +8,13 @@ class ShowDialog(QMainWindow, Ui_ShowDialog):
     def __init__(self, inputs: Inputs):
         super().__init__()
         self.setupUi(self)
+        self.inputs = inputs
 
         # UI adjustments
         self.pass_button.setIconSize(self.pass_button.size())
         self.fail_button.setIconSize(self.fail_button.size())
-        self.title_label.setText(inputs.title)
-        self.description_label.setText(inputs.description)
+        self.title_label.setText(self.inputs.title)
+        self.description_label.setText(self.inputs.description)
 
         # UI bindings
         self.pass_button.clicked.connect(self.pass_clicked)
