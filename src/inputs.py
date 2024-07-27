@@ -1,5 +1,5 @@
 import json
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Any
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,18 +10,18 @@ T = TypeVar('T', bound='JSONFileMixin')
 
 
 class JSONFileMixin(DataClassJSONMixin):
-    def to_file(self, file: str | Path):
+    def to_file(self, file: str | Path, **from_dict_kwargs: Any):
         file_path = Path(file)
-        data = self.to_json()
+        data = self.to_dict(**from_dict_kwargs)
         with open(file_path, 'w') as f:
-            f.write(data)
+            json.dump(data, f, indent=4)
 
     @classmethod
-    def from_file(cls: Type[T], file: str | Path) -> T:
+    def from_file(cls: Type[T], file: str | Path, **from_dict_kwargs: Any) -> T:
         file_path = Path(file)
         with open(file_path) as f:
-            data = f.read()
-        return cls.from_json(T, data)
+            data = json.load(f)
+        return cls.from_dict(data, **from_dict_kwargs)
 
 
 @dataclass
