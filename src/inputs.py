@@ -1,8 +1,7 @@
 import json
-from typing import Type, TypeVar, Any
-
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Type, TypeVar
 
 from mashumaro.mixins.json import DataClassJSONMixin
 

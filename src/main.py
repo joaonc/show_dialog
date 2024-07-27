@@ -7,14 +7,15 @@ from PySide6.QtWidgets import QApplication
 
 import src.config as config
 import src.update as update
+from src.inputs import Inputs
 from src.ui.show_dialog import ShowDialog
 
 
-def main():
+def main(inputs: Inputs):
     # Launch UI
     if not config.check_update_only:
         app = QApplication()
-        window = ShowDialog()
+        window = ShowDialog(inputs)
         window.show()
         app_response = app.exec()
         if app_response != 0:
@@ -83,7 +84,7 @@ def set_config_values():
         '--log-level',
         # Can use `logging.getLevelNamesMapping()` instead of `_nameToLevel` on python 3.11+
         choices=[level.lower() for level in logging._nameToLevel],  # noqa
-        default='error',
+        default='debug',
         help='Log level to use.',
     )
     parser.add_argument(
@@ -97,7 +98,7 @@ def set_config_values():
 
     logging.basicConfig(level=logging.getLevelName(args.log_level.upper()))
     logging.debug(
-        f'Show Dialog.\n  App version: {config.version}.\n  Log level: {args.log_level}.\n  '
+        f'Show Dialog.\n  App version: {config.version}\n  Log level: {args.log_level}\n  '
         f'File: {sys.executable}'
     )
 
@@ -129,5 +130,6 @@ def set_config_values():
 
 if __name__ == '__main__':
     set_config_values()
-    main()
+    _inputs = Inputs(title='The Title', description='The Description')
+    main(_inputs)
     logging.debug('App exiting.')

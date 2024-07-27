@@ -38,7 +38,7 @@
     <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="details_label">
+  <widget class="QLabel" name="description_label">
    <property name="geometry">
     <rect>
      <x>300</x>
@@ -53,7 +53,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Details</string>
+    <string>Description</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pass_button">
