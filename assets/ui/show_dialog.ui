@@ -6,14 +6,93 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>677</width>
+    <height>584</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>50</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Show Dialog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../resources.qrc">
+    <normaloff>:/images/window_icon.png</normaloff>:/images/window_icon.png</iconset>
+  </property>
+  <widget class="QLabel" name="title_label">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>50</y>
+     <width>431</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Title</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="details_label">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>260</y>
+     <width>261</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>20</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Details</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pass_button">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>430</y>
+     <width>331</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Pass</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/images/pass_icon.png</normaloff>:/images/pass_icon.png</iconset>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="fail_button">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>430</y>
+     <width>271</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Fail</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/images/fail_icon.png</normaloff>:/images/fail_icon.png</iconset>
+   </property>
+  </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

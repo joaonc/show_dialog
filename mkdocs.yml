@@ -7,8 +7,8 @@ nav:
 
 theme:
   name: material
-  logo: _assets/images/window.svg
-  favicon: _assets/images/window.svg
+  logo: _assets/images/window_icon.svg
+  favicon: _assets/images/window_icon.svg
   font:
     text: Arimo                 # Google font, replaces the default Arial
   features:
