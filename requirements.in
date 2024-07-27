@@ -1,3 +1,5 @@
-pyside6
-semantic-version
-pyyaml
+pyside6             # Qt
+semantic-version    # Semantic versioning
+pyyaml              # YAML functionality
+
+mashumaro           # JSON to class serialization

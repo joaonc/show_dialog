@@ -77,7 +77,7 @@ def perform_update(update_file=None):
         backup_file = current_file.rename(backup_file_path)
         config.backup_file = backup_file
     else:
-        logging.debug('Not backing up file due to `QT_PLAYGROUND_IGNORE_UPDATE` being set.')
+        logging.debug('Not backing up file due to `SHOW_DIALOG_IGNORE_UPDATE` being set.')
 
     # Substitute with new file
     try:
@@ -85,7 +85,7 @@ def perform_update(update_file=None):
         if not config.IGNORE_UPDATE:
             shutil.copy(update_file, current_file)
         else:
-            logging.debug('Not copying file due to `QT_PLAYGROUND_IGNORE_UPDATE` being set.')
+            logging.debug('Not copying file due to `SHOW_DIALOG_IGNORE_UPDATE` being set.')
     except Exception as e:
         logging.debug('Update failed, rolling back.')
         backup_file.rename(current_file)  # noqa

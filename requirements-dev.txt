@@ -44,6 +44,8 @@ isort==5.13.2
     # via -r requirements-dev.in
 markdown-it-py==3.0.0
     # via rich
+mashumaro==3.13.1
+    # via -r requirements.txt
 mccabe==0.7.0
     # via flake8
 mdurl==0.1.2
@@ -142,7 +144,9 @@ types-pyyaml==6.0.12.20240724
     # via -r requirements-dev.in
 typing-extensions==4.12.2
     # via
+    #   -r requirements.txt
     #   black
+    #   mashumaro
     #   mypy
 virtualenv==20.26.3
     # via pre-commit
