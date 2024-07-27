@@ -15,6 +15,8 @@ class ShowDialog(QMainWindow, Ui_ShowDialog):
         self.fail_button.setIconSize(self.fail_button.size())
         self.title_label.setText(self.inputs.title)
         self.description_label.setText(self.inputs.description)
+        if self.inputs.dialog_title:
+            self.setWindowTitle(self.inputs.dialog_title)
 
         # UI bindings
         self.pass_button.clicked.connect(self.pass_clicked)

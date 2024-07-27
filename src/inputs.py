@@ -29,5 +29,7 @@ class Inputs(JSONFileMixin):
     Inputs to the app.
     """
 
+    dialog_title: str = ''
+    """Title of the window."""
     title: str = ''
     description: str = ''
