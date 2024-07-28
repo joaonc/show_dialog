@@ -24,11 +24,24 @@ def test_dialog_title(show_dialog: ShowDialog):
 
 
 @pytest.mark.parametrize(
-    'show_dialog', [Inputs(title='foo bar', title_color='rgb(255, 0, 0)')], indirect=True
+    'show_dialog',
+    [
+        Inputs(title='foo bar', title_color='rgb(255, 0, 0)'),
+        Inputs(title='foo bar', title_color='red'),
+    ],
+    indirect=True,
 )
 def test_title(show_dialog: ShowDialog):
     assert show_dialog.title_label.text() == 'foo bar'
-    assert show_dialog.title_label.palette().color(QPalette.ColorRole.Text) == QColor.fromRgb(255,0,0)
+    assert show_dialog.title_label.palette().color(QPalette.ColorRole.Text) == QColor('red')
+
+
+@pytest.mark.parametrize(
+    'show_dialog', [Inputs(description='foo bar', description_color='blue')], indirect=True
+)
+def test_description(show_dialog: ShowDialog):
+    assert show_dialog.description_label.text() == 'foo bar'
+    assert show_dialog.description_label.palette().color(QPalette.ColorRole.Text) == QColor('blue')
 
 
 @patch('PySide6.QtWidgets.QApplication.exit')
