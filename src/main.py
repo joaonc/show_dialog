@@ -171,4 +171,3 @@ if __name__ == '__main__':
     _inputs = set_config_values()
     main(_inputs)
     logging.debug('App exiting.')
-    set_config_values()

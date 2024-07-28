@@ -22,8 +22,11 @@ class ShowDialog(QMainWindow, Ui_ShowDialog):
         self.pass_button.clicked.connect(self.pass_clicked)
         self.fail_button.clicked.connect(self.fail_clicked)
 
+    # noinspection PyMethodMayBeStatic
     def pass_clicked(self):
-        self.close()
+        # Equivalent to `self.close()`.
+        # Using `QApplication.exit()` to enable testing exit code.
+        QApplication.exit(0)
 
     # noinspection PyMethodMayBeStatic
     def fail_clicked(self):
