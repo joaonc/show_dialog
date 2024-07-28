@@ -1,3 +1,4 @@
+from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QMainWindow
 
 from src.inputs import Inputs
@@ -25,11 +26,13 @@ class ShowDialog(QMainWindow, Ui_ShowDialog):
         # UI bindings
         self.pass_button.clicked.connect(self.pass_clicked)
         self.fail_button.clicked.connect(self.fail_clicked)
+        self.exit_shortcut = QShortcut(QKeySequence('Ctrl+Q'), self)
+        self.exit_shortcut.activated.connect(self.fail_clicked)
 
     # noinspection PyMethodMayBeStatic
     def pass_clicked(self):
         # Equivalent to `self.close()`.
-        # Using `QApplication.exit()` to enable testing exit code.
+        # Using `QApplication.exit(0)` to enable testing exit code.
         QApplication.exit(0)
 
     # noinspection PyMethodMayBeStatic
