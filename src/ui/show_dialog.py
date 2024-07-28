@@ -17,6 +17,10 @@ class ShowDialog(QMainWindow, Ui_ShowDialog):
         self.description_label.setText(self.inputs.description)
         if self.inputs.dialog_title:
             self.setWindowTitle(self.inputs.dialog_title)
+        if self.inputs.title_color:
+            self.title_label.setStyleSheet(f'color: {self.inputs.title_color};')
+        if self.inputs.description_color:
+            self.description_label.setStyleSheet(f'color: {self.inputs.description_color};')
 
         # UI bindings
         self.pass_button.clicked.connect(self.pass_clicked)

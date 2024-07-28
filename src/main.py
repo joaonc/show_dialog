@@ -162,12 +162,15 @@ def set_config_values() -> Inputs:
             inputs = Inputs.from_dict(inputs_from_file.to_dict() | inputs.to_dict())
         else:
             inputs = inputs_from_file
-    logging.debug(f'Inputs:\n{pprint.pformat(inputs.to_dict(), indent=4)}')
+    logging.debug(f'Inputs:\n{pprint.pformat(inputs.to_dict(), indent=2)}')
 
     return inputs
 
 
 if __name__ == '__main__':
+    import sys
+
+    sys.argv += ['--inputs-file', str(config.ASSETS_DIR / 'inputs/inputs_01.json')]
     _inputs = set_config_values()
     main(_inputs)
     logging.debug('App exiting.')
