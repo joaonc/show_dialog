@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>677</width>
-    <height>584</height>
+    <width>679</width>
+    <height>589</height>
    </rect>
   </property>
   <property name="font">
@@ -22,74 +22,81 @@
    <iconset resource="../resources.qrc">
     <normaloff>:/images/window_icon.png</normaloff>:/images/window_icon.png</iconset>
   </property>
-  <widget class="QLabel" name="title_label">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>50</y>
-     <width>431</width>
-     <height>121</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Title</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="description_label">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>260</y>
-     <width>261</width>
-     <height>101</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>20</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>Description</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pass_button">
-   <property name="geometry">
-    <rect>
-     <x>330</x>
-     <y>430</y>
-     <width>331</width>
-     <height>121</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Pass</string>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/images/pass_icon.png</normaloff>:/images/pass_icon.png</iconset>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="fail_button">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>430</y>
-     <width>271</width>
-     <height>121</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Fail</string>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/images/fail_icon.png</normaloff>:/images/fail_icon.png</iconset>
-   </property>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="v_layout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+     </property>
+     <item>
+      <widget class="QLabel" name="title_label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Title</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="description_label">
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Description</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="buttons_h_layout">
+       <item>
+        <widget class="QPushButton" name="fail_button">
+         <property name="maximumSize">
+          <size>
+           <width>325</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Fail</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../resources.qrc">
+           <normaloff>:/images/fail_icon.png</normaloff>:/images/fail_icon.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pass_button">
+         <property name="maximumSize">
+          <size>
+           <width>325</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Pass</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../resources.qrc">
+           <normaloff>:/images/pass_icon.png</normaloff>:/images/pass_icon.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources>
   <include location="../resources.qrc"/>
