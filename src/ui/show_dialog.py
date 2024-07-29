@@ -1,9 +1,6 @@
-from pathlib import Path
-
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
 
-import src.config as config
 from src.inputs import Inputs
 from src.ui.forms.ui_show_dialog import Ui_ShowDialog
 

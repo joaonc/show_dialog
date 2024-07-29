@@ -3,23 +3,37 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Type, TypeVar
 
+import yaml
 from mashumaro.mixins.json import DataClassJSONMixin
 
 T = TypeVar('T', bound='JSONFileMixin')
 
 
 class JSONFileMixin(DataClassJSONMixin):
-    def to_file(self, file: str | Path, **from_dict_kwargs: Any):
+    def to_json_file(self, file: str | Path, **from_dict_kwargs: Any):
         file_path = Path(file)
         data = self.to_dict(**from_dict_kwargs)
         with open(file_path, 'w') as f:
             json.dump(data, f, indent=2)
 
+    def to_yaml_file(self, file: str | Path, **from_dict_kwargs: Any):
+        file_path = Path(file)
+        data = self.to_dict(**from_dict_kwargs)
+        with open(file_path, 'w') as f:
+            yaml.safe_dump(data, f, default_flow_style=False, indent=2)
+
     @classmethod
-    def from_file(cls: Type[T], file: str | Path, **from_dict_kwargs: Any) -> T:
+    def from_json_file(cls: Type[T], file: str | Path, **from_dict_kwargs: Any) -> T:
         file_path = Path(file)
         with open(file_path) as f:
             data = json.load(f)
+        return cls.from_dict(data, **from_dict_kwargs)
+
+    @classmethod
+    def from_yaml_file(cls: Type[T], file: str | Path, **from_dict_kwargs: Any) -> T:
+        file_path = Path(file)
+        with open(file_path) as f:
+            data = yaml.safe_load(f)
         return cls.from_dict(data, **from_dict_kwargs)
 
 
