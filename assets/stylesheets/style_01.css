@@ -2,12 +2,16 @@ QLabel#title_label {
     color: blue;
 }
 
+QLabel#description_label {
+    color: rgb(0, 0, 50);
+}
+
 QPushButton#pass_button {
-    color : yellow;
+    color : green;
     /*background-color : gray;*/
 }
 
 QPushButton#fail_button {
-    color : white;
-    background-color : green;
+    color : red;
+    /*background-color : green;*/
 }

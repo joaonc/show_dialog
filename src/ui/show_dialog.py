@@ -13,7 +13,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self,
         app: QApplication,
         inputs: Inputs,
-        stylesheet: str | Path = config.ASSETS_DIR / 'style.css',
+        stylesheet: str | None = None,
     ):
         super().__init__()
         self.app = app
@@ -27,9 +27,8 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         if self.inputs.dialog_title:
             self.setWindowTitle(self.inputs.dialog_title)
 
-        with open(self.stylesheet) as f:
-            css = f.read()
-        self.app.setStyleSheet(css)
+        if self.stylesheet:
+            self.app.setStyleSheet(self.stylesheet)
 
         # UI bindings
         self.pass_button.clicked.connect(self.pass_clicked)
