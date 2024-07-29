@@ -2,17 +2,23 @@ from unittest.mock import patch
 
 import pytest
 from PySide6 import QtCore
-from PySide6.QtGui import QColor, QPalette
 from PySide6.QtTest import QTest
+from PySide6.QtWidgets import QApplication
 
 from src.inputs import Inputs
 from src.ui.show_dialog import ShowDialog
 
 
+@pytest.fixture(scope='session')
+def app():
+    _app = QApplication([])
+    yield _app
+
+
 @pytest.fixture
-def show_dialog(request, qtbot):
+def show_dialog(request, app, qtbot):
     inputs = getattr(request, 'param', Inputs())
-    dialog = ShowDialog(inputs)
+    dialog = ShowDialog(app, inputs)
     qtbot.addWidget(dialog)
 
     yield dialog
@@ -23,25 +29,14 @@ def test_dialog_title(show_dialog: ShowDialog):
     assert show_dialog.windowTitle() == 'foo bar'
 
 
-@pytest.mark.parametrize(
-    'show_dialog',
-    [
-        Inputs(title='foo bar', title_color='rgb(255, 0, 0)'),
-        Inputs(title='foo bar', title_color='red'),
-    ],
-    indirect=True,
-)
+@pytest.mark.parametrize('show_dialog', [Inputs(title='foo bar')], indirect=True)
 def test_title(show_dialog: ShowDialog):
     assert show_dialog.title_label.text() == 'foo bar'
-    assert show_dialog.title_label.palette().color(QPalette.ColorRole.Text) == QColor('red')
 
 
-@pytest.mark.parametrize(
-    'show_dialog', [Inputs(description='foo bar', description_color='blue')], indirect=True
-)
+@pytest.mark.parametrize('show_dialog', [Inputs(description='foo bar')], indirect=True)
 def test_description(show_dialog: ShowDialog):
     assert show_dialog.description_label.text() == 'foo bar'
-    assert show_dialog.description_label.palette().color(QPalette.ColorRole.Text) == QColor('blue')
 
 
 @patch('PySide6.QtWidgets.QApplication.exit')

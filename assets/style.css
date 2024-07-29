@@ -1,0 +1,13 @@
+QLabel#title_label {
+    color: blue;
+}
+
+QPushButton#pass_button {
+    color : yellow;
+    /*background-color : gray;*/
+}
+
+QPushButton#fail_button {
+    color : white;
+    background-color : green;
+}

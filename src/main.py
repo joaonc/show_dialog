@@ -21,7 +21,7 @@ def main(inputs: Inputs):
     # Launch UI
     if not config.check_update_only:
         app = QApplication()
-        window = ShowDialog(inputs)
+        window = ShowDialog(app, inputs)
         window.show()
         app_response = app.exec()
         if app_response != 0:
@@ -168,8 +168,6 @@ def set_config_values() -> Inputs:
 
 
 if __name__ == '__main__':
-    import sys
-
     sys.argv += ['--inputs-file', str(config.ASSETS_DIR / 'inputs/inputs_01.json')]
     _inputs = set_config_values()
     main(_inputs)

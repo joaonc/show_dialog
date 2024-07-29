@@ -1,13 +1,23 @@
+from pathlib import Path
+
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
 
+import src.config as config
 from src.inputs import Inputs
 from src.ui.forms.ui_show_dialog import Ui_ShowDialog
 
 
 class ShowDialog(QDialog, Ui_ShowDialog):
-    def __init__(self, inputs: Inputs):
+    def __init__(
+        self,
+        app: QApplication,
+        inputs: Inputs,
+        stylesheet: str | Path = config.ASSETS_DIR / 'style.css',
+    ):
         super().__init__()
+        self.app = app
+        self.stylesheet = stylesheet
         self.setupUi(self)
         self.inputs = inputs
 
@@ -16,10 +26,10 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.description_label.setText(self.inputs.description)
         if self.inputs.dialog_title:
             self.setWindowTitle(self.inputs.dialog_title)
-        if self.inputs.title_color:
-            self.title_label.setStyleSheet(f'color: {self.inputs.title_color};')
-        if self.inputs.description_color:
-            self.description_label.setStyleSheet(f'color: {self.inputs.description_color};')
+
+        with open(self.stylesheet) as f:
+            css = f.read()
+        self.app.setStyleSheet(css)
 
         # UI bindings
         self.pass_button.clicked.connect(self.pass_clicked)
@@ -31,12 +41,10 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.pass_button.setIconSize(self.pass_button.size())
         self.fail_button.setIconSize(self.fail_button.size())
 
-    # noinspection PyMethodMayBeStatic
     def pass_clicked(self):
         # Equivalent to `self.close()`.
         # Using `QApplication.exit(0)` to enable testing exit code.
-        QApplication.exit(0)
+        self.app.exit(0)
 
-    # noinspection PyMethodMayBeStatic
     def fail_clicked(self):
-        QApplication.exit(1)
+        self.app.exit(1)
