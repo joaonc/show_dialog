@@ -6,7 +6,7 @@ from setuptools import setup
 PROJECT_ROOT = Path(__file__).parent
 ASSETS_DIR = PROJECT_ROOT / 'assets'
 
-REQUIREMENTS = ['pytest', 'six']
+REQUIREMENTS = []
 
 with open(ASSETS_DIR / 'app.yaml') as f:
     manifest = yaml.safe_load(f)
@@ -19,7 +19,7 @@ setup(
     version=manifest['version'],
     py_modules=['show_dialog'],
     provides=['show_dialog'],
-    description='Show dialog',
+    description='Easily show a dialog',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Joao Coelho',

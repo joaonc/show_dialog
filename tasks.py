@@ -356,11 +356,12 @@ def build_upload(c, label: str = 'auto'):
 )
 def build_publish(c, no_upload: bool = False):
     """
-    Publish package to pypi.
+    Publish package to Pypi.
     """
     dist_dir = BUILD_DIST_DIR / 'package'
     # Create distribution files (source and wheel)
-    c.run(f'python setup.py sdist --dist-dir "{dist_dir}" bdist_wheel --dist-dir "{dist_dir}"')
+    # c.run(f'python setup.py sdist --dist-dir "{dist_dir}" bdist_wheel --dist-dir "{dist_dir}"')
+    c.run(f'python -m build --outdir "{dist_dir}"')
     # Upload to pypi
     if not no_upload:
         c.run(f'twine upload "{dist_dir}/*"')
