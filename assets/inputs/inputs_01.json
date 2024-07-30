@@ -1,7 +1,5 @@
 {
   "dialog_title": "inputs_01",
   "title": "Foo bar",
-  "title_color": "rgb(255, 0, 0)",
-  "description": "Baz",
-  "description_color": "blue"
+  "description": "Baz"
 }

@@ -5,6 +5,7 @@ from PySide6 import QtCore
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
 
+import config
 from src.inputs import Inputs
 from src.ui.show_dialog import ShowDialog
 
@@ -37,6 +38,32 @@ def test_title(show_dialog: ShowDialog):
 @pytest.mark.parametrize('show_dialog', [Inputs(description='foo bar')], indirect=True)
 def test_description(show_dialog: ShowDialog):
     assert show_dialog.description_label.text() == 'foo bar'
+
+
+@pytest.mark.parametrize(
+    'show_dialog, expected_description',
+    [
+        (
+            Inputs.from_file(config.ASSETS_DIR / 'inputs/inputs_02.yaml'),
+            'This multiline text will transform into a single line.',
+        ),
+        (
+            Inputs.from_file(config.ASSETS_DIR / 'inputs/inputs_03.yaml'),
+            'This multiline text will transform into a single line.\n',
+        ),
+        (
+            Inputs.from_file(config.ASSETS_DIR / 'inputs/inputs_04.yaml'),
+            'This multiline text will\nretain its original newlines.',
+        ),
+        (
+            Inputs.from_file(config.ASSETS_DIR / 'inputs/inputs_05.yaml'),
+            'This multiline text will\nretain its original newlines.\n',
+        ),
+    ],
+    indirect=['show_dialog'],
+)
+def test_description_multi_lines(show_dialog: ShowDialog, expected_description: str):
+    assert show_dialog.description_label.text() == expected_description
 
 
 @patch('PySide6.QtWidgets.QApplication.exit')
