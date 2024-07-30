@@ -17,11 +17,11 @@ INPUTS = os.environ.get(
 )
 
 
-def main(inputs: Inputs):
+def main(inputs: Inputs, stylesheet: str | None):
     # Launch UI
     if not config.check_update_only:
         app = QApplication()
-        window = ShowDialog(inputs)
+        window = ShowDialog(app, inputs, stylesheet)
         window.show()
         app_response = app.exec()
         if app_response != 0:
@@ -58,7 +58,7 @@ def main(inputs: Inputs):
         logging.info('Not checking for app update.')
 
 
-def set_config_values() -> Inputs:
+def set_config_values() -> tuple[Inputs, str | None]:
     from argparse import ArgumentParser, BooleanOptionalAction, RawTextHelpFormatter
 
     description = f'Show Dialog {config.version}'
@@ -76,6 +76,7 @@ def set_config_values() -> Inputs:
         help='Path to JSON file that maps to the `Inputs` class.\n'
         'If both `--inputs` and `--inputs-file` are specified, `--inputs` takes precedence.',
     )
+    parser.add_argument('--stylesheet', type=str, help='Path to CSS file to apply.')
     parser.add_argument(
         '--check-update',
         action=BooleanOptionalAction,
@@ -162,13 +163,25 @@ def set_config_values() -> Inputs:
             inputs = Inputs.from_dict(inputs_from_file.to_dict() | inputs.to_dict())
         else:
             inputs = inputs_from_file
-    logging.debug(f'Inputs:\n{pprint.pformat(inputs.to_dict(), indent=4)}')
+    logging.debug(f'Inputs:\n{pprint.pformat(inputs.to_dict(), indent=2)}')
 
-    return inputs
+    css = None
+    if args.stylesheet:
+        with open(args.stylesheet) as f:
+            css = f.read()
+
+    return inputs, css
 
 
 if __name__ == '__main__':
-    _inputs = set_config_values()
-    main(_inputs)
+    # region DEBUG
+    sys.argv += [
+        '--inputs-file',
+        str(config.ASSETS_DIR / 'inputs/inputs_05.yaml'),
+        '--stylesheet',
+        str(config.ASSETS_DIR / 'stylesheets/style_01.css'),
+    ]
+    # endregion
+    _inputs, _stylesheet = set_config_values()
+    main(_inputs, _stylesheet)
     logging.debug('App exiting.')
-    set_config_values()

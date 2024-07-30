@@ -61,9 +61,9 @@ APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
 # endregion
 
 # region Global constants
-ORGANIZATION_NAME = 'The Qt Playground Foundation'
-ORGANIZATION_DOMAIN = 'qt-playground.app'
-APPLICATION_NAME = 'Qt Playground'
+ORGANIZATION_NAME = 'The Show Dialog Foundation'
+ORGANIZATION_DOMAIN = 'show-dialog.app'
+APPLICATION_NAME = 'Show Dialog'
 # endregion
 
 # region General configs
