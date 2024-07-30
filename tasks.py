@@ -351,6 +351,19 @@ def build_upload(c, label: str = 'auto'):
     c.run(command)
 
 
+@task(
+    help={'dist_dir': 'Directory to build the distribution files.'},
+)
+def build_publish(c, dist_dir: str = str(BUILD_DIST_DIR / 'package')):
+    """
+    Publish package to pypi.
+    """
+    # Create distribution files (source and wheel)
+    c.run(f'python setup.py sdist --dist-dir "f{dist_dir}" bdist_wheel --dist-dir "f{dist_dir}"')
+    # Upload to pypi
+    c.run(f'twine upload "f{dist_dir}/*"')
+
+
 @task
 def build_run(c):
     """
@@ -587,6 +600,7 @@ build_collection.add_task(build_dist, 'dist')
 build_collection.add_task(build_release, 'release')
 build_collection.add_task(build_run, 'run')
 build_collection.add_task(build_upload, 'upload')
+build_collection.add_task(build_publish, 'publish')
 
 lint_collection = Collection('lint')
 lint_collection.add_task(lint_all, 'all')

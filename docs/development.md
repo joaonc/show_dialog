@@ -21,7 +21,12 @@ If using an IDE such as PyCharm or VS Code, the tests can be executed from withi
 Note that pytest options are in `pyproject.toml`, in the `[tool.pytest.ini_options]` section and
 linting options are also in `pyproject.toml` and `setup.cfg`.
 
-## Releasing
+## Publish to Pypi
+
+## Releases in GitHub
+In addition to publishing as a package in Pypi, a release is also created in GitHub with executable
+files that can be downloaded and executed with no dependencies (including not needing Python).
+
 Releases are published in GitHub, under the
 [Releases](https://github.com/joaonc/show_dialog/releases) page.
 
