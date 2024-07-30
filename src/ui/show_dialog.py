@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
 
@@ -37,8 +38,22 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.pass_button.setIconSize(self.pass_button.size())
         self.fail_button.setIconSize(self.fail_button.size())
 
+    def closeEvent(self, event):
+        """
+        When closing the app (``X`` button), mark as fail instead of pass.
+        """
+        self.fail_clicked()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:
+            # Disable exiting the app when pressing escape.
+            # This avoids passing the step unintentionally by accidentally pressing escape.
+            pass
+        else:
+            super().keyPressEvent(event)
+
     def pass_clicked(self):
-        # Equivalent to `self.close()`.
+        # Equivalent to `self.close()` and `self.done(0)`.
         # Using `QApplication.exit(0)` to enable testing exit code.
         self.app.exit(0)
 

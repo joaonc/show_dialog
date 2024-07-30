@@ -3,6 +3,8 @@ site_name: Show Dialog
 nav:
   - Home:
       - Introduction: index.md
+      - Usage: usage.md
+      - Inputs: inputs.md
       - Development: development.md
 
 theme:
