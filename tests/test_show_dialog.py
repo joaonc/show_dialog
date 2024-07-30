@@ -5,7 +5,7 @@ from PySide6 import QtCore
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
 
-import config
+import src.config as config
 from src.inputs import Inputs
 from src.ui.show_dialog import ShowDialog
 
