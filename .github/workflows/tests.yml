@@ -12,7 +12,13 @@ jobs:
         python-version: ['3.10', '3.11']
     name: Python ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install libEGL
+        run: |
+          sudo apt-get update -yqq
+          sudo apt-get install -y libegl1-mesa
+        if: runner.os == 'Linux'
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
