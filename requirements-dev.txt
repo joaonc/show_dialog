@@ -13,7 +13,9 @@ bandit==1.7.9
 black==24.4.2
     # via -r requirements-dev.in
 build==1.2.1
-    # via pip-tools
+    # via
+    #   -r requirements-dev.in
+    #   pip-tools
 certifi==2024.7.4
     # via requests
 cfgv==3.4.0

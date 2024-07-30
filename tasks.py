@@ -352,16 +352,18 @@ def build_upload(c, label: str = 'auto'):
 
 
 @task(
-    help={'dist_dir': 'Directory to build the distribution files.'},
+    help={'no_upload': 'Do not upload to Pypi.'},
 )
-def build_publish(c, dist_dir: str = str(BUILD_DIST_DIR / 'package')):
+def build_publish(c, no_upload: bool = False):
     """
     Publish package to pypi.
     """
+    dist_dir = BUILD_DIST_DIR / 'package'
     # Create distribution files (source and wheel)
-    c.run(f'python setup.py sdist --dist-dir "f{dist_dir}" bdist_wheel --dist-dir "f{dist_dir}"')
+    c.run(f'python setup.py sdist --dist-dir "{dist_dir}" bdist_wheel --dist-dir "{dist_dir}"')
     # Upload to pypi
-    c.run(f'twine upload "f{dist_dir}/*"')
+    if not no_upload:
+        c.run(f'twine upload "{dist_dir}/*"')
 
 
 @task
