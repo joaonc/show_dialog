@@ -40,7 +40,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
 
     def closeEvent(self, event):
         """
-        When closing the app, mark as fail instead of pass.
+        When closing the app (``X`` button), mark as fail instead of pass.
         """
         self.fail_clicked()
 
