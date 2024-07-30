@@ -7,6 +7,7 @@ os.environ.setdefault('INVOKE_RUN_ECHO', '1')  # Show commands by default
 
 
 PROJECT_ROOT = Path(__file__).parent
+PROJECT_NAME = PROJECT_ROOT.name
 ASSETS_DIR = PROJECT_ROOT / 'assets'
 
 # Requirements files
@@ -154,6 +155,7 @@ def build_clean(c):
 
     for d in [BUILD_WORK_DIR, BUILD_DIST_DIR]:
         shutil.rmtree(d, ignore_errors=True)
+    shutil.rmtree(PROJECT_ROOT / f'{PROJECT_NAME}.egg-info', ignore_errors=True)
 
 
 @task(
@@ -349,6 +351,22 @@ def build_upload(c, label: str = 'auto'):
     command = f'gh release upload "{release_tag}" "{zip_file}{label}"'
 
     c.run(command)
+
+
+@task(
+    help={'no_upload': 'Do not upload to Pypi.'},
+)
+def build_publish(c, no_upload: bool = False):
+    """
+    Publish package to Pypi.
+    """
+    dist_dir = BUILD_DIST_DIR / 'package'
+    # Create distribution files (source and wheel)
+    # c.run(f'python setup.py sdist --dist-dir "{dist_dir}" bdist_wheel --dist-dir "{dist_dir}"')
+    c.run(f'python -m build --outdir "{dist_dir}"')
+    # Upload to pypi
+    if not no_upload:
+        c.run(f'twine upload "{dist_dir}/*"')
 
 
 @task
@@ -576,6 +594,16 @@ def docs_deploy(c):
     c.run('mkdocs gh-deploy')
 
 
+@task
+def docs_clean(c):
+    """
+    Delete documentation website static files.
+    """
+    import shutil
+
+    shutil.rmtree(PROJECT_ROOT / 'site', ignore_errors=True)
+
+
 ns = Collection()  # Main namespace
 
 test_collection = Collection('test')
@@ -587,6 +615,7 @@ build_collection.add_task(build_dist, 'dist')
 build_collection.add_task(build_release, 'release')
 build_collection.add_task(build_run, 'run')
 build_collection.add_task(build_upload, 'upload')
+build_collection.add_task(build_publish, 'publish')
 
 lint_collection = Collection('lint')
 lint_collection.add_task(lint_all, 'all')
@@ -609,6 +638,7 @@ precommit_collection.add_task(precommit_upgrade, 'upgrade')
 docs_collection = Collection('docs')
 docs_collection.add_task(docs_serve, 'serve')
 docs_collection.add_task(docs_deploy, 'deploy')
+docs_collection.add_task(docs_clean, 'clean')
 
 ui_collection = Collection('ui')
 ui_collection.add_task(ui_py, 'py')

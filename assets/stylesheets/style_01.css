@@ -1,3 +1,7 @@
+/*
+Default style.
+ */
+
 QLabel#title_label {
     color: blue;
 }

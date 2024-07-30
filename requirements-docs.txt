@@ -7,9 +7,13 @@
 babel==2.15.0
     # via mkdocs-material
 certifi==2024.7.4
-    # via requests
+    # via
+    #   -c requirements-dev.txt
+    #   requests
 charset-normalizer==3.3.2
-    # via requests
+    # via
+    #   -c requirements-dev.txt
+    #   requests
 click==8.1.7
     # via
     #   -c requirements-dev.txt
@@ -23,7 +27,9 @@ colorama==0.4.6
 ghp-import==2.1.0
     # via mkdocs
 idna==3.7
-    # via requests
+    # via
+    #   -c requirements-dev.txt
+    #   requests
 jinja2==3.1.4
     # via
     #   mkdocs
@@ -90,10 +96,14 @@ pyyaml-env-tag==0.1
 regex==2024.7.24
     # via mkdocs-material
 requests==2.32.3
-    # via mkdocs-material
+    # via
+    #   -c requirements-dev.txt
+    #   mkdocs-material
 six==1.16.0
     # via python-dateutil
 urllib3==2.2.2
-    # via requests
+    # via
+    #   -c requirements-dev.txt
+    #   requests
 watchdog==4.0.1
     # via mkdocs
