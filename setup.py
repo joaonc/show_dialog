@@ -6,8 +6,6 @@ from setuptools import setup
 PROJECT_ROOT = Path(__file__).parent
 ASSETS_DIR = PROJECT_ROOT / 'assets'
 
-REQUIREMENTS = []
-
 with open(ASSETS_DIR / 'app.yaml') as f:
     manifest = yaml.safe_load(f)
 
@@ -26,7 +24,7 @@ setup(
     author_email='6wfon3p6d@mozmail.com',
     url='https://github.com/joaonc/show_dialog',
     keywords='qt, qt6',
-    install_requires=REQUIREMENTS,
+    # install_requires=REQUIREMENTS,
     license='MIT License',
     python_requires='>=3.10',
     include_package_data=True,
