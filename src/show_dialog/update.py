@@ -6,7 +6,7 @@ from pathlib import Path
 
 from semantic_version import Version
 
-from . import config
+from src.show_dialog import config
 
 
 class FileUpdateError(Exception): ...

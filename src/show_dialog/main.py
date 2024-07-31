@@ -7,10 +7,9 @@ from pathlib import Path
 
 from PySide6.QtWidgets import QApplication
 
-from . import config
-from . import update
-from .inputs import Inputs
-from .ui.show_dialog import ShowDialog
+from src.show_dialog import config, update
+from src.show_dialog.inputs import Inputs
+from src.show_dialog.ui.show_dialog import ShowDialog
 
 INPUTS = os.environ.get(
     'SHOW_DIALOG_INPUTS', Inputs(title='The Title', description='The Description').to_json()
