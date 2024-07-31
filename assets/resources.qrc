@@ -1,5 +1,7 @@
 <RCC>
   <qresource>
+    <file>images/play_icon.png</file>
+    <file>images/stop_icon.png</file>
     <file>images/fail_icon.png</file>
     <file>images/pass_icon.png</file>
     <file>images/window_icon.png</file>

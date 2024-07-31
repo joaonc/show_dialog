@@ -90,7 +90,8 @@ class Ui_ShowDialog(object):
     def retranslateUi(self, ShowDialog):
         ShowDialog.setWindowTitle(QCoreApplication.translate("ShowDialog", u"Show Dialog", None))
         self.title_label.setText(QCoreApplication.translate("ShowDialog", u"Title", None))
-        self.description_label.setText(QCoreApplication.translate("ShowDialog", u"Description", None))
+        self.description_label.setText(QCoreApplication.translate("ShowDialog", u"Description\n"
+"multiline", None))
         self.fail_button.setText(QCoreApplication.translate("ShowDialog", u"Fail", None))
         self.pass_button.setText(QCoreApplication.translate("ShowDialog", u"Pass", None))
     # retranslateUi
