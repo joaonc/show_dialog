@@ -1,5 +1,7 @@
+import logging
+
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QKeySequence, QShortcut
+from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
 
 from src.show_dialog.inputs import Inputs
@@ -26,8 +28,22 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             self.setWindowTitle(self.inputs.dialog_title)
         if self.inputs.pass_button_text:
             self.pass_button.setText(self.inputs.pass_button_text)
+        if self.inputs.pass_button_icon:
+            icon = QIcon(self.inputs.pass_button_icon)
+            if not icon:
+                logging.warning(
+                    f'Icon image for PASS button not found: {self.inputs.pass_button_icon}'
+                )
+            self.pass_button.setIcon(icon)
         if self.inputs.fail_button_text:
             self.fail_button.setText(self.inputs.fail_button_text)
+        if self.inputs.fail_button_icon:
+            icon = QIcon(self.inputs.fail_button_icon)
+            if not icon:
+                logging.warning(
+                    f'Icon image for FAIL button not found: {self.inputs.fail_button_icon}'
+                )
+            self.fail_button.setIcon(icon)
 
         if self.stylesheet:
             self.app.setStyleSheet(self.stylesheet)
