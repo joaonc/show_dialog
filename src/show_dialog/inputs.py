@@ -77,3 +77,7 @@ class Inputs(JSONFileMixin):
     """Title of the window."""
     title: str = ''
     description: str = ''
+    pass_button_text: str = ''
+    pass_button_icon: str = ''
+    fail_button_text: str = ''
+    fail_button_icon: str = ''

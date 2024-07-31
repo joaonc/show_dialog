@@ -24,6 +24,10 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.description_label.setText(self.inputs.description)
         if self.inputs.dialog_title:
             self.setWindowTitle(self.inputs.dialog_title)
+        if self.inputs.pass_button_text:
+            self.pass_button.setText(self.inputs.pass_button_text)
+        if self.inputs.fail_button_text:
+            self.fail_button.setText(self.inputs.fail_button_text)
 
         if self.stylesheet:
             self.app.setStyleSheet(self.stylesheet)

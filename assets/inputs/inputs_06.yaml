@@ -1,0 +1,7 @@
+# Set pass/fail buttons
+dialog_title: inputs_06
+title: Pass / Fail buttons set
+description: |
+    Pass / Fail buttons have their text and icons changed.
+pass_button_text: Ok
+fail_button_text: Cancel
