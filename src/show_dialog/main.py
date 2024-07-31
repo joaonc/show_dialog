@@ -176,7 +176,7 @@ if __name__ == '__main__':
     # region DEBUG
     sys.argv += [
         '--inputs-file',
-        str(config.ASSETS_DIR / 'inputs/inputs_05.yaml'),
+        str(config.ASSETS_DIR / 'inputs/inputs_07.yaml'),
         '--stylesheet',
         str(config.ASSETS_DIR / 'stylesheets/style_01.css'),
     ]

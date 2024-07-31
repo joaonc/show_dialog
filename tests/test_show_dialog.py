@@ -78,3 +78,13 @@ def test_fail_clicked(exit_mock, show_dialog: ShowDialog):
     """Clicking FAIL button application exits with code 1."""
     QTest.mouseClick(show_dialog.fail_button, QtCore.Qt.MouseButton.LeftButton)
     exit_mock.assert_called_once_with(1)
+
+
+@pytest.mark.parametrize(
+    'show_dialog, expected_pass_fail_text',
+    [(Inputs.from_file(config.ASSETS_DIR / 'inputs/inputs_06.yaml'), ('Ok', 'Cancel'))],
+    indirect=['show_dialog'],
+)
+def test_pass_fail_buttons_text(show_dialog: ShowDialog, expected_pass_fail_text: tuple[str, str]):
+    assert show_dialog.pass_button.text() == expected_pass_fail_text[0]
+    assert show_dialog.fail_button.text() == expected_pass_fail_text[1]

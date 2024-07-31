@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  deploy:
+  deploy-docs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

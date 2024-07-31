@@ -77,3 +77,17 @@ class Inputs(JSONFileMixin):
     """Title of the window."""
     title: str = ''
     description: str = ''
+    pass_button_text: str = ''
+    pass_button_icon: str = ''
+    """
+    Set the icon for the _Pass_ button.
+
+    Can be a resource path, relative path or absolute path. See examples under ``assets/inputs``.
+    """
+    fail_button_text: str = ''
+    fail_button_icon: str = ''
+    """
+    Set the icon for the _Fail_ button.
+
+    Can be a resource path, relative path or absolute path. See examples under ``assets/inputs``.
+    """
