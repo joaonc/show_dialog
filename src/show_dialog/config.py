@@ -54,7 +54,7 @@ Set the environment variable ``SHOW_DIALOG_IGNORE_UPDATE`` to ``True`` or ``1``.
 if IS_BUNDLED_APP:
     PROJECT_ROOT = Path(sys._MEIPASS)  # type: ignore
 else:
-    PROJECT_ROOT = Path(__file__).parents[1]
+    PROJECT_ROOT = Path(__file__).parents[2]
 
 ASSETS_DIR = PROJECT_ROOT / 'assets'
 APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'

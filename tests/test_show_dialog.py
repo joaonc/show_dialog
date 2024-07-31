@@ -5,9 +5,9 @@ from PySide6 import QtCore
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
 
-import src.config as config
-from src.inputs import Inputs
-from src.ui.show_dialog import ShowDialog
+import src.show_dialog.config as config
+from src.show_dialog.inputs import Inputs
+from src.show_dialog.ui.show_dialog import ShowDialog
 
 
 @pytest.fixture(scope='session')

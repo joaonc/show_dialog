@@ -1,4 +1,4 @@
-# `src/ui/forms` folder
+# `.../ui/forms` folder
 The files in this folder are created with PySide tools and should not be edited manually or with
 linters.
 

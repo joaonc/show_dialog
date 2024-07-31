@@ -9,6 +9,7 @@ os.environ.setdefault('INVOKE_RUN_ECHO', '1')  # Show commands by default
 PROJECT_ROOT = Path(__file__).parent
 PROJECT_NAME = PROJECT_ROOT.name
 ASSETS_DIR = PROJECT_ROOT / 'assets'
+SOURCE_DIR = PROJECT_ROOT / 'src' / PROJECT_NAME
 
 # Requirements files
 REQUIREMENTS_MAIN = 'main'
@@ -40,11 +41,14 @@ QRC_FILES = tuple(ASSETS_DIR.glob("**/*.qrc"))
 Qt ``.qrc`` resource files.
 """
 
+# region Executable build configs
 BUILD_SPEC_FILE = ASSETS_DIR / 'pyinstaller.spec'
 BUILD_APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
-BUILD_IN_FILE = PROJECT_ROOT / 'src' / 'main.py'
+BUILD_IN_FILE = SOURCE_DIR / 'main.py'
+"""Executable input file."""
 BUILD_WORK_DIR = PROJECT_ROOT / 'build'
 BUILD_DIST_DIR = PROJECT_ROOT / 'dist'
+# endregion
 
 
 def _csstr_to_list(csstr: str) -> list[str]:
@@ -153,8 +157,11 @@ def build_clean(c):
     """
     import shutil
 
+    # From building the executable
     for d in [BUILD_WORK_DIR, BUILD_DIST_DIR]:
         shutil.rmtree(d, ignore_errors=True)
+
+    # From building the package to publish in Pypi
     shutil.rmtree(PROJECT_ROOT / f'{PROJECT_NAME}.egg-info', ignore_errors=True)
 
 
@@ -419,7 +426,7 @@ def ui_py(c, file=None):
                 f'File "{file}" not found. Available files: {", ".join(p.stem for p in UI_FILES)}'
             )
 
-        file_path_out = PROJECT_ROOT / 'src/ui/forms' / f'ui_{file_stem}.py'
+        file_path_out = SOURCE_DIR / 'ui/forms' / f'ui_{file_stem}.py'
 
         c.run(f'pyside6-uic {file_path_in} -o {file_path_out} --from-imports')
 
@@ -451,7 +458,7 @@ def ui_rc(c, file=None):
                 f'File "{file}" not found. Available files: {", ".join(p.stem for p in QRC_FILES)}'
             )
 
-        file_path_out = PROJECT_ROOT / 'src/ui/forms' / f'{file_stem}_rc.py'
+        file_path_out = SOURCE_DIR / 'ui/forms' / f'{file_stem}_rc.py'
 
         c.run(f'pyside6-rcc {file_path_in} -o {file_path_out}')
 

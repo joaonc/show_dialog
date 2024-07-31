@@ -6,7 +6,7 @@ target-version = ['py311']
 skip-string-normalization = true
 exclude='''
 /(
-    src/ui/forms
+    src/show_dialog/ui/forms
   | \.venv.*
   | \venv.*
 )/
@@ -16,19 +16,19 @@ exclude='''
 line_length = 100
 profile = 'black'
 sections = 'FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER'
-skip = ['src/ui/forms']
+skip = ['src/show_dialog/ui/forms']
 skip_glob = ['**/.venv*', '**/venv*']
 
 # flake8 not working with pyproject.toml
 #[tool.flake8]
 #max-line-length = 100
-#extend-exclude = 'src/ui/forms,.venv*,venv*,assets,docs,site,__pycache__'
+#extend-exclude = 'src/show_dialog/ui/forms,.venv*,venv*,assets,docs,site,__pycache__'
 
 [tool.mypy]
 # Technical notes on exclusions:
 # 1 The regex for all folders needs to be in a one line string.
 # 2 The `.` doesn't need to be escaped. Escape with `\\.` for a fully compatible regex.
-exclude = '^venv*|^.venv*|.git|.eggs|build|dist|.cache|.pytest_cache|.mypy_cache|.vscode|.idea|tasks.py|src/ui/forms'
+exclude = '^venv*|^.venv*|.git|.eggs|build|dist|.cache|.pytest_cache|.mypy_cache|.vscode|.idea|tasks.py|src/show_dialog/ui/forms'
 python_version = '3.11'
 warn_return_any = true
 warn_unused_configs = true

@@ -2,8 +2,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
 
-from src.inputs import Inputs
-from src.ui.forms.ui_show_dialog import Ui_ShowDialog
+from src.show_dialog.inputs import Inputs
+from src.show_dialog.ui.forms.ui_show_dialog import Ui_ShowDialog
 
 
 class ShowDialog(QDialog, Ui_ShowDialog):
