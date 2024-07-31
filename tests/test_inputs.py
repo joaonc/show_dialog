@@ -3,7 +3,7 @@ import json
 import pytest
 import yaml
 
-from src.inputs import DataFileType, Inputs
+from src.show_dialog.inputs import DataFileType, Inputs
 
 
 @pytest.fixture
