@@ -5,5 +5,6 @@
     <file>images/fail_icon.png</file>
     <file>images/pass_icon.png</file>
     <file>images/window_icon.png</file>
+    <file>stylesheets/style_01.css</file>
   </qresource>
 </RCC>
