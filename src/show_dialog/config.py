@@ -22,6 +22,8 @@ def is_truthy(value) -> bool:
 
 
 # region Run configs
+DEBUG = is_truthy(os.environ.get('SHOW_DIALOG_DEBUG'))
+
 IS_BUNDLED_APP = getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')
 """
 Whether the code is running as an executable bundled by PyInstaller or as normal Python code.

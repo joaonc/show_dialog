@@ -58,6 +58,9 @@ def main(inputs: Inputs, stylesheet: str | None):
 
 
 def set_config_values() -> tuple[Inputs, str | None]:
+    """
+    Parse CLI arguments and set ``config`` values.
+    """
     from argparse import ArgumentParser, BooleanOptionalAction, RawTextHelpFormatter
 
     description = f'Show Dialog {config.version}'
@@ -150,8 +153,10 @@ def set_config_values() -> tuple[Inputs, str | None]:
     inputs_file = args.inputs_file
 
     if not (inputs_json or inputs_file):
-        inputs_json = INPUTS
-        # raise ValueError('Either `--inputs` or `--inputs-file` must be specified.')
+        if config.DEBUG:
+            inputs_json = INPUTS
+        else:
+            raise ValueError('Either `--inputs` or `--inputs-file` must be specified.')
 
     inputs = Inputs()
     if inputs_json:
@@ -174,12 +179,13 @@ def set_config_values() -> tuple[Inputs, str | None]:
 
 if __name__ == '__main__':
     # region DEBUG
-    sys.argv += [
-        # '--inputs-file',
-        # str(config.ASSETS_DIR / 'inputs/inputs_07.yaml'),
-        '--stylesheet',
-        str(config.ASSETS_DIR / 'stylesheets/style_01.css'),
-    ]
+    if config.DEBUG:
+        sys.argv += [
+            '--inputs-file',
+            str(config.ASSETS_DIR / 'inputs/inputs_07.yaml'),
+            '--stylesheet',
+            str(config.ASSETS_DIR / 'stylesheets/style_01.css'),
+        ]
     # endregion
     _inputs, _stylesheet = set_config_values()
     main(_inputs, _stylesheet)
