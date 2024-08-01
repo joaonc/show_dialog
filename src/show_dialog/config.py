@@ -42,17 +42,6 @@ Set the environment variable ``SHOW_DIALOG_IGNORE_BUNDLED_APP`` to ``True`` or `
 executing the code as a script. Ignored when running as a bundled app.
 """
 
-IGNORE_UPDATE = is_truthy(os.environ.get('SHOW_DIALOG_IGNORE_UPDATE', 'False'))
-"""
-Do not perform an app update (and backup), even if one is available.
-
-See also the ``check-update`` and ``check-update-only`` CLI options.
-
-To be used for debugging purposes.
-
-Set the environment variable ``SHOW_DIALOG_IGNORE_UPDATE`` to ``True`` or ``1``.
-"""
-
 if IS_BUNDLED_APP:
     PROJECT_ROOT = Path(sys._MEIPASS)  # type: ignore
 else:
@@ -76,12 +65,4 @@ App manifest contents (as a dict).
 
 version = Version(app_manifest['version'])
 """App version."""
-
-check_update = False
-"""Check for app updates."""
-check_update_only = False
-"""Only check for updates and do not launch the app."""
-update_manifest = None
-update_file = None
-backup_file = None
 # endregion
