@@ -61,7 +61,7 @@ APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
 # endregion
 
 # region Global constants
-ORGANIZATION_NAME = 'The Show Dialog Foundation'
+ORGANIZATION_NAME = 'Show Dialog'
 ORGANIZATION_DOMAIN = 'show-dialog.app'
 APPLICATION_NAME = 'Show Dialog'
 # endregion
@@ -75,7 +75,7 @@ App manifest contents (as a dict).
 version = Version(app_manifest['version'])
 """App version."""
 
-check_update = True
+check_update = False
 """Check for app updates."""
 check_update_only = False
 """Only check for updates and do not launch the app."""
