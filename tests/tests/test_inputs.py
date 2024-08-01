@@ -4,11 +4,7 @@ import pytest
 import yaml
 
 from src.show_dialog.inputs import DataFileType, Inputs
-
-
-@pytest.fixture
-def inputs_instance():
-    return Inputs(title='Foo', description='Bar')
+from tests.libs.fixtures import inputs_instance  # noqa: F401
 
 
 class TestDataFileType:

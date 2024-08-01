@@ -16,9 +16,12 @@ inv ui.py -f show_dialog
 `inv --help ui.py` for more details.
 
 ## `resources_rc.py` file
-Resources added in the UI builder.
+Qt [resources](https://doc.qt.io/qtforpython-6/PySide6/QtCore/QResource.html) added in the UI
+builder and manually as well.
 
-Generated from the `.qrc` files under `/assets`.
+Generated from the `.qrc` files under `/assets`.  
+More info on `.qrc` files
+[here](https://doc.qt.io/qtforpython-6/tutorials/basictutorial/qrcfiles.html).
 
 Uses the tool `pyside6-rcc` and generated with the command
 ```

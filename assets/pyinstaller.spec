@@ -7,8 +7,9 @@
 from pathlib import Path
 
 PROJECT_ROOT = Path(SPECPATH).parent.resolve(strict=True)
-SOURCE_DIR = PROJECT_ROOT / 'src'
+PROJECT_NAME = PROJECT_ROOT.name
 ASSETS_DIR = PROJECT_ROOT / 'assets'
+SOURCE_DIR = PROJECT_ROOT / 'src' / PROJECT_NAME
 APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
 
 
@@ -23,8 +24,8 @@ a = Analysis(
             str(ASSETS_DIR.relative_to(PROJECT_ROOT)),
         ),
         (
-            str(ASSETS_DIR / 'images' / 'button.gif'),
-            str(ASSETS_DIR.relative_to(PROJECT_ROOT) / 'images'),
+            str(ASSETS_DIR / 'stylesheets' / 'style_01.css'),
+            str(ASSETS_DIR.relative_to(PROJECT_ROOT) / 'stylesheets'),
         ),
     ],
     hiddenimports=[],
