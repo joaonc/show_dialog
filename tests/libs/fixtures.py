@@ -2,6 +2,7 @@ import pytest
 from PySide6.QtCore import QResource
 
 from src.show_dialog.inputs import Inputs
+from tests.libs import resources_rc  # noqa: F401  # Needed to initialize resources
 from tests.libs.config import TESTS_ROOT
 
 
@@ -19,6 +20,6 @@ def testing_resources():
     """
     resources_file = TESTS_ROOT / 'libs/resources_rc.py'
     if not resources_file.is_file():
-        raise FileNotFoundError(f'Resources file not found `{resources_file}`.')
+        raise FileNotFoundError(resources_file)
 
     QResource.registerResource(str(resources_file))

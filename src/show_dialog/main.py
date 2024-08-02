@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QApplication
 from src.show_dialog import config
 from src.show_dialog.inputs import Inputs
 from src.show_dialog.ui.show_dialog import ShowDialog
+from src.show_dialog.utils_qt import list_resources
 
 INPUTS = os.environ.get(
     'SHOW_DIALOG_INPUTS', Inputs(title='The Title', description='The Description').to_json()
@@ -49,7 +50,9 @@ def set_config_values() -> tuple[Inputs, str | None]:
     parser.add_argument(
         '--stylesheet',
         type=str,
-        help='Path to CSS file to apply.',
+        default=':/stylesheets/style_01.css',
+        help=f'Path to CSS file to apply. Can be a path to an external file or one of the included '
+        f' {", ".join(file for file in list_resources(":/stylesheets"))}',
     )
     parser.add_argument(
         '--log-level',
@@ -126,8 +129,6 @@ if __name__ == '__main__':
         sys.argv += [
             '--inputs-file',
             str(config.ASSETS_DIR / 'inputs/inputs_07.yaml'),
-            '--stylesheet',
-            str(config.ASSETS_DIR / 'stylesheets/style_01.css'),
         ]
     # endregion
     _inputs, _stylesheet = set_config_values()
