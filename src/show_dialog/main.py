@@ -21,7 +21,7 @@ def main(inputs: Inputs, stylesheet: str | None):
         sys.exit(app_response)
 
 
-def set_config_values() -> tuple[Inputs, str | None]:
+def _set_config_values() -> tuple[Inputs, str | None]:
     """
     Parse CLI arguments and set ``config`` values.
     """
@@ -53,7 +53,7 @@ def set_config_values() -> tuple[Inputs, str | None]:
         '--log-level',
         # Can use `logging.getLevelNamesMapping()` instead of `_nameToLevel` on python 3.11+
         choices=[level.lower() for level in logging._nameToLevel],  # noqa
-        default='debug',
+        default='info',
         help='Log level to use.',
     )
     parser.add_argument(
@@ -115,6 +115,6 @@ def set_config_values() -> tuple[Inputs, str | None]:
 
 
 if __name__ == '__main__':
-    _inputs, _stylesheet = set_config_values()
+    _inputs, _stylesheet = _set_config_values()
     main(_inputs, _stylesheet)
     logging.debug('App exiting.')
