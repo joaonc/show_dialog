@@ -1,5 +1,10 @@
-# Show Dialog
+# show-dialog
+
+[![image](https://img.shields.io/pypi/v/pytest_params.svg)](https://pypi.python.org/pypi/show_dialog)
+
 Easily show a dialog window for miscellaneous purposes.
+
+----
 
 The initial use case is to show instructions in manual steps in tests.
 

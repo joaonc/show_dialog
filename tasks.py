@@ -58,7 +58,23 @@ BUILD_APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
 BUILD_IN_FILE = SOURCE_DIR / 'main.py'
 """Executable input file."""
 BUILD_WORK_DIR = PROJECT_ROOT / 'build'
+BUILD_WORK_EXE_DIR = BUILD_WORK_DIR / 'exe'
+"""See ``BUILD_DIST_EXE_DIR`` for more info."""
 BUILD_DIST_DIR = PROJECT_ROOT / 'dist'
+BUILD_DIST_EXE_DIR = BUILD_DIST_DIR / 'exe'
+"""
+Directory where the executable is built.
+
+There are two types of distributions: package and executable.
+
+To build the package, ``flit`` is used and at the time of writing it doesn't offer an option to
+specify the output directory and it's always ``dist`` (``BUILD_DIST_DIR``)
+
+To build the executable, ``pyinstaller`` is used and it does allow to specify the output directory.
+
+To avoid mixing the files when creating both types of distributions, the package files will be in
+``BUILD_DIST_DIR`` and the executable files in ``BUILD_DIST_EXE_DIR``.
+"""
 # endregion
 
 
@@ -195,6 +211,7 @@ def _update_project_version(version: str):
         with open(file, 'w') as f:
             f.write(new_text)
 
+
 @task
 def build_clean(c):
     """
@@ -263,9 +280,9 @@ def build_version(c, version: str = '', bump: str = ''):
         'no_zip': 'Do not create a ZIP file, which can be used to upload to a GitHub release.',
     },
 )
-def build_dist(c, no_spec: bool = False, no_zip: bool = False):
+def build_exe(c, no_spec: bool = False, no_zip: bool = False):
     """
-    Build the distributable/executable file(s).
+    Build the executable file(s).
     """
     from datetime import datetime, timezone
 
@@ -275,13 +292,13 @@ def build_dist(c, no_spec: bool = False, no_zip: bool = False):
     if no_spec:
         c.run(
             f'pyinstaller '
-            f'--onefile "{BUILD_IN_FILE}" --distpath "{BUILD_DIST_DIR}" '
-            f'--workpath "{BUILD_WORK_DIR}" --specpath "{BUILD_WORK_DIR}"'
+            f'--onefile "{BUILD_IN_FILE}" --distpath "{BUILD_DIST_EXE_DIR}" '
+            f'--workpath "{BUILD_WORK_EXE_DIR}" --specpath "{BUILD_WORK_EXE_DIR}"'
         )
     else:
         c.run(
             f'pyinstaller "{BUILD_SPEC_FILE}" '
-            f'--distpath "{BUILD_DIST_DIR}" --workpath "{BUILD_WORK_DIR}"'
+            f'--distpath "{BUILD_DIST_EXE_DIR}" --workpath "{BUILD_WORK_EXE_DIR}"'
         )
 
     app_file, manifest_file, zip_file = _get_build_files()
@@ -311,6 +328,20 @@ def build_dist(c, no_spec: bool = False, no_zip: bool = False):
             f.write(manifest_file, arcname=manifest_file.name)
 
     print('Done')
+
+
+@task(
+    help={'no_upload': 'Do not upload to Pypi.'},
+)
+def build_publish(c, no_upload: bool = False):
+    """
+    Build package and publish (upload) to Pypi.
+    """
+    # Create distribution files (source and wheel)
+    c.run('flit build')
+    # Upload to pypi
+    if not no_upload:
+        c.run('flit publish')
 
 
 @task(
@@ -402,12 +433,12 @@ def build_release(
 )
 def build_upload(c, label: str = 'auto'):
     """
-    Upload asset to the release in the manifest file.
+    Upload asset to the GitHub release in the manifest file.
     The artifact being uploaded is the Zip file with the executable binary for the current OS.
     The release the artifact is uploaded to is specified in the manifest file inside the Zip file.
 
     The following must already exist:
-      * The artifact (`inv build.dist`).
+      * The artifact (`inv build.exe`).
       * The release in GitHub (`inv build.release`).
     """
     import zipfile
@@ -450,22 +481,6 @@ def build_upload(c, label: str = 'auto'):
     c.run(command)
 
 
-@task(
-    help={'no_upload': 'Do not upload to Pypi.'},
-)
-def build_publish(c, no_upload: bool = False):
-    """
-    Publish package to Pypi.
-    """
-    dist_dir = BUILD_DIST_DIR / 'package'
-    # Create distribution files (source and wheel)
-    # c.run(f'python setup.py sdist --dist-dir "{dist_dir}" bdist_wheel --dist-dir "{dist_dir}"')
-    c.run(f'python -m build --outdir "{dist_dir}"')
-    # Upload to pypi
-    if not no_upload:
-        c.run(f'twine upload "{dist_dir}/*"')
-
-
 @task
 def build_run(c):
     """
@@ -474,7 +489,7 @@ def build_run(c):
     os_name = _get_os_name()
 
     if os_name == 'windows':
-        exes = list(BUILD_DIST_DIR.glob('**/*.exe'))
+        exes = list(BUILD_DIST_EXE_DIR.glob('**/*.exe'))
         if len(exes) == 0:
             raise Exit('No executable found.')
         elif len(exes) > 1:
@@ -484,7 +499,7 @@ def build_run(c):
         app_file, _, _ = _get_build_files()
         c.run(str(app_file))
     elif os_name == 'linux':
-        raise Exit('Running on Linux still needs to be implemented.')
+        raise Exit('Running on Linux not yet implemented.')
     else:
         raise Exit(f'Running on {os_name.title()} is not supported.')
 
@@ -709,7 +724,7 @@ test_collection.add_task(test_unit, 'unit')
 build_collection = Collection('build')
 build_collection.add_task(build_clean, 'clean')
 build_collection.add_task(build_version, 'version')
-build_collection.add_task(build_dist, 'dist')
+build_collection.add_task(build_exe, 'exe')
 build_collection.add_task(build_release, 'release')
 build_collection.add_task(build_run, 'run')
 build_collection.add_task(build_upload, 'upload')
