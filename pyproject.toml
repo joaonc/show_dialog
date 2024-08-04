@@ -63,6 +63,3 @@ Home = 'https://github.com/joaonc/show_dialog'
 
 [tool.flit.module]
 name = 'show_dialog'
-
-[tool.flit.sdist]
-exclude = ['docs', 'tests', '.github']

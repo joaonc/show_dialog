@@ -375,21 +375,22 @@ def build_publish(c, no_upload: bool = False):
     c.run('flit build')
     # Upload to pypi
     if not no_upload:
-        c.run('flit publish')
+        version = _get_project_version()
+        response = input(f'Publishing version {version} to Pypi. Press Y to confirm.')
+        if response.lower().strip() == 'y':
+            c.run('flit publish')
+        else:
+            print('Package not published to Pypi.')
 
 
 @task(
     help={
-        'prerelease': 'Mark the release as a prerelease (beta).',
-        'draft': 'Save the release as a draft instead of publishing it.',
         'notes': 'Release notes.',
         'notes_file': 'Read release notes from file. Ignores the `-notes` parameter.',
     },
 )
 def build_release(
     c,
-    prerelease: bool = False,
-    draft: bool = False,
     notes: str = '',
     notes_file: str = '',
 ):
@@ -398,19 +399,19 @@ def build_release(
 
     Does not upload artifacts (executable) to the release. Use `build.upload` for that.
     """
-    import shutil
     import zipfile
 
     import yaml
-
-    if shutil.which('gh') is None:
-        raise Exit(
-            '`gh` command not found. '
-            'Please install GitHub CLI (https://cli.github.com/) to proceed.'
-        )
+    from packaging.version import Version
 
     if notes and notes_file:
         raise Exit('Both `--notes` and `--notes-file` are specified. Only one can be specified.')
+
+    if not notes and not notes_file:
+        response = input('No release notes or notes file specified, continue? [Y/n]')
+        response = response.strip().lower() or 'y'
+        if response not in ['yes', 'y']:
+            raise Exit('No release notes specified.')
 
     _, manifest_file, zip_file = _get_build_files()
 
@@ -424,39 +425,44 @@ def build_release(
     with zipfile.ZipFile(zip_file) as f:
         manifest_str = f.read(manifest_file.name).decode()
     manifest = yaml.safe_load(manifest_str)
+    app_version = Version(manifest['version'])
 
-    # Prepare release
-    app_version = manifest['version']
-    release_tag = app_version
-    release_title = f'v{app_version}' + (' (beta)' if prerelease else '')
-
-    if _check_git_tag_exists(release_tag):
+    # Verify version
+    version = Version(_get_project_version())
+    if version != app_version:
         raise Exit(
-            f'Tag/Release `{release_tag}` already exists.\n'
-            f'Update version in `{BUILD_APP_MANIFEST_FILE.relative_to(PROJECT_ROOT)}`.'
+            f'Version mismatch between the project `{version}` '
+            f'and the executable `{app_version}`.'
         )
 
-    if not notes and not notes_file:
-        response = input('No release notes or notes file specified, continue? [Y/n]')
-        response = response.strip().lower() or 'y'
-        if response not in ['yes', 'y']:
-            raise Exit('No release notes specified.')
+    latest_release, latest_tag = _get_latest_release()
+    latest_version = Version(_get_version_from_release_name(latest_release))
+    if str(latest_version) != latest_tag:
+        raise Exit(
+            f'Invalid format in latest release or tag: Release: {latest_release}, Tag: {latest_tag}'
+        )
 
-    # Create release
-    command = (
-        f'gh release create "{release_tag}" "{zip_file}" --title "{release_title}" --generate-notes'
-    )
+    if latest_version >= version:
+        raise Exit(
+            f'Release/tag version being created ({version}) needs to be greater than the current '
+            f'latest release version ({latest_version}).'
+        )
+
+    # Create release (zip file not uploaded)
+    new_release, new_tag = _get_release_name_and_tag(str(version))
+    command = f'gh release create "{new_tag}" --title "{new_release}" --generate-notes'
     if notes:
         command += f' --notes "{notes}"'
     if notes_file:
         notes_file_path = Path(notes_file)
         command += f' --notes-file "{notes_file_path.resolve(strict=True)}"'
-    if prerelease:
-        command += ' --prerelease'
-    if draft:
-        command += ' --draft'
 
-    c.run(command)
+    response = input(f'Creating GitHub release `{new_release}`. Press Y to confirm.')
+    if response.lower().strip() == 'y':
+        c.run(command)
+        print('GitHub release created. Upload artifacts with `build.upload`.')
+    else:
+        print('GitHub release not created.')
 
 
 @task(
