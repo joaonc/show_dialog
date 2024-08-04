@@ -1,4 +1,3 @@
-import re
 import os
 from pathlib import Path
 
@@ -178,6 +177,8 @@ def _calculate_sha1(file_path):
 
 
 def _get_project_version() -> str:
+    import re
+
     pattern = re.compile('''^[ _]*version[ _]*[:=] *['"](.*)['"]''', re.MULTILINE)
     versions = {}
     for file in VERSION_FILES:
@@ -203,6 +204,8 @@ def _get_project_version() -> str:
 
 
 def _update_project_version(version: str):
+    import re
+
     pattern = re.compile('''^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$''', re.MULTILINE)
     for file in VERSION_FILES:
         with open(file) as f:
@@ -212,6 +215,35 @@ def _update_project_version(version: str):
             f.write(new_text)
 
 
+def _get_release_name_and_tag(version: str) -> tuple[str, str]:
+    """
+    Generate release name and tag based on the version.
+
+    :return: Tuple with release name (ex 'v1.2.3') and tag (ex '1.2.3').
+    """
+    return f'v{version}', version
+
+
+def _get_version_from_release_name(release_name: str) -> str:
+    if not release_name.startswith('v'):
+        raise Exit(f'Invalid release name: {release_name}')
+    return release_name[1:]
+
+
+def _get_latest_release() -> tuple[str, str]:
+    """
+    Retrieves the latest release from GitHub.
+
+    :return: Tuple with release name (ex 'v1.2.3') and tag (ex '1.2.3').
+    """
+    import json
+    import subprocess
+
+    release_info_json = subprocess.check_output(['gh', 'release', 'view', '--json', 'name,tagName'])
+    release_info = json.loads(release_info_json)
+    return release_info['name'], release_info['tagName']
+
+
 @task
 def build_clean(c):
     """
@@ -219,11 +251,11 @@ def build_clean(c):
     """
     import shutil
 
-    # From building the executable
+    # From building the package and/or executable
     for d in [BUILD_WORK_DIR, BUILD_DIST_DIR]:
         shutil.rmtree(d, ignore_errors=True)
 
-    # From building the package to publish in Pypi
+    # From building the package
     shutil.rmtree(PROJECT_ROOT / f'{PROJECT_NAME}.egg-info', ignore_errors=True)
 
 
@@ -336,6 +368,8 @@ def build_exe(c, no_spec: bool = False, no_zip: bool = False):
 def build_publish(c, no_upload: bool = False):
     """
     Build package and publish (upload) to Pypi.
+
+    Output in `dist` folder.
     """
     # Create distribution files (source and wheel)
     c.run('flit build')
@@ -348,8 +382,6 @@ def build_publish(c, no_upload: bool = False):
     help={
         'prerelease': 'Mark the release as a prerelease (beta).',
         'draft': 'Save the release as a draft instead of publishing it.',
-        'no_upload': 'Do not upload artifacts to the release. Can be uploaded later with '
-        '`inv build.upload`.',
         'notes': 'Release notes.',
         'notes_file': 'Read release notes from file. Ignores the `-notes` parameter.',
     },
@@ -358,15 +390,13 @@ def build_release(
     c,
     prerelease: bool = False,
     draft: bool = False,
-    no_upload: bool = False,
     notes: str = '',
     notes_file: str = '',
 ):
     """
-    Create a GitHub release with the current code.
+    Create a release and tag in GitHub from the current project version.
 
-    Need to be authenticated with `gh auth login` or by setting the `GH_TOKEN` environment variable
-    with a GitHub API authentication token.
+    Does not upload artifacts (executable) to the release. Use `build.upload` for that.
     """
     import shutil
     import zipfile
@@ -405,6 +435,12 @@ def build_release(
             f'Tag/Release `{release_tag}` already exists.\n'
             f'Update version in `{BUILD_APP_MANIFEST_FILE.relative_to(PROJECT_ROOT)}`.'
         )
+
+    if not notes and not notes_file:
+        response = input('No release notes or notes file specified, continue? [Y/n]')
+        response = response.strip().lower() or 'y'
+        if response not in ['yes', 'y']:
+            raise Exit('No release notes specified.')
 
     # Create release
     command = (

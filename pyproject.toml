@@ -57,10 +57,6 @@ readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
 license = {file = 'LICENSE'}
 dependencies = ['mashumaro', 'pyside6', 'pyyaml']
-classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Framework :: Qt" ,
-]
 
 [project.urls]
 Home = 'https://github.com/joaonc/show_dialog'
