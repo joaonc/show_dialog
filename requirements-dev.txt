@@ -137,7 +137,7 @@ requests==2.32.3
 rich==13.7.1
     # via bandit
 semantic-version==2.10.0
-    # via -r requirements.txt
+    # via -r requirements-dev.in
 shiboken6==6.7.2
     # via
     #   -r requirements.txt

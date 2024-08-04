@@ -1,5 +1,4 @@
 pyside6             # Qt
-semantic-version    # Semantic versioning, more useful than `packaging.version`
 pyyaml              # YAML functionality
 
 mashumaro           # JSON to class serialization

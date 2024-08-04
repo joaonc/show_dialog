@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 import yaml
-from semantic_version import Version
+from packaging.version import Version
 
 
 def read_manifest_file(manifest) -> dict:
