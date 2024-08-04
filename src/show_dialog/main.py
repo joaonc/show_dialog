@@ -52,7 +52,7 @@ def set_config_values() -> tuple[Inputs, str | None]:
         type=str,
         default=':/stylesheets/style_01.css',
         help=f'Path to CSS file to apply. Can be a path to an external file or one of the included '
-        f' {", ".join(file for file in list_resources(":/stylesheets"))}',
+        f'{", ".join("`"+file.removeprefix(":/stylesheets/")+"`" for file in list_resources(":/stylesheets"))}',  # noqa
     )
     parser.add_argument(
         '--log-level',
