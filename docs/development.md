@@ -46,9 +46,10 @@ The working directory should be the project root, not the directory where `main.
 
 ![Main](images/run_main_config.png)
 
-## Publish to Pypi
+## Publishing
+### Publish to Pypi
 
-## Releases in GitHub
+### Release in GitHub
 In addition to publishing as a package in Pypi, a release is also created in GitHub with executable
 files that can be downloaded and executed with no dependencies (including not needing Python).
 
@@ -58,7 +59,7 @@ Releases are published in GitHub, under the
 At the time of this writing, releasing binaries is not yet an automated process with GitHub actions,
 so the steps below will need to be done manually.
 
-### GH CLI
+#### GH CLI
 This project uses [GitHub CLI](https://cli.github.com/) ([docs](https://cli.github.com/manual/))
 to manage releases.
 
@@ -92,7 +93,7 @@ gh auth login
 You can authenticate in other ways, see
 [docs](https://cli.github.com/manual/gh_auth_login) for more info.
 
-### Create release
+#### Create release
 1. Update (increase) the app version in `assets/app.yaml`.
 2. Create and merge a new PR called _"Preparing for v1.2.3"_ release.  
    This merges the new version, which will be used to create the release and set it to the right
@@ -110,13 +111,13 @@ You can authenticate in other ways, see
 
 See sections below for beta and draft releases.
 
-#### Beta
+##### Beta
 **TODO**
 
-#### Draft
+##### Draft
 **TODO**
 
-### Upload artifacts
+#### Upload artifacts
 **TODO**
 
 ## More info

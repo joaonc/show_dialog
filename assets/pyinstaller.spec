@@ -23,10 +23,6 @@ a = Analysis(
             str(APP_MANIFEST_FILE),
             str(ASSETS_DIR.relative_to(PROJECT_ROOT)),
         ),
-        (
-            str(ASSETS_DIR / 'stylesheets' / 'style_01.css'),
-            str(ASSETS_DIR.relative_to(PROJECT_ROOT) / 'stylesheets'),
-        ),
     ],
     hiddenimports=[],
     hookspath=[],
