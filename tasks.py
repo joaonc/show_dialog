@@ -1,3 +1,4 @@
+import re
 import os
 from pathlib import Path
 
@@ -30,6 +31,16 @@ REQUIREMENTS_TASK_HELP = {
     f'(ex. "dev"). For main file use "{REQUIREMENTS_MAIN}". Available requirements: '
     f'{", ".join(REQUIREMENTS_FILES)}.'
 }
+
+VERSION_FILES = [
+    PROJECT_ROOT / 'pyproject.toml',
+    ASSETS_DIR / 'app.yaml',
+    SOURCE_DIR / '__init__.py',
+]
+"""
+Files that contain the package version.
+This version needs to be updated with each release.
+"""
 
 UI_FILES = tuple((ASSETS_DIR / 'ui').glob("**/*.ui"))
 """
@@ -150,6 +161,40 @@ def _calculate_sha1(file_path):
     return hasher.hexdigest()
 
 
+def _get_project_version() -> str:
+    pattern = re.compile('''^[ _]*version[ _]*[:=] *['"](.*)['"]''', re.MULTILINE)
+    versions = {}
+    for file in VERSION_FILES:
+        with open(file) as f:
+            text = f.read()
+        match = pattern.search(text)
+        if not match:
+            raise Exit(f'Could not find version in `{file.relative_to(PROJECT_ROOT)}`.')
+        versions[file] = match.group(1)
+
+    if len(set(versions.values())) != 1:
+        raise Exit(
+            'Version mismatch in files that contain versions.\n'
+            + (
+                '\n'.join(
+                    f'{file.relative_to(PROJECT_ROOT)}: {version}'
+                    for file, version in versions.items()
+                )
+            )
+        )
+
+    return list(versions.values())[0]
+
+
+def _update_project_version(version: str):
+    pattern = re.compile('''^([ _]*version[ _]*= *['"])(.*)(['"].*)$''', re.MULTILINE)
+    for file in VERSION_FILES:
+        with open(file) as f:
+            text = f.read()
+        new_text = pattern.sub(lambda match: f'{match.group(1)}{version}{match.group(3)}', text)
+        with open(file, 'w') as f:
+            f.write(new_text)
+
 @task
 def build_clean(c):
     """
@@ -163,6 +208,51 @@ def build_clean(c):
 
     # From building the package to publish in Pypi
     shutil.rmtree(PROJECT_ROOT / f'{PROJECT_NAME}.egg-info', ignore_errors=True)
+
+
+@task(
+    help={
+        'version': 'Version in semantic versioning format (ex 1.5.0). '
+        'If `version` is set, then `bump` cannot be used.',
+        'bump': 'Portion of the version to increase, can be "major", "minor", or "patch".'
+        'If `bump` is set, then `version` cannot be used.',
+    },
+)
+def build_version(c, version: str = '', bump: str = ''):
+    """
+    Updates the files that contain the project version to the new version.
+    """
+    from semantic_version import Version
+
+    v1 = Version(_get_project_version())
+    if version and bump:
+        raise Exit('Either `version` or `bump` can be set, not both.')
+    if not (version or bump):
+        try:
+            bump = {'1': 'major', '2': 'minor', '3': 'patch'}[
+                input(
+                    f'Current version is `{v1}`, which portion to bump?'
+                    '\n1 - Major\n2 - Minor\n3 - Patch\n> '
+                )
+            ]
+        except KeyError:
+            raise Exit('Invalid choice')
+
+    if version:
+        v2 = Version(version)
+        if v2 <= v1:
+            raise Exit(f'New version `{v2}` needs to be greater than the existing version `{v1}`.')
+    else:
+        try:
+            v2 = getattr(v1, f'next_{bump.lower().strip()}')()
+        except AttributeError:
+            raise Exit('Invalid `bump` choice.')
+
+    _update_project_version(str(v2))
+    print(
+        f'New version is {v2}. Modified files have not been commited:\n'
+        + '\n'.join(f'{file.relative_to(PROJECT_ROOT)}' for file in VERSION_FILES)
+    )
 
 
 @task(
@@ -618,6 +708,7 @@ test_collection.add_task(test_unit, 'unit')
 
 build_collection = Collection('build')
 build_collection.add_task(build_clean, 'clean')
+build_collection.add_task(build_version, 'version')
 build_collection.add_task(build_dist, 'dist')
 build_collection.add_task(build_release, 'release')
 build_collection.add_task(build_run, 'run')
