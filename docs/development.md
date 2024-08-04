@@ -5,7 +5,10 @@ which includes _Qt Designer_, a WYSIWYG UI editor.
 Docstrings are in [reStructuredText](https://docutils.sourceforge.io/rst.html) format.
 
 ## Contributing
-**TODO**
+### Requirements
+```
+pip install -r requirements-dev.txt
+```
 
 ### Linting and Tests
 Linting and unit tests are done as actions in GitHub, but should be executed locally with the
@@ -20,6 +23,28 @@ If using an IDE such as PyCharm or VS Code, the tests can be executed from withi
 
 Note that pytest options are in `pyproject.toml`, in the `[tool.pytest.ini_options]` section and
 linting options are also in `pyproject.toml` and `setup.cfg`.
+
+### Running
+Running the code from the CLI or from the IDE needs be done as a module.  
+If trying to run as a script, the relative imports won't work.
+
+#### CLI
+With an inputs file and log level specified.
+```
+python -m src.show_dialog.main --inputs-file assets/inputs/inputs_07.yaml --log-level debug
+```
+
+#### IDE
+This section has screenshots from PyCharm. VS Code and other IDEs should have similar options.
+
+When running from the IDE, make sure you specify to run `main` as a module, not a script.
+
+![Module](images/run_main_module.png)
+
+Here are the full options, including parameters.  
+The working directory should be the project root, not the directory where `main.py` is located.
+
+![Main](images/run_main_config.png)
 
 ## Publish to Pypi
 
