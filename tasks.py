@@ -187,7 +187,7 @@ def _get_project_version() -> str:
 
 
 def _update_project_version(version: str):
-    pattern = re.compile('''^([ _]*version[ _]*= *['"])(.*)(['"].*)$''', re.MULTILINE)
+    pattern = re.compile('''^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$''', re.MULTILINE)
     for file in VERSION_FILES:
         with open(file) as f:
             text = f.read()
