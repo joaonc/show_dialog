@@ -16,12 +16,12 @@ types-setuptools    # Mypy type hints
 
 # Test
 pytest              # Test framework
+pytest-params       # Easier test case parameters
 pytest-qt           # Qt plugin to allow user interaction
 exceptiongroup; python_version < '3.11'  # pytest 8.2+ dependency
 
-# Publishing
-build               # Build package
-twine               # Upload to Pypi
+# Build and publish
+flit                # Build, install and upload to Pypi
 
 # Installer
 pyinstaller         # Installer framework
