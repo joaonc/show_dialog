@@ -5,10 +5,10 @@ import types
 
 from PySide6.QtWidgets import QApplication
 
-from src.show_dialog import config
-from src.show_dialog.inputs import Inputs
-from src.show_dialog.ui.show_dialog import ShowDialog
-from src.show_dialog.utils_qt import list_resources, read_resource_file
+from . import config
+from .inputs import Inputs
+from .ui.show_dialog import ShowDialog
+from .utils_qt import list_resources, read_resource_file
 
 
 def main(inputs: Inputs, stylesheet: str | None):
