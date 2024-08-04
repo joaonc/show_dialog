@@ -23,3 +23,5 @@ def testing_resources():
         raise FileNotFoundError(resources_file)
 
     QResource.registerResource(str(resources_file))
+    yield
+    QResource.unregisterResource(str(resources_file))

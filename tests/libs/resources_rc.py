@@ -6,27 +6,33 @@
 from PySide6 import QtCore
 
 qt_resource_data = b"\
-\x00\x00\x01-\
+\x00\x00\x01\x8c\
 /\
-*\x0d\x0aDefault style\
-.\x0d\x0a */\x0d\x0a\x0d\x0aQLabel\
-#title_label {\x0d\x0a\
-    color: blue;\
-\x0d\x0a}\x0d\x0a\x0d\x0aQLabel#de\
-scription_label \
-{\x0d\x0a    color: rg\
-b(0, 0, 50);\x0d\x0a}\x0d\
-\x0a\x0d\x0aQPushButton#p\
-ass_button {\x0d\x0a  \
-  color : green;\
-\x0d\x0a    /*backgrou\
-nd-color : gray;\
-*/\x0d\x0a}\x0d\x0a\x0d\x0aQPushBu\
-tton#fail_button\
- {\x0d\x0a    color : \
-red;\x0d\x0a    /*back\
-ground-color : g\
-reen;*/\x0d\x0a}\x0d\x0a\
+*\x0d\x0aTest styleshe\
+et.\x0d\x0a\x0d\x0aSee `test\
+s/libs/README.md\
+` on how to upda\
+te the resources\
+ file when this \
+file is updated.\
+\x0d\x0a */\x0d\x0a\x0d\x0aQLabel#\
+title_label {\x0d\x0a \
+   color: blue;\x0d\
+\x0a}\x0d\x0a\x0d\x0aQLabel#des\
+cription_label {\
+\x0d\x0a    color: rgb\
+(0, 0, 50);\x0d\x0a}\x0d\x0a\
+\x0d\x0aQPushButton#pa\
+ss_button {\x0d\x0a   \
+ color : green;\x0d\
+\x0a    /*backgroun\
+d-color : gray;*\
+/\x0d\x0a}\x0d\x0a\x0d\x0aQPushBut\
+ton#fail_button \
+{\x0d\x0a    color : r\
+ed;\x0d\x0a    /*backg\
+round-color : gr\
+een;*/\x0d\x0a}\x0d\x0a\
 "
 
 qt_resource_name = b"\
@@ -46,16 +52,13 @@ qt_resource_struct = b"\
 \x00\x00\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x02\
 \x00\x00\x00\x00\x00\x00\x00\x00\
 \x00\x00\x00\x1c\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\
-\x00\x00\x01\x91\x05\xee\xb9\xc6\
+\x00\x00\x01\x91\x1eD\xed\xf1\
 "
-
 
 def qInitResources():
     QtCore.qRegisterResourceData(0x03, qt_resource_struct, qt_resource_name, qt_resource_data)
 
-
 def qCleanupResources():
     QtCore.qUnregisterResourceData(0x03, qt_resource_struct, qt_resource_name, qt_resource_data)
-
 
 qInitResources()

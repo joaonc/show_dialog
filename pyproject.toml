@@ -5,11 +5,12 @@ line-length = 100
 target-version = ['py311']
 skip-string-normalization = true
 exclude='''
-/(
+(
     src/show_dialog/ui/forms
+  | tests/libs/resources_rc\.py
   | \.venv.*
   | \venv.*
-)/
+)
 '''
 
 [tool.isort]
@@ -38,7 +39,7 @@ disable_error_code = 'annotation-unchecked'
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
-module = ['invoke', 'factory', 'PySide6', 'semantic_version']
+module = ['invoke', 'pytest_params', 'semantic_version', 'PySide6']
 
 [tool.pytest.ini_options]
 markers = ['pri_1', 'flaky', 'nightly', 'performance', 'manual']

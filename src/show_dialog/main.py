@@ -1,5 +1,4 @@
 import logging
-import os
 import pprint
 import sys
 import types
@@ -9,11 +8,7 @@ from PySide6.QtWidgets import QApplication
 from src.show_dialog import config
 from src.show_dialog.inputs import Inputs
 from src.show_dialog.ui.show_dialog import ShowDialog
-from src.show_dialog.utils_qt import list_resources
-
-INPUTS = os.environ.get(
-    'SHOW_DIALOG_INPUTS', Inputs(title='The Title', description='The Description').to_json()
-)
+from src.show_dialog.utils_qt import list_resources, read_resource_file
 
 
 def main(inputs: Inputs, stylesheet: str | None):
@@ -52,7 +47,7 @@ def set_config_values() -> tuple[Inputs, str | None]:
         type=str,
         default=':/stylesheets/style_01.css',
         help=f'Path to CSS file to apply. Can be a path to an external file or one of the included '
-        f' {", ".join(file for file in list_resources(":/stylesheets"))}',
+        f'{", ".join("`"+file+"`" for file in list_resources(":/stylesheets"))}',
     )
     parser.add_argument(
         '--log-level',
@@ -99,10 +94,7 @@ def set_config_values() -> tuple[Inputs, str | None]:
     inputs_file = args.inputs_file
 
     if not (inputs_json or inputs_file):
-        if config.DEBUG:
-            inputs_json = INPUTS
-        else:
-            raise ValueError('Either `--inputs` or `--inputs-file` must be specified.')
+        raise ValueError('Either `--inputs` or `--inputs-file` must be specified.')
 
     inputs = Inputs()
     if inputs_json:
@@ -117,20 +109,12 @@ def set_config_values() -> tuple[Inputs, str | None]:
 
     css = None
     if args.stylesheet:
-        with open(args.stylesheet) as f:
-            css = f.read()
+        css = read_resource_file(args.stylesheet)
 
     return inputs, css
 
 
 if __name__ == '__main__':
-    # region DEBUG
-    if config.DEBUG:
-        sys.argv += [
-            '--inputs-file',
-            str(config.ASSETS_DIR / 'inputs/inputs_07.yaml'),
-        ]
-    # endregion
     _inputs, _stylesheet = set_config_values()
     main(_inputs, _stylesheet)
     logging.debug('App exiting.')

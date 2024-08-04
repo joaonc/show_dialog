@@ -12,7 +12,7 @@ def list_resources(base_path: str = ':/', recursive: bool = False) -> list[str]:
         # for subdir in dirs:
         #     entries += list_resources(subdir, True)
 
-    # Note: For some reason, the filter `QDir.Filter.Files` doesn't work on python 3.11
+    # Note: The filter `QDir.Filter.Files` doesn't work on python 3.11
     #       https://github.com/joaonc/show_dialog/issues/16
     # entries = d.entryList(QDir.Filter.Files)
     entries = d.entryList()
@@ -22,6 +22,9 @@ def list_resources(base_path: str = ':/', recursive: bool = False) -> list[str]:
 
 
 def read_resource_file(file_path):
+    """
+    Read both regular files (from a path) and resource files (file inside a resource).
+    """
     file = QFile(file_path)
     if not file.exists():
         raise FileNotFoundError(file_path)
