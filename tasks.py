@@ -31,6 +31,16 @@ REQUIREMENTS_TASK_HELP = {
     f'{", ".join(REQUIREMENTS_FILES)}.'
 }
 
+VERSION_FILES = [
+    PROJECT_ROOT / 'pyproject.toml',
+    ASSETS_DIR / 'app.yaml',
+    SOURCE_DIR / '__init__.py',
+]
+"""
+Files that contain the package version.
+This version needs to be updated with each release.
+"""
+
 UI_FILES = tuple((ASSETS_DIR / 'ui').glob("**/*.ui"))
 """
 QT ``.ui`` files.
@@ -47,7 +57,23 @@ BUILD_APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
 BUILD_IN_FILE = SOURCE_DIR / 'main.py'
 """Executable input file."""
 BUILD_WORK_DIR = PROJECT_ROOT / 'build'
+BUILD_WORK_EXE_DIR = BUILD_WORK_DIR / 'exe'
+"""See ``BUILD_DIST_EXE_DIR`` for more info."""
 BUILD_DIST_DIR = PROJECT_ROOT / 'dist'
+BUILD_DIST_EXE_DIR = BUILD_DIST_DIR / 'exe'
+"""
+Directory where the executable is built.
+
+There are two types of distributions: package and executable.
+
+To build the package, ``flit`` is used and at the time of writing it doesn't offer an option to
+specify the output directory and it's always ``dist`` (``BUILD_DIST_DIR``)
+
+To build the executable, ``pyinstaller`` is used and it does allow to specify the output directory.
+
+To avoid mixing the files when creating both types of distributions, the package files will be in
+``BUILD_DIST_DIR`` and the executable files in ``BUILD_DIST_EXE_DIR``.
+"""
 # endregion
 
 
@@ -123,13 +149,6 @@ def _get_build_files() -> tuple[Path, Path, Path]:
     return app_file, manifest_file, zip_file
 
 
-def _check_git_tag_exists(tag) -> bool:
-    import subprocess
-
-    tags = subprocess.check_output(['git', 'tag', '--list'], text=True).split('\n')
-    return tag in tags
-
-
 def _get_git_commit() -> str:
     import subprocess
 
@@ -150,6 +169,74 @@ def _calculate_sha1(file_path):
     return hasher.hexdigest()
 
 
+def _get_project_version() -> str:
+    import re
+
+    pattern = re.compile('''^[ _]*version[ _]*[:=] *['"](.*)['"]''', re.MULTILINE)
+    versions = {}
+    for file in VERSION_FILES:
+        with open(file) as f:
+            text = f.read()
+        match = pattern.search(text)
+        if not match:
+            raise Exit(f'Could not find version in `{file.relative_to(PROJECT_ROOT)}`.')
+        versions[file] = match.group(1)
+
+    if len(set(versions.values())) != 1:
+        raise Exit(
+            'Version mismatch in files that contain versions.\n'
+            + (
+                '\n'.join(
+                    f'{file.relative_to(PROJECT_ROOT)}: {version}'
+                    for file, version in versions.items()
+                )
+            )
+        )
+
+    return list(versions.values())[0]
+
+
+def _update_project_version(version: str):
+    import re
+
+    pattern = re.compile('''^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$''', re.MULTILINE)
+    for file in VERSION_FILES:
+        with open(file) as f:
+            text = f.read()
+        new_text = pattern.sub(lambda match: f'{match.group(1)}{version}{match.group(3)}', text)
+        with open(file, 'w') as f:
+            f.write(new_text)
+
+
+def _get_release_name_and_tag(version: str) -> tuple[str, str]:
+    """
+    Generate release name and tag based on the version.
+
+    :return: Tuple with release name (ex 'v1.2.3') and tag (ex '1.2.3').
+    """
+    return f'v{version}', version
+
+
+def _get_version_from_release_name(release_name: str) -> str:
+    if not release_name.startswith('v'):
+        raise Exit(f'Invalid release name: {release_name}')
+    return release_name[1:]
+
+
+def _get_latest_release() -> tuple[str, str]:
+    """
+    Retrieves the latest release from GitHub.
+
+    :return: Tuple with release name (ex 'v1.2.3') and tag (ex '1.2.3').
+    """
+    import json
+    import subprocess
+
+    release_info_json = subprocess.check_output(['gh', 'release', 'view', '--json', 'name,tagName'])
+    release_info = json.loads(release_info_json)
+    return release_info['name'], release_info['tagName']
+
+
 @task
 def build_clean(c):
     """
@@ -157,12 +244,57 @@ def build_clean(c):
     """
     import shutil
 
-    # From building the executable
+    # From building the package and/or executable
     for d in [BUILD_WORK_DIR, BUILD_DIST_DIR]:
         shutil.rmtree(d, ignore_errors=True)
 
-    # From building the package to publish in Pypi
+    # From building the package
     shutil.rmtree(PROJECT_ROOT / f'{PROJECT_NAME}.egg-info', ignore_errors=True)
+
+
+@task(
+    help={
+        'version': 'Version in semantic versioning format (ex 1.5.0). '
+        'If `version` is set, then `bump` cannot be used.',
+        'bump': 'Portion of the version to increase, can be "major", "minor", or "patch".'
+        'If `bump` is set, then `version` cannot be used.',
+    },
+)
+def build_version(c, version: str = '', bump: str = ''):
+    """
+    Updates the files that contain the project version to the new version.
+    """
+    from semantic_version import Version
+
+    v1 = Version(_get_project_version())
+    if version and bump:
+        raise Exit('Either `version` or `bump` can be set, not both.')
+    if not (version or bump):
+        try:
+            bump = {'1': 'major', '2': 'minor', '3': 'patch'}[
+                input(
+                    f'Current version is `{v1}`, which portion to bump?'
+                    '\n1 - Major\n2 - Minor\n3 - Patch\n> '
+                )
+            ]
+        except KeyError:
+            raise Exit('Invalid choice')
+
+    if version:
+        v2 = Version(version)
+        if v2 <= v1:
+            raise Exit(f'New version `{v2}` needs to be greater than the existing version `{v1}`.')
+    else:
+        try:
+            v2 = getattr(v1, f'next_{bump.lower().strip()}')()
+        except AttributeError:
+            raise Exit('Invalid `bump` choice.')
+
+    _update_project_version(str(v2))
+    print(
+        f'New version is {v2}. Modified files have not been commited:\n'
+        + '\n'.join(f'{file.relative_to(PROJECT_ROOT)}' for file in VERSION_FILES)
+    )
 
 
 @task(
@@ -173,9 +305,9 @@ def build_clean(c):
         'no_zip': 'Do not create a ZIP file, which can be used to upload to a GitHub release.',
     },
 )
-def build_dist(c, no_spec: bool = False, no_zip: bool = False):
+def build_exe(c, no_spec: bool = False, no_zip: bool = False):
     """
-    Build the distributable/executable file(s).
+    Build the executable file(s).
     """
     from datetime import datetime, timezone
 
@@ -185,13 +317,13 @@ def build_dist(c, no_spec: bool = False, no_zip: bool = False):
     if no_spec:
         c.run(
             f'pyinstaller '
-            f'--onefile "{BUILD_IN_FILE}" --distpath "{BUILD_DIST_DIR}" '
-            f'--workpath "{BUILD_WORK_DIR}" --specpath "{BUILD_WORK_DIR}"'
+            f'--onefile "{BUILD_IN_FILE}" --distpath "{BUILD_DIST_EXE_DIR}" '
+            f'--workpath "{BUILD_WORK_EXE_DIR}" --specpath "{BUILD_WORK_EXE_DIR}"'
         )
     else:
         c.run(
             f'pyinstaller "{BUILD_SPEC_FILE}" '
-            f'--distpath "{BUILD_DIST_DIR}" --workpath "{BUILD_WORK_DIR}"'
+            f'--distpath "{BUILD_DIST_EXE_DIR}" --workpath "{BUILD_WORK_EXE_DIR}"'
         )
 
     app_file, manifest_file, zip_file = _get_build_files()
@@ -224,82 +356,83 @@ def build_dist(c, no_spec: bool = False, no_zip: bool = False):
 
 
 @task(
+    help={'no_upload': 'Do not upload to Pypi.'},
+)
+def build_publish(c, no_upload: bool = False):
+    """
+    Build package and publish (upload) to Pypi.
+
+    Output in `dist` folder.
+    """
+    # Create distribution files (source and wheel)
+    c.run('flit build')
+    # Upload to pypi
+    if not no_upload:
+        version = _get_project_version()
+        response = input(f'Publishing version {version} to Pypi. Press Y to confirm.')
+        if response.lower().strip() == 'y':
+            c.run('flit publish')
+        else:
+            print('Package not published to Pypi.')
+
+
+@task(
     help={
-        'prerelease': 'Mark the release as a prerelease (beta).',
-        'draft': 'Save the release as a draft instead of publishing it.',
-        'no_upload': 'Do not upload artifacts to the release. Can be uploaded later with '
-        '`inv build.upload`.',
         'notes': 'Release notes.',
         'notes_file': 'Read release notes from file. Ignores the `-notes` parameter.',
     },
 )
 def build_release(
     c,
-    prerelease: bool = False,
-    draft: bool = False,
-    no_upload: bool = False,
     notes: str = '',
     notes_file: str = '',
 ):
     """
-    Create a GitHub release with the current code.
+    Create a release and tag in GitHub from the current project version.
 
-    Need to be authenticated with `gh auth login` or by setting the `GH_TOKEN` environment variable
-    with a GitHub API authentication token.
+    Does not upload artifacts (executable/zip) to the release. Use `build.upload` for that.
     """
-    import shutil
-    import zipfile
-
-    import yaml
-
-    if shutil.which('gh') is None:
-        raise Exit(
-            '`gh` command not found. '
-            'Please install GitHub CLI (https://cli.github.com/) to proceed.'
-        )
+    from packaging.version import Version
 
     if notes and notes_file:
         raise Exit('Both `--notes` and `--notes-file` are specified. Only one can be specified.')
 
-    _, manifest_file, zip_file = _get_build_files()
+    if not notes and not notes_file:
+        response = input('No release notes or notes file specified, continue? [Y/n]')
+        response = response.strip().lower() or 'y'
+        if response not in ['yes', 'y']:
+            raise Exit('No release notes specified.')
 
-    if not zip_file.exists():
+    # Check that there's no release with the current version
+    version = Version(_get_project_version())
+    latest_release, latest_tag = _get_latest_release()
+    latest_version = Version(_get_version_from_release_name(latest_release))
+    if str(latest_version) != latest_tag:
         raise Exit(
-            f'Zip file not found: {zip_file}\n'
-            'Rebuild the app with `inv build.dist` and without the `--no-zip` option.'
+            f'Invalid format in latest release or tag: Release: {latest_release}, Tag: {latest_tag}'
         )
 
-    # Get build info from manifest inside Zip
-    with zipfile.ZipFile(zip_file) as f:
-        manifest_str = f.read(manifest_file.name).decode()
-    manifest = yaml.safe_load(manifest_str)
-
-    # Prepare release
-    app_version = manifest['version']
-    release_tag = app_version
-    release_title = f'v{app_version}' + (' (beta)' if prerelease else '')
-
-    if _check_git_tag_exists(release_tag):
+    if latest_version >= version:
         raise Exit(
-            f'Tag/Release `{release_tag}` already exists.\n'
-            f'Update version in `{BUILD_APP_MANIFEST_FILE.relative_to(PROJECT_ROOT)}`.'
+            f'Release/tag version being created ({version}) needs to be greater than the current '
+            f'latest release version ({latest_version}).'
         )
 
-    # Create release
-    command = (
-        f'gh release create "{release_tag}" "{zip_file}" --title "{release_title}" --generate-notes'
-    )
+    # Create release (zip file not uploaded)
+    new_release, new_tag = _get_release_name_and_tag(str(version))
+    command = f'gh release create "{new_tag}" --title "{new_release}" --generate-notes'
     if notes:
         command += f' --notes "{notes}"'
     if notes_file:
         notes_file_path = Path(notes_file)
         command += f' --notes-file "{notes_file_path.resolve(strict=True)}"'
-    if prerelease:
-        command += ' --prerelease'
-    if draft:
-        command += ' --draft'
 
-    c.run(command)
+    response = input(f'Creating GitHub release `{new_release}`. Press Y to confirm.')
+    if response.lower().strip() == 'y':
+        c.run(command)
+        print('GitHub release created. Upload artifacts with `build.upload`.')
+    else:
+        print('GitHub release not created.')
 
 
 @task(
@@ -312,17 +445,18 @@ def build_release(
 )
 def build_upload(c, label: str = 'auto'):
     """
-    Upload asset to the release in the manifest file.
+    Upload asset to the GitHub release in the manifest file.
     The artifact being uploaded is the Zip file with the executable binary for the current OS.
     The release the artifact is uploaded to is specified in the manifest file inside the Zip file.
 
     The following must already exist:
-      * The artifact (`inv build.dist`).
+      * The artifact (`inv build.exe`).
       * The release in GitHub (`inv build.release`).
     """
     import zipfile
 
     import yaml
+    from packaging.version import Version
 
     _, manifest_file, zip_file = _get_build_files()
 
@@ -336,14 +470,15 @@ def build_upload(c, label: str = 'auto'):
     with zipfile.ZipFile(zip_file) as f:
         manifest_str = f.read(manifest_file.name).decode()
     manifest = yaml.safe_load(manifest_str)
+    app_version = Version(manifest['version'])
 
-    app_version = manifest['version']
-    release_tag = app_version
-
-    if not _check_git_tag_exists(release_tag):
+    # Verify executable is being uploaded to the correct GH release
+    latest_release, latest_tag = _get_latest_release()
+    latest_version = Version(_get_version_from_release_name(latest_release))
+    if app_version != latest_version:
         raise Exit(
-            f'Tag/Release `{release_tag}` doesn\'t exist.\n'
-            'Create release with `inv build.release` first.'
+            f'App version `{app_version}` does not match '
+            f'the latest release in GitHub `{latest_version}`.`'
         )
 
     # Create label
@@ -355,25 +490,13 @@ def build_upload(c, label: str = 'auto'):
         label = f'#{label}'
 
     # Upload file
-    command = f'gh release upload "{release_tag}" "{zip_file}{label}"'
+    print(
+        f'Uploading `{zip_file.name}` to release `{latest_release}`'
+        + (f' with label `{label}`' if label else '')
+    )
+    command = f'gh release upload "{latest_tag}" "{zip_file}{label}"'
 
     c.run(command)
-
-
-@task(
-    help={'no_upload': 'Do not upload to Pypi.'},
-)
-def build_publish(c, no_upload: bool = False):
-    """
-    Publish package to Pypi.
-    """
-    dist_dir = BUILD_DIST_DIR / 'package'
-    # Create distribution files (source and wheel)
-    # c.run(f'python setup.py sdist --dist-dir "{dist_dir}" bdist_wheel --dist-dir "{dist_dir}"')
-    c.run(f'python -m build --outdir "{dist_dir}"')
-    # Upload to pypi
-    if not no_upload:
-        c.run(f'twine upload "{dist_dir}/*"')
 
 
 @task
@@ -384,7 +507,7 @@ def build_run(c):
     os_name = _get_os_name()
 
     if os_name == 'windows':
-        exes = list(BUILD_DIST_DIR.glob('**/*.exe'))
+        exes = list(BUILD_DIST_EXE_DIR.glob('**/*.exe'))
         if len(exes) == 0:
             raise Exit('No executable found.')
         elif len(exes) > 1:
@@ -394,7 +517,7 @@ def build_run(c):
         app_file, _, _ = _get_build_files()
         c.run(str(app_file))
     elif os_name == 'linux':
-        raise Exit('Running on Linux still needs to be implemented.')
+        raise Exit('Running on Linux not yet implemented.')
     else:
         raise Exit(f'Running on {os_name.title()} is not supported.')
 
@@ -618,7 +741,8 @@ test_collection.add_task(test_unit, 'unit')
 
 build_collection = Collection('build')
 build_collection.add_task(build_clean, 'clean')
-build_collection.add_task(build_dist, 'dist')
+build_collection.add_task(build_version, 'version')
+build_collection.add_task(build_exe, 'exe')
 build_collection.add_task(build_release, 'release')
 build_collection.add_task(build_run, 'run')
 build_collection.add_task(build_upload, 'upload')

@@ -5,10 +5,10 @@ import types
 
 from PySide6.QtWidgets import QApplication
 
-from src.show_dialog import config
-from src.show_dialog.inputs import Inputs
-from src.show_dialog.ui.show_dialog import ShowDialog
-from src.show_dialog.utils_qt import list_resources, read_resource_file
+from . import config
+from .inputs import Inputs
+from .ui.show_dialog import ShowDialog
+from .utils_qt import list_resources, read_resource_file
 
 
 def main(inputs: Inputs, stylesheet: str | None):
@@ -21,7 +21,7 @@ def main(inputs: Inputs, stylesheet: str | None):
         sys.exit(app_response)
 
 
-def set_config_values() -> tuple[Inputs, str | None]:
+def _set_config_values() -> tuple[Inputs, str | None]:
     """
     Parse CLI arguments and set ``config`` values.
     """
@@ -53,7 +53,7 @@ def set_config_values() -> tuple[Inputs, str | None]:
         '--log-level',
         # Can use `logging.getLevelNamesMapping()` instead of `_nameToLevel` on python 3.11+
         choices=[level.lower() for level in logging._nameToLevel],  # noqa
-        default='debug',
+        default='info',
         help='Log level to use.',
     )
     parser.add_argument(
@@ -115,6 +115,6 @@ def set_config_values() -> tuple[Inputs, str | None]:
 
 
 if __name__ == '__main__':
-    _inputs, _stylesheet = set_config_values()
+    _inputs, _stylesheet = _set_config_values()
     main(_inputs, _stylesheet)
     logging.debug('App exiting.')

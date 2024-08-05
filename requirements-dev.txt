@@ -34,7 +34,7 @@ docutils==0.21.2
     # via flit
 filelock==3.15.4
     # via virtualenv
-flake8==7.1.0
+flake8==7.1.1
     # via -r requirements-dev.in
 flit==3.9.0
     # via -r requirements-dev.in
@@ -137,7 +137,7 @@ requests==2.32.3
 rich==13.7.1
     # via bandit
 semantic-version==2.10.0
-    # via -r requirements.txt
+    # via -r requirements-dev.in
 shiboken6==6.7.2
     # via
     #   -r requirements.txt
