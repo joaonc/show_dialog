@@ -149,13 +149,6 @@ def _get_build_files() -> tuple[Path, Path, Path]:
     return app_file, manifest_file, zip_file
 
 
-def _check_git_tag_exists(tag) -> bool:
-    import subprocess
-
-    tags = subprocess.check_output(['git', 'tag', '--list'], text=True).split('\n')
-    return tag in tags
-
-
 def _get_git_commit() -> str:
     import subprocess
 
@@ -397,11 +390,8 @@ def build_release(
     """
     Create a release and tag in GitHub from the current project version.
 
-    Does not upload artifacts (executable) to the release. Use `build.upload` for that.
+    Does not upload artifacts (executable/zip) to the release. Use `build.upload` for that.
     """
-    import zipfile
-
-    import yaml
     from packaging.version import Version
 
     if notes and notes_file:
@@ -413,28 +403,8 @@ def build_release(
         if response not in ['yes', 'y']:
             raise Exit('No release notes specified.')
 
-    _, manifest_file, zip_file = _get_build_files()
-
-    if not zip_file.exists():
-        raise Exit(
-            f'Zip file not found: {zip_file}\n'
-            'Rebuild the app with `inv build.dist` and without the `--no-zip` option.'
-        )
-
-    # Get build info from manifest inside Zip
-    with zipfile.ZipFile(zip_file) as f:
-        manifest_str = f.read(manifest_file.name).decode()
-    manifest = yaml.safe_load(manifest_str)
-    app_version = Version(manifest['version'])
-
-    # Verify version
+    # Check that there's no release with the current version
     version = Version(_get_project_version())
-    if version != app_version:
-        raise Exit(
-            f'Version mismatch between the project `{version}` '
-            f'and the executable `{app_version}`.'
-        )
-
     latest_release, latest_tag = _get_latest_release()
     latest_version = Version(_get_version_from_release_name(latest_release))
     if str(latest_version) != latest_tag:
@@ -486,6 +456,7 @@ def build_upload(c, label: str = 'auto'):
     import zipfile
 
     import yaml
+    from packaging.version import Version
 
     _, manifest_file, zip_file = _get_build_files()
 
@@ -499,14 +470,15 @@ def build_upload(c, label: str = 'auto'):
     with zipfile.ZipFile(zip_file) as f:
         manifest_str = f.read(manifest_file.name).decode()
     manifest = yaml.safe_load(manifest_str)
+    app_version = Version(manifest['version'])
 
-    app_version = manifest['version']
-    release_tag = app_version
-
-    if not _check_git_tag_exists(release_tag):
+    # Verify executable is being uploaded to the correct GH release
+    latest_release, latest_tag = _get_latest_release()
+    latest_version = Version(_get_version_from_release_name(latest_release))
+    if app_version != latest_version:
         raise Exit(
-            f'Tag/Release `{release_tag}` doesn\'t exist.\n'
-            'Create release with `inv build.release` first.'
+            f'App version `{app_version}` does not match '
+            f'the latest release in GitHub `{latest_version}`.`'
         )
 
     # Create label
@@ -518,7 +490,11 @@ def build_upload(c, label: str = 'auto'):
         label = f'#{label}'
 
     # Upload file
-    command = f'gh release upload "{release_tag}" "{zip_file}{label}"'
+    print(
+        f'Uploading `{zip_file.name}` to release `{latest_release}`'
+        + (f' with label `{label}`' if label else '')
+    )
+    command = f'gh release upload "{latest_tag}" "{zip_file}{label}"'
 
     c.run(command)
 
