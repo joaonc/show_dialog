@@ -51,7 +51,7 @@ APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
 
 # region Global constants
 ORGANIZATION_NAME = 'Show Dialog'
-ORGANIZATION_DOMAIN = 'show-dialog.app'
+ORGANIZATION_DOMAIN = 'qt-show-dialog.app'  # Does not exist. To avoid build issues on Mac.
 APPLICATION_NAME = 'Show Dialog'
 # endregion
 

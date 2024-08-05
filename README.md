@@ -1,4 +1,4 @@
-# show-dialog
+# qt-show-dialog
 
 [![image](https://img.shields.io/pypi/v/pytest_params.svg)](https://pypi.python.org/pypi/show_dialog)
 
