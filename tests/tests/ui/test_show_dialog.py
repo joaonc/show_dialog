@@ -4,10 +4,11 @@ import pytest
 from PySide6 import QtCore
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
+from pytest_params import params
 
-import src.show_dialog.config as config
 from src.show_dialog.inputs import Inputs
 from src.show_dialog.ui.show_dialog import ShowDialog
+from tests.libs import config
 
 
 @pytest.fixture(scope='session')
@@ -25,38 +26,53 @@ def show_dialog(request, app, qtbot):
     yield dialog
 
 
-@pytest.mark.parametrize('show_dialog', [Inputs(dialog_title='foo bar')], indirect=True)
+@params('show_dialog', [('dialog title', Inputs(dialog_title='foo bar'))], indirect=True)
 def test_dialog_title(show_dialog: ShowDialog):
     assert show_dialog.windowTitle() == 'foo bar'
 
 
-@pytest.mark.parametrize('show_dialog', [Inputs(title='foo bar')], indirect=True)
+@params('show_dialog', [('simple title', Inputs(title='foo bar'))], indirect=True)
 def test_title(show_dialog: ShowDialog):
     assert show_dialog.title_label.text() == 'foo bar'
 
 
-@pytest.mark.parametrize('show_dialog', [Inputs(description='foo bar')], indirect=True)
+@params('show_dialog', [('simple description', Inputs(description='foo bar'))], indirect=True)
 def test_description(show_dialog: ShowDialog):
     assert show_dialog.description_label.text() == 'foo bar'
 
 
-@pytest.mark.parametrize(
+@params(
+    'show_dialog',
+    [
+        ('markdown description', Inputs(description='# Title\ntext', description_md=True)),
+    ],
+    indirect=True,
+)
+def test_description_md(show_dialog: ShowDialog):
+    assert show_dialog.description_label.text() == '<h1>Title</h1>\n<p>text</p>'
+
+
+@params(
     'show_dialog, expected_description',
     [
         (
-            Inputs.from_file(config.ASSETS_DIR / 'inputs/inputs_02.yaml'),
+            'single line',
+            Inputs.from_file(config.TEST_ASSETS_DIR / 'inputs/inputs_02.yaml'),
             'This multiline text will transform into a single line.',
         ),
         (
-            Inputs.from_file(config.ASSETS_DIR / 'inputs/inputs_03.yaml'),
+            'single line, newline at end',
+            Inputs.from_file(config.TEST_ASSETS_DIR / 'inputs/inputs_03.yaml'),
             'This multiline text will transform into a single line.\n',
         ),
         (
-            Inputs.from_file(config.ASSETS_DIR / 'inputs/inputs_04.yaml'),
+            'multi line',
+            Inputs.from_file(config.TEST_ASSETS_DIR / 'inputs/inputs_04.yaml'),
             'This multiline text will\nretain its original newlines.',
         ),
         (
-            Inputs.from_file(config.ASSETS_DIR / 'inputs/inputs_05.yaml'),
+            'multi line, newline at end',
+            Inputs.from_file(config.TEST_ASSETS_DIR / 'inputs/inputs_05.yaml'),
             'This multiline text will\nretain its original newlines.\n',
         ),
     ],
@@ -80,9 +96,15 @@ def test_fail_clicked(exit_mock, show_dialog: ShowDialog):
     exit_mock.assert_called_once_with(1)
 
 
-@pytest.mark.parametrize(
+@params(
     'show_dialog, expected_pass_fail_text',
-    [(Inputs.from_file(config.ASSETS_DIR / 'inputs/inputs_06.yaml'), ('Ok', 'Cancel'))],
+    [
+        (
+            'custom text on buttons',
+            Inputs.from_file(config.TEST_ASSETS_DIR / 'inputs/inputs_06.yaml'),
+            ('Ok', 'Cancel'),
+        ),
+    ],
     indirect=['show_dialog'],
 )
 def test_pass_fail_buttons_text(show_dialog: ShowDialog, expected_pass_fail_text: tuple[str, str]):

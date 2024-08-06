@@ -24,7 +24,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
 
         # UI adjustments
         self.title_label.setText(self.inputs.title)
-        if self.inputs.description:
+        if self.inputs.description_md:
             description = markdown.markdown(self.inputs.description)
             logging.debug(f'Description converted to HTML:\n{description}')
         else:
