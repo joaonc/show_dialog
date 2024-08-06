@@ -50,6 +50,8 @@ invoke==2.2.0
     # via -r requirements-dev.in
 isort==5.13.2
     # via -r requirements-dev.in
+markdown==3.6
+    # via -r requirements.txt
 markdown-it-py==3.0.0
     # via rich
 mashumaro==3.13.1
@@ -91,7 +93,7 @@ pluggy==1.5.0
     #   pytest-qt
 pre-commit==3.8.0
     # via -r requirements-dev.in
-pycodestyle==2.12.0
+pycodestyle==2.12.1
     # via flake8
 pyflakes==3.2.0
     # via flake8
@@ -121,7 +123,7 @@ pytest==8.3.2
     #   -r requirements-dev.in
     #   pytest-params
     #   pytest-qt
-pytest-params==0.1.0
+pytest-params==0.2.0
     # via -r requirements-dev.in
 pytest-qt==4.4.0
     # via -r requirements-dev.in
@@ -148,6 +150,8 @@ stevedore==5.2.0
     # via bandit
 tomli-w==1.0.0
     # via flit
+types-markdown==3.6.0.20240316
+    # via -r requirements-dev.in
 types-pyyaml==6.0.12.20240724
     # via -r requirements-dev.in
 types-setuptools==71.1.0.20240726

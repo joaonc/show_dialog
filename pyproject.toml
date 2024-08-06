@@ -50,7 +50,7 @@ requires = ['flit_core >=3.2,<4']
 build-backend = 'flit_core.buildapi'
 
 [project]
-name = 'show-dialog'
+name = 'qt-show-dialog'
 version = '0.1.0'
 description = 'Easily show a dialog window for miscellaneous purposes.'
 readme = 'README.md'
@@ -60,6 +60,7 @@ dependencies = ['mashumaro', 'pyside6', 'pyyaml']
 
 [project.urls]
 Home = 'https://github.com/joaonc/show_dialog'
+Documentation = 'https://joaonc.github.io/show_dialog'
 
 [tool.flit.module]
 name = 'show_dialog'

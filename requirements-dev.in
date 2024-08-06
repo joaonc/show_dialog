@@ -11,6 +11,7 @@ black               # Linter
 flake8              # Linter
 isort               # Linter
 mypy                # Code inspector
+types-markdown      # Mypy type hints
 types-pyyaml        # Mypy type hints
 types-setuptools    # Mypy type hints
 

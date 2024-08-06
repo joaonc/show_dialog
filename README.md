@@ -1,6 +1,6 @@
-# show-dialog
+# qt-show-dialog
 
-[![image](https://img.shields.io/pypi/v/pytest_params.svg)](https://pypi.python.org/pypi/show_dialog)
+[![image](https://img.shields.io/pypi/v/qt-show-dialog.svg)](https://pypi.python.org/pypi/qt-show-dialog)
 
 Easily show a dialog window for miscellaneous purposes.
 

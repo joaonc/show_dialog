@@ -1,5 +1,6 @@
 import logging
 
+import markdown
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
@@ -23,7 +24,12 @@ class ShowDialog(QDialog, Ui_ShowDialog):
 
         # UI adjustments
         self.title_label.setText(self.inputs.title)
-        self.description_label.setText(self.inputs.description)
+        if self.inputs.description_md:
+            description = markdown.markdown(self.inputs.description)
+            logging.debug(f'Description converted to HTML:\n{description}')
+        else:
+            description = self.inputs.description
+        self.description_label.setText(description)
         if self.inputs.dialog_title:
             self.setWindowTitle(self.inputs.dialog_title)
         if self.inputs.pass_button_text:

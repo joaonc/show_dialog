@@ -77,6 +77,17 @@ class Inputs(JSONFileMixin):
     """Title of the window."""
     title: str = ''
     description: str = ''
+    """
+    Text to display in the description section.
+
+    Can be plain text or HTML. For markdown, set ``description_md`` to ``True``.
+    """
+    description_md: bool = False
+    """
+    Whether the text in the ``description`` field is markdown.
+
+    Text in ``description`` can be plain text or HTML.
+    """
     pass_button_text: str = ''
     pass_button_icon: str = ''
     """

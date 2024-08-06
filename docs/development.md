@@ -47,9 +47,9 @@ The working directory should be the project root, not the directory where `main.
 ![Main](images/run_main_config.png)
 
 ## Publishing
-### Publish to Pypi
+### Build app
 
-### Release in GitHub
+### Create release in GitHub
 In addition to publishing as a package in Pypi, a release is also created in GitHub with executable
 files that can be downloaded and executed with no dependencies (including not needing Python).
 
@@ -103,22 +103,27 @@ You can authenticate in other ways, see
 
 !!! Note "Recommended command"
 
-    Create the file `release_notes.md` and _don't_ add it to the project.
+    Create the file `release_notes.md` and _don't_ add it to the project (it's in `.gitignore`, so
+    you should be ok).
 
     ```
     inv build.release --notes-file release_notes.md
     ```
 
-See sections below for beta and draft releases.
-
-##### Beta
-**TODO**
-
-##### Draft
-**TODO**
-
 #### Upload artifacts
 **TODO**
+
+### Publish to Pypi
+```
+inv build.publish
+```
+
+!!! Note
+
+    There's a similarly named project in Pypi called
+    [`showdialog`](https://pypi.org/project/showdialog/), so the initially chosen names of
+    `show-dialog` and `show_dialog` were not possible due to the similar name and Pypi didn't allow
+    it, so ended up with the current `qt-show-dialog`.
 
 ## More info
 [Managing releases in a repository](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository).
