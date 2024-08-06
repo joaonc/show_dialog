@@ -79,7 +79,7 @@ class Inputs(JSONFileMixin):
     description: str = ''
     """
     Text to display in the description section.
-    
+
     Can be plain text or HTML. For markdown, set ``description_md`` to ``True``.
     """
     description_md: bool = False
