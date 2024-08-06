@@ -4,7 +4,7 @@ import pytest
 import yaml
 from pytest_params import params
 
-from src.show_dialog.inputs import DataFileType, Inputs
+from src.show_dialog.inputs import DataFileType, Inputs, InputsFactory
 from tests.libs.fixtures import inputs_instance  # noqa: F401
 
 
@@ -84,3 +84,9 @@ class TestInputs:
         file = tmp_path / 'foo.bar'
         with pytest.raises(ValueError):
             Inputs.from_file(file)
+
+
+class TestInputsFactory:
+    def test_create(self):
+        base = InputsFactory()
+        factory = InputsFactory()

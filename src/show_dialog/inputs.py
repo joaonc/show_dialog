@@ -102,3 +102,20 @@ class Inputs(JSONFileMixin):
 
     Can be a resource path, relative path or absolute path. See examples under ``assets/inputs``.
     """
+
+
+class InputsFactory:
+    """
+    Create instances of ``Inputs`` with the defaults set in ``inputs``.
+    """
+
+    def __init__(self, defaults: Inputs):
+        self.defaults = defaults
+
+    def create(self, inputs: Inputs) -> Inputs:
+        """
+        Generate a new instance of ``Inputs`` with the defaults set in the constructor.
+        """
+        inputs_default = self.defaults.to_dict()
+        new_inputs = {k: v for k, v in inputs.to_dict().items() if v}
+        return inputs.from_dict(inputs_default | new_inputs)
