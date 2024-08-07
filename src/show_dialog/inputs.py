@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Type, TypeVar
 
 import yaml
+from mashumaro import DataClassDictMixin
 from mashumaro.mixins.json import DataClassJSONMixin
 
 T = TypeVar('T', bound='JSONFileMixin')
@@ -30,6 +31,10 @@ class DataFileType(Enum):
 
 
 class JSONFileMixin(DataClassJSONMixin):
+    """
+    Adds the ability to load from file and save to file.
+    Files can be JSON or YAML.
+    """
 
     def to_file(
         self,
@@ -67,8 +72,15 @@ class JSONFileMixin(DataClassJSONMixin):
         return cls.from_dict(data, **from_dict_kwargs)
 
 
+class DefaultsMixin(DataClassDictMixin):
+    def create(self, new_instance: DataClassDictMixin):
+        defaults = self.to_dict()
+        new_values = {k: v for k, v in new_instance.to_dict().items() if v or isinstance(v, bool)}
+        return self.__class__.from_dict(defaults | new_values)
+
+
 @dataclass
-class Inputs(JSONFileMixin):
+class Inputs(JSONFileMixin, DefaultsMixin):
     """
     Inputs to the app.
     """
@@ -102,20 +114,3 @@ class Inputs(JSONFileMixin):
 
     Can be a resource path, relative path or absolute path. See examples under ``assets/inputs``.
     """
-
-
-class InputsFactory:
-    """
-    Create instances of ``Inputs`` with the defaults set in ``inputs``.
-    """
-
-    def __init__(self, defaults: Inputs):
-        self.defaults = defaults
-
-    def create(self, inputs: Inputs) -> Inputs:
-        """
-        Generate a new instance of ``Inputs`` with the defaults set in the constructor.
-        """
-        inputs_default = self.defaults.to_dict()
-        new_inputs = {k: v for k, v in inputs.to_dict().items() if v}
-        return inputs.from_dict(inputs_default | new_inputs)

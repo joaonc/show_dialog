@@ -85,8 +85,9 @@ class TestInputs:
         with pytest.raises(ValueError):
             Inputs.from_file(file)
 
-
-class TestInputsFactory:
     def test_create(self):
-        base = InputsFactory()
-        factory = InputsFactory()
+        base = Inputs(title='Foo', description='Bar')
+        new = base.create(Inputs(description='Baz', dialog_title='qux'))
+
+        assert isinstance(new, Inputs)
+        assert new == Inputs(title='Foo', description='Baz', dialog_title='qux')
