@@ -84,3 +84,22 @@ class TestInputs:
         file = tmp_path / 'foo.bar'
         with pytest.raises(ValueError):
             Inputs.from_file(file)
+
+    def test_create(self):
+        base = Inputs(title='Foo', description='Bar')
+        new = base.create(Inputs(description='Baz', dialog_title='qux'))
+
+        assert isinstance(new, Inputs)
+        assert new == Inputs(title='Foo', description='Baz', dialog_title='qux')
+
+    def test_create_with_boolean(self):
+        """
+        Boolean fields are not taken into consideration when creating new instances with the current
+        instance as defaults.
+        """
+        base = Inputs(description_md=True)
+        new_inputs = Inputs()
+        assert new_inputs.description_md is False
+        new = base.create(new_inputs)
+
+        assert new.description_md is False
