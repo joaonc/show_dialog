@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QApplication, QDialog
 
 from ..inputs import Inputs
 from .forms.ui_show_dialog import Ui_ShowDialog
+from ..utils_qt import set_layout_visibility
 
 
 class ShowDialog(QDialog, Ui_ShowDialog):
@@ -65,7 +66,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             else:
                 self.timeout_progress_bar.setTextVisible(False)
         else:
-            self.timeout_progress_bar.setVisible(False)
+            set_layout_visibility(self.timeout_h_layout, False)
 
         if self.stylesheet:
             self.app.setStyleSheet(self.stylesheet)

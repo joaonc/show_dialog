@@ -1,4 +1,5 @@
 from PySide6.QtCore import QDir, QFile, QTextStream
+from PySide6.QtWidgets import QLayout
 
 
 def list_resources(base_path: str = ':/', recursive: bool = False) -> list[str]:
@@ -33,3 +34,17 @@ def read_resource_file(file_path):
     stream = QTextStream(file)
     content = stream.readAll()
     return content
+
+
+def set_layout_visibility(layout: QLayout, visible: bool) -> None:
+    """
+    Set visibility for all widgets and layouts within the given layout.
+    """
+    for i in range(layout.count()):
+        item = layout.itemAt(i)
+        if isinstance(item, QLayout):
+            set_layout_visibility(item, visible)
+        else:
+            widget = item.widget()
+            if widget is not None:
+                widget.setVisible(visible)
