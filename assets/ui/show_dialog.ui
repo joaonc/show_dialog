@@ -24,39 +24,36 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QVBoxLayout" name="v_layout">
-     <property name="sizeConstraint">
-      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+    <widget class="QLabel" name="title_label">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <item>
-      <widget class="QLabel" name="title_label">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Title</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="description_label">
-       <property name="font">
-        <font>
-         <pointsize>20</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Description
+     <property name="text">
+      <string>Title</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="description_label">
+     <property name="font">
+      <font>
+       <pointsize>20</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Description
 multiline</string>
-       </property>
-      </widget>
-     </item>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="timeout_h_layout">
      <item>
       <widget class="QProgressBar" name="timeout_progress_bar">
        <property name="sizeIncrement">
@@ -88,42 +85,60 @@ multiline</string>
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="buttons_h_layout">
-       <item>
-        <widget class="QPushButton" name="fail_button">
-         <property name="maximumSize">
-          <size>
-           <width>325</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Fail</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../resources.qrc">
-           <normaloff>:/images/fail_icon.png</normaloff>:/images/fail_icon.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pass_button">
-         <property name="maximumSize">
-          <size>
-           <width>325</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Pass</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../resources.qrc">
-           <normaloff>:/images/pass_icon.png</normaloff>:/images/pass_icon.png</iconset>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QPushButton" name="timeout_increase_button">
+       <property name="maximumSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>+</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="buttons_h_layout">
+     <item>
+      <widget class="QPushButton" name="fail_button">
+       <property name="maximumSize">
+        <size>
+         <width>325</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Fail</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../resources.qrc">
+         <normaloff>:/images/fail_icon.png</normaloff>:/images/fail_icon.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pass_button">
+       <property name="maximumSize">
+        <size>
+         <width>325</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Pass</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../resources.qrc">
+         <normaloff>:/images/pass_icon.png</normaloff>:/images/pass_icon.png</iconset>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

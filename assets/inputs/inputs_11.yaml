@@ -4,6 +4,6 @@ title: Timeout
 description: |
     This dialog has a timeout,
     after which it is dismissed.
-timeout: 3
+timeout: 10
 timeout_pass: true
 timeout_text: '%v'

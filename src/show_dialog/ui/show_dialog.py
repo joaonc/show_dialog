@@ -55,6 +55,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             self.timeout_progress_bar.setMinimum(0)
             self.timeout_progress_bar.setMaximum(self.inputs.timeout)
             self.timeout_progress_bar.setValue(self.inputs.timeout)
+            self.timeout_increase_button.clicked.connect(self.timeout_increase_clicked)
             self.timer = QTimer()
             self.timer.setInterval(1000)
             self.timer.timeout.connect(self.timer_timeout)
@@ -101,6 +102,13 @@ class ShowDialog(QDialog, Ui_ShowDialog):
                 self.pass_clicked()
             else:
                 self.fail_clicked()
+
+    def timeout_increase_clicked(self):
+        timeout_increase = 10
+        new_value = self.timeout_progress_bar.value() + timeout_increase
+        if new_value > self.timeout_progress_bar.maximum():
+            self.timeout_progress_bar.setMaximum(new_value)
+        self.timeout_progress_bar.setValue(new_value)
 
     def pass_clicked(self):
         # Equivalent to `self.close()` and `self.done(0)`.
