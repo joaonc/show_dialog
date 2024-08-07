@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout, QLabel,
-    QLayout, QPushButton, QSizePolicy, QVBoxLayout,
-    QWidget)
+    QLayout, QProgressBar, QPushButton, QSizePolicy,
+    QVBoxLayout, QWidget)
 from . import resources_rc
 
 class Ui_ShowDialog(object):
@@ -54,6 +54,21 @@ class Ui_ShowDialog(object):
         self.description_label.setFont(font1)
 
         self.v_layout.addWidget(self.description_label)
+
+        self.timeout_progress_bar = QProgressBar(ShowDialog)
+        self.timeout_progress_bar.setObjectName(u"timeout_progress_bar")
+        self.timeout_progress_bar.setSizeIncrement(QSize(0, 0))
+        self.timeout_progress_bar.setBaseSize(QSize(0, 0))
+        font2 = QFont()
+        font2.setFamilies([u"Consolas"])
+        font2.setPointSize(20)
+        font2.setBold(False)
+        font2.setKerning(True)
+        self.timeout_progress_bar.setFont(font2)
+        self.timeout_progress_bar.setValue(24)
+        self.timeout_progress_bar.setTextVisible(True)
+
+        self.v_layout.addWidget(self.timeout_progress_bar)
 
         self.buttons_h_layout = QHBoxLayout()
         self.buttons_h_layout.setObjectName(u"buttons_h_layout")
