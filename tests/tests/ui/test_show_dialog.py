@@ -110,3 +110,17 @@ def test_fail_clicked(exit_mock, show_dialog: ShowDialog):
 def test_pass_fail_buttons_text(show_dialog: ShowDialog, expected_pass_fail_text: tuple[str, str]):
     assert show_dialog.pass_button.text() == expected_pass_fail_text[0]
     assert show_dialog.fail_button.text() == expected_pass_fail_text[1]
+
+
+@params(
+    'show_dialog',
+    [
+        ('no timeout - default', Inputs()),
+        ('no timeout - set to 0', Inputs(timeout=0)),
+    ],
+    indirect=True,
+)
+def test_timeout_no_timeout(show_dialog: ShowDialog):
+    """Timeout UI should not appear if there's no timeout."""
+    assert show_dialog.timeout_progress_bar.isVisible() is False
+    assert show_dialog.timeout_increase_button.isVisible() is False

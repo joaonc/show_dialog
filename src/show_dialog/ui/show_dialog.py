@@ -1,11 +1,12 @@
 import logging
 
 import markdown
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
 
 from ..inputs import Inputs
+from ..utils_qt import set_layout_visibility
 from .forms.ui_show_dialog import Ui_ShowDialog
 
 
@@ -21,6 +22,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.stylesheet = stylesheet
         self.setupUi(self)
         self.inputs = inputs
+        self.timer = None
 
         # UI adjustments
         self.title_label.setText(self.inputs.title)
@@ -50,6 +52,22 @@ class ShowDialog(QDialog, Ui_ShowDialog):
                     f'Icon image for FAIL button not found: {self.inputs.fail_button_icon}'
                 )
             self.fail_button.setIcon(icon)
+        if self.inputs.timeout:
+            self.timeout_increase_button.setIconSize(self.timeout_increase_button.size())
+            self.timeout_increase_button.clicked.connect(self.timeout_increase_clicked)
+            self.timeout_progress_bar.setMinimum(0)
+            self.timeout_progress_bar.setMaximum(self.inputs.timeout)
+            self.timeout_progress_bar.setValue(self.inputs.timeout)
+            self.timer = QTimer()
+            self.timer.setInterval(1000)
+            self.timer.timeout.connect(self.timer_timeout)
+            self.timer.start()
+            if self.inputs.timeout_text:
+                self.timeout_progress_bar.setFormat(self.inputs.timeout_text)
+            else:
+                self.timeout_progress_bar.setTextVisible(False)
+        else:
+            set_layout_visibility(self.timeout_h_layout, False)
 
         if self.stylesheet:
             self.app.setStyleSheet(self.stylesheet)
@@ -77,6 +95,22 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             pass
         else:
             super().keyPressEvent(event)
+
+    def timer_timeout(self):
+        new_value = self.timeout_progress_bar.value() - self.timer.interval() / 1000
+        self.timeout_progress_bar.setValue(new_value)
+        if new_value <= 0:
+            if self.inputs.timeout_pass:
+                self.pass_clicked()
+            else:
+                self.fail_clicked()
+
+    def timeout_increase_clicked(self):
+        timeout_increase = 10
+        new_value = self.timeout_progress_bar.value() + timeout_increase
+        if new_value > self.timeout_progress_bar.maximum():
+            self.timeout_progress_bar.setMaximum(new_value)
+        self.timeout_progress_bar.setValue(new_value)
 
     def pass_clicked(self):
         # Equivalent to `self.close()` and `self.done(0)`.

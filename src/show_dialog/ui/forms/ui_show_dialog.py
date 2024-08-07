@@ -16,7 +16,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout, QLabel,
-    QLayout, QPushButton, QSizePolicy, QVBoxLayout,
+    QProgressBar, QPushButton, QSizePolicy, QVBoxLayout,
     QWidget)
 from . import resources_rc
 
@@ -33,9 +33,6 @@ class Ui_ShowDialog(object):
         ShowDialog.setWindowIcon(icon)
         self.verticalLayout = QVBoxLayout(ShowDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.v_layout = QVBoxLayout()
-        self.v_layout.setObjectName(u"v_layout")
-        self.v_layout.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.title_label = QLabel(ShowDialog)
         self.title_label.setObjectName(u"title_label")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
@@ -45,7 +42,7 @@ class Ui_ShowDialog(object):
         self.title_label.setSizePolicy(sizePolicy)
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.v_layout.addWidget(self.title_label)
+        self.verticalLayout.addWidget(self.title_label)
 
         self.description_label = QLabel(ShowDialog)
         self.description_label.setObjectName(u"description_label")
@@ -53,33 +50,62 @@ class Ui_ShowDialog(object):
         font1.setPointSize(20)
         self.description_label.setFont(font1)
 
-        self.v_layout.addWidget(self.description_label)
+        self.verticalLayout.addWidget(self.description_label)
+
+        self.timeout_h_layout = QHBoxLayout()
+        self.timeout_h_layout.setObjectName(u"timeout_h_layout")
+        self.timeout_progress_bar = QProgressBar(ShowDialog)
+        self.timeout_progress_bar.setObjectName(u"timeout_progress_bar")
+        self.timeout_progress_bar.setSizeIncrement(QSize(0, 0))
+        self.timeout_progress_bar.setBaseSize(QSize(0, 0))
+        font2 = QFont()
+        font2.setFamilies([u"Consolas"])
+        font2.setPointSize(20)
+        font2.setBold(False)
+        font2.setKerning(True)
+        self.timeout_progress_bar.setFont(font2)
+        self.timeout_progress_bar.setValue(24)
+        self.timeout_progress_bar.setTextVisible(True)
+
+        self.timeout_h_layout.addWidget(self.timeout_progress_bar)
+
+        self.timeout_increase_button = QPushButton(ShowDialog)
+        self.timeout_increase_button.setObjectName(u"timeout_increase_button")
+        self.timeout_increase_button.setMaximumSize(QSize(50, 50))
+        font3 = QFont()
+        font3.setPointSize(30)
+        self.timeout_increase_button.setFont(font3)
+        icon1 = QIcon()
+        icon1.addFile(u":/images/plus_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.timeout_increase_button.setIcon(icon1)
+
+        self.timeout_h_layout.addWidget(self.timeout_increase_button)
+
+
+        self.verticalLayout.addLayout(self.timeout_h_layout)
 
         self.buttons_h_layout = QHBoxLayout()
         self.buttons_h_layout.setObjectName(u"buttons_h_layout")
         self.fail_button = QPushButton(ShowDialog)
         self.fail_button.setObjectName(u"fail_button")
         self.fail_button.setMaximumSize(QSize(325, 100))
-        icon1 = QIcon()
-        icon1.addFile(u":/images/fail_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.fail_button.setIcon(icon1)
+        icon2 = QIcon()
+        icon2.addFile(u":/images/fail_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.fail_button.setIcon(icon2)
 
         self.buttons_h_layout.addWidget(self.fail_button)
 
         self.pass_button = QPushButton(ShowDialog)
         self.pass_button.setObjectName(u"pass_button")
         self.pass_button.setMaximumSize(QSize(325, 100))
-        icon2 = QIcon()
-        icon2.addFile(u":/images/pass_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.pass_button.setIcon(icon2)
+        icon3 = QIcon()
+        icon3.addFile(u":/images/pass_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.pass_button.setIcon(icon3)
 
         self.buttons_h_layout.addWidget(self.pass_button)
 
 
-        self.v_layout.addLayout(self.buttons_h_layout)
-
-
-        self.verticalLayout.addLayout(self.v_layout)
+        self.verticalLayout.addLayout(self.buttons_h_layout)
 
 
         self.retranslateUi(ShowDialog)
@@ -92,6 +118,7 @@ class Ui_ShowDialog(object):
         self.title_label.setText(QCoreApplication.translate("ShowDialog", u"Title", None))
         self.description_label.setText(QCoreApplication.translate("ShowDialog", u"Description\n"
 "multiline", None))
+        self.timeout_increase_button.setText("")
         self.fail_button.setText(QCoreApplication.translate("ShowDialog", u"Fail", None))
         self.pass_button.setText(QCoreApplication.translate("ShowDialog", u"Pass", None))
     # retranslateUi

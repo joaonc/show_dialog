@@ -36,6 +36,14 @@ class TestInputs:
         assert inputs.dialog_title == ''
         assert inputs.title == ''
         assert inputs.description == ''
+        assert inputs.description_md is False
+        assert inputs.timeout == 0
+        assert inputs.timeout_pass is False
+        assert inputs.timeout_text == '%v'
+        assert inputs.pass_button_text == ''
+        assert inputs.fail_button_text == ''
+        assert inputs.pass_button_icon == ''
+        assert inputs.fail_button_icon == ''
 
     @params(
         'file_name, file_type',
