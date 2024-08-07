@@ -73,9 +73,19 @@ class JSONFileMixin(DataClassJSONMixin):
 
 
 class DefaultsMixin(DataClassDictMixin):
+    """
+    Add factory-like functionality.
+    """
+
     def create(self, new_instance: DataClassDictMixin):
+        """
+        Create a new instance with this instance's values as defaults.
+
+        Note that boolean fields are never updated.
+        """
         defaults = self.to_dict()
         new_values = {k: v for k, v in new_instance.to_dict().items() if v or isinstance(v, bool)}
+
         return self.__class__.from_dict(defaults | new_values)
 
 

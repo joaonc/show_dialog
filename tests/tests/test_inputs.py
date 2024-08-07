@@ -4,7 +4,7 @@ import pytest
 import yaml
 from pytest_params import params
 
-from src.show_dialog.inputs import DataFileType, Inputs, InputsFactory
+from src.show_dialog.inputs import DataFileType, Inputs
 from tests.libs.fixtures import inputs_instance  # noqa: F401
 
 
@@ -91,3 +91,15 @@ class TestInputs:
 
         assert isinstance(new, Inputs)
         assert new == Inputs(title='Foo', description='Baz', dialog_title='qux')
+
+    def test_create_with_boolean(self):
+        """
+        Boolean fields are not taken into consideration when creating new instances with the current
+        instance as defaults.
+        """
+        base = Inputs(description_md=True)
+        new_inputs = Inputs()
+        assert new_inputs.description_md is False
+        new = base.create(new_inputs)
+
+        assert new.description_md is False
