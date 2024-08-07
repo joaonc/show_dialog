@@ -113,7 +113,7 @@ class Inputs(JSONFileMixin, DefaultsMixin):
     timeout: int = 0
     """
     Timeout in seconds for the dialog to be automatically dismissed.
-    
+
     ``0`` for no timeout.
     """
     timeout_pass: bool = False
@@ -131,7 +131,7 @@ class Inputs(JSONFileMixin, DefaultsMixin):
     Blank string to not show text.
 
     Examples:
-    
+
     * ``'%p%'`` to show percentage completed, ex '15%'
     * ``'%vs'`` to show the number of seconds elapsed, ex '15s'
     """

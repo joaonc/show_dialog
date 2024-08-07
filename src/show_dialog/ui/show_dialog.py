@@ -1,7 +1,7 @@
 import logging
 
 import markdown
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
 
@@ -21,6 +21,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.stylesheet = stylesheet
         self.setupUi(self)
         self.inputs = inputs
+        self.timer = None
 
         # UI adjustments
         self.title_label.setText(self.inputs.title)
@@ -54,6 +55,10 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             self.timeout_progress_bar.setMinimum(0)
             self.timeout_progress_bar.setMaximum(self.inputs.timeout)
             self.timeout_progress_bar.setValue(self.inputs.timeout)
+            self.timer = QTimer()
+            self.timer.setInterval(1000)
+            self.timer.timeout.connect(self.timer_timeout)
+            self.timer.start()
             if self.inputs.timeout_text:
                 self.timeout_progress_bar.setFormat(self.inputs.timeout_text)
             else:
@@ -87,6 +92,15 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             pass
         else:
             super().keyPressEvent(event)
+
+    def timer_timeout(self):
+        new_value = self.timeout_progress_bar.value() - self.timer.interval() / 1000
+        self.timeout_progress_bar.setValue(new_value)
+        if new_value <= 0:
+            if self.inputs.timeout_pass:
+                self.pass_clicked()
+            else:
+                self.fail_clicked()
 
     def pass_clicked(self):
         # Equivalent to `self.close()` and `self.done(0)`.
