@@ -50,6 +50,16 @@ class ShowDialog(QDialog, Ui_ShowDialog):
                     f'Icon image for FAIL button not found: {self.inputs.fail_button_icon}'
                 )
             self.fail_button.setIcon(icon)
+        if self.inputs.timeout:
+            self.timeout_progress_bar.setMinimum(0)
+            self.timeout_progress_bar.setMaximum(self.inputs.timeout)
+            self.timeout_progress_bar.setValue(self.inputs.timeout)
+            if self.inputs.timeout_text:
+                self.timeout_progress_bar.setFormat(self.inputs.timeout_text)
+            else:
+                self.timeout_progress_bar.setTextVisible(False)
+        else:
+            self.timeout_progress_bar.setVisible(False)
 
         if self.stylesheet:
             self.app.setStyleSheet(self.stylesheet)

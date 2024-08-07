@@ -110,6 +110,31 @@ class Inputs(JSONFileMixin, DefaultsMixin):
 
     Text in ``description`` can be plain text or HTML.
     """
+    timeout: int = 0
+    """
+    Timeout in seconds for the dialog to be automatically dismissed.
+    
+    ``0`` for no timeout.
+    """
+    timeout_pass: bool = False
+    """
+    Result at the end of timeout: Pass (``True``) or fail (``False``).
+    """
+    timeout_text: str = '%v'
+    """
+    Text format for timeout.
+
+    * ``%p`` is replaced by the percentage completed.
+    * ``%v`` is replaced by the current value.
+    * ``%m`` is replaced by the total number of steps.
+
+    Blank string to not show text.
+
+    Examples:
+    
+    * ``'%p%'`` to show percentage completed, ex '15%'
+    * ``'%vs'`` to show the number of seconds elapsed, ex '15s'
+    """
     pass_button_text: str = ''
     pass_button_icon: str = ''
     """
