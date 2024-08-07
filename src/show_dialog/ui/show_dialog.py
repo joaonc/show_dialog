@@ -6,8 +6,8 @@ from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
 
 from ..inputs import Inputs
-from .forms.ui_show_dialog import Ui_ShowDialog
 from ..utils_qt import set_layout_visibility
+from .forms.ui_show_dialog import Ui_ShowDialog
 
 
 class ShowDialog(QDialog, Ui_ShowDialog):
@@ -53,10 +53,11 @@ class ShowDialog(QDialog, Ui_ShowDialog):
                 )
             self.fail_button.setIcon(icon)
         if self.inputs.timeout:
+            self.timeout_increase_button.setIconSize(self.timeout_increase_button.size())
+            self.timeout_increase_button.clicked.connect(self.timeout_increase_clicked)
             self.timeout_progress_bar.setMinimum(0)
             self.timeout_progress_bar.setMaximum(self.inputs.timeout)
             self.timeout_progress_bar.setValue(self.inputs.timeout)
-            self.timeout_increase_button.clicked.connect(self.timeout_increase_clicked)
             self.timer = QTimer()
             self.timer.setInterval(1000)
             self.timer.timeout.connect(self.timer_timeout)

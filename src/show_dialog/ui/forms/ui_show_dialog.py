@@ -75,6 +75,9 @@ class Ui_ShowDialog(object):
         font3 = QFont()
         font3.setPointSize(30)
         self.timeout_increase_button.setFont(font3)
+        icon1 = QIcon()
+        icon1.addFile(u":/images/plus_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.timeout_increase_button.setIcon(icon1)
 
         self.timeout_h_layout.addWidget(self.timeout_increase_button)
 
@@ -86,18 +89,18 @@ class Ui_ShowDialog(object):
         self.fail_button = QPushButton(ShowDialog)
         self.fail_button.setObjectName(u"fail_button")
         self.fail_button.setMaximumSize(QSize(325, 100))
-        icon1 = QIcon()
-        icon1.addFile(u":/images/fail_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.fail_button.setIcon(icon1)
+        icon2 = QIcon()
+        icon2.addFile(u":/images/fail_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.fail_button.setIcon(icon2)
 
         self.buttons_h_layout.addWidget(self.fail_button)
 
         self.pass_button = QPushButton(ShowDialog)
         self.pass_button.setObjectName(u"pass_button")
         self.pass_button.setMaximumSize(QSize(325, 100))
-        icon2 = QIcon()
-        icon2.addFile(u":/images/pass_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.pass_button.setIcon(icon2)
+        icon3 = QIcon()
+        icon3.addFile(u":/images/pass_icon.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.pass_button.setIcon(icon3)
 
         self.buttons_h_layout.addWidget(self.pass_button)
 
@@ -115,7 +118,7 @@ class Ui_ShowDialog(object):
         self.title_label.setText(QCoreApplication.translate("ShowDialog", u"Title", None))
         self.description_label.setText(QCoreApplication.translate("ShowDialog", u"Description\n"
 "multiline", None))
-        self.timeout_increase_button.setText(QCoreApplication.translate("ShowDialog", u"+", None))
+        self.timeout_increase_button.setText("")
         self.fail_button.setText(QCoreApplication.translate("ShowDialog", u"Fail", None))
         self.pass_button.setText(QCoreApplication.translate("ShowDialog", u"Pass", None))
     # retranslateUi
