@@ -330,8 +330,8 @@ def build_version(c, version: str = '', bump: str = ''):
 
     _update_project_version(str(v2))
     print(
-        f'New version is {v2}. Modified files have not been commited:\n'
-        + '\n'.join(f'{file.relative_to(PROJECT_ROOT)}' for file in VERSION_FILES)
+        f'New version is `{v2}`. Modified files have not been commited:\n'
+        + '\n'.join(f'  {file.relative_to(PROJECT_ROOT)}' for file in VERSION_FILES)
     )
 
 
