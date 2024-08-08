@@ -7,10 +7,6 @@
 from pathlib import Path
 
 PROJECT_ROOT = Path(SPECPATH).parent.resolve(strict=True)
-#PROJECT_NAME = PROJECT_ROOT.name
-#ASSETS_DIR = PROJECT_ROOT / 'assets'
-#SOURCE_DIR = PROJECT_ROOT / 'src' / PROJECT_NAME
-
 BUILD_WORK_DIR = PROJECT_ROOT / 'build'
 BUILD_WORK_APP_DIR = BUILD_WORK_DIR / 'app'
 

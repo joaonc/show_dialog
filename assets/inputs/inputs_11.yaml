@@ -3,7 +3,8 @@ dialog_title: inputs_11
 title: Timeout
 description: |
     This dialog has a timeout,
-    after which it is dismissed.
+    after which it is dismissed
+    and returns 1 (error).
 timeout: 10
-timeout_pass: true
+timeout_pass: false
 timeout_text: '%v'

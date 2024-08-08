@@ -5,7 +5,7 @@ import types
 
 from PySide6.QtWidgets import QApplication
 
-from . import config
+from . import __version__, config
 from .inputs import Inputs
 from .ui.show_dialog import ShowDialog
 from .utils_qt import list_resources, read_resource_file
@@ -26,8 +26,6 @@ def _set_config_values() -> tuple[Inputs, str | None]:
     Parse CLI arguments and set ``config`` values.
     """
     from argparse import ArgumentParser, RawTextHelpFormatter
-
-    from . import __version__
 
     description = f'Show Dialog {__version__}'
 
