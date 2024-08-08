@@ -141,26 +141,6 @@ def _get_build_app_files() -> tuple[Path, Path]:
     return app_file, zip_file
 
 
-def _get_git_commit() -> str:
-    import subprocess
-
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip().lower()
-
-
-def _calculate_sha1(file_path):
-    import hashlib
-
-    # Initialize SHA1 hash object
-    hasher = hashlib.sha1()
-
-    with open(file_path, 'rb') as file:
-        # Read and update hash in chunks of 4K
-        for byte_block in iter(lambda: file.read(4096), b''):
-            hasher.update(byte_block)
-
-    return hasher.hexdigest()
-
-
 def _get_project_version() -> str:
     import re
 
@@ -188,16 +168,30 @@ def _get_project_version() -> str:
     return list(versions.values())[0]
 
 
-def _update_project_version(version: str):
+def _re_sub_file(file: Path, regex: str, repl: str):
+    """
+    Regex search/replace text in a file.
+
+    :param file: File to update.
+    :param regex: Regex pattern, as a string.
+        The regex needs to return 3 capturing groups: text before, text to replace, text after
+        (per line).
+    :param repl: Text to replace with.
+    """
     import re
 
-    pattern = re.compile('''^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$''', re.MULTILINE)
+    pattern = re.compile(regex, re.MULTILINE)
+    with open(file) as f:
+        text = f.read()
+    new_text = pattern.sub(lambda match: f'{match.group(1)}{repl}{match.group(3)}', text)
+    with open(file, 'w') as f:
+        f.write(new_text)
+
+
+def _update_project_version(version: str):
+    regex = r'''^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$'''
     for file in VERSION_FILES:
-        with open(file) as f:
-            text = f.read()
-        new_text = pattern.sub(lambda match: f'{match.group(1)}{version}{match.group(3)}', text)
-        with open(file, 'w') as f:
-            f.write(new_text)
+        _re_sub_file(file, regex, version)
 
 
 def _get_release_name_and_tag(version: str) -> tuple[str, str]:
