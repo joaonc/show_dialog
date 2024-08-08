@@ -352,10 +352,10 @@ def build_app(c, no_spec: bool = False, no_zip: bool = False):
     # Build executable
     if no_spec:
         build_source_dir = BUILD_WORK_APP_DIR / PROJECT_SOURCE_DIR.relative_to(PROJECT_ROOT)
-        build_in_file = build_source_dir / PROJECT_NAME / 'main.py'
+        build_input_file = build_source_dir / PROJECT_NAME / 'main.py'
         c.run(
             f'pyinstaller '
-            f'--onefile "{build_in_file}" --distpath "{BUILD_DIST_APP_DIR}" '
+            f'--onefile "{build_input_file}" --distpath "{BUILD_DIST_APP_DIR}" '
             f'--workpath "{BUILD_WORK_APP_DIR}" --specpath "{BUILD_WORK_APP_DIR}"'
         )
     else:
