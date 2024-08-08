@@ -123,9 +123,9 @@ def _get_os_name():
 
 
 def _get_build_app_files() -> tuple[Path, Path]:
-    import show_dialog
+    import src.show_dialog
 
-    version = show_dialog.__version__
+    version = src.show_dialog.__version__
 
     # Assumes the distribution directory is empty prior to creating the app
     files = [f for f in BUILD_DIST_APP_DIR.glob('*') if f.is_file() and f.suffix.lower() != '.zip']
@@ -216,18 +216,20 @@ def _get_version_from_release_name(release_name: str) -> str:
     return release_name[1:]
 
 
-def _get_latest_release() -> tuple[str, str]:
+def _get_latest_release() -> tuple[str, str, list[dict]]:
     """
     Retrieves the latest release from GitHub.
 
-    :return: Tuple with release name (ex 'v1.2.3') and tag (ex '1.2.3').
+    :return: Tuple with: release name (ex 'v1.2.3'), tag (ex '1.2.3') and list of assets uploaded.
     """
     import json
     import subprocess
 
-    release_info_json = subprocess.check_output(['gh', 'release', 'view', '--json', 'name,tagName'])
+    release_info_json = subprocess.check_output(
+        ['gh', 'release', 'view', '--json', 'name,tagName,assets']
+    )
     release_info = json.loads(release_info_json)
-    return release_info['name'], release_info['tagName']
+    return release_info['name'], release_info['tagName'], release_info['assets']
 
 
 def _module_path_from_file(file: Path, base_dir: Path) -> str:
@@ -426,7 +428,7 @@ def build_release(
 
     # Check that there's no release with the current version
     version = Version(_get_project_version())
-    latest_release, latest_tag = _get_latest_release()
+    latest_release, latest_tag, _ = _get_latest_release()
     latest_version = Version(_get_version_from_release_name(latest_release))
     if str(latest_version) != latest_tag:
         raise Exit(
@@ -487,13 +489,21 @@ def build_upload(c, label: str = 'none'):
             'Rebuild the app with `inv build.dist` and without the `--no-zip` option.'
         )
 
-    # Verify executable is being uploaded to the correct GH release
-    latest_release, latest_tag = _get_latest_release()
+    # Verify asset is being uploaded to the correct GH release
+    latest_release, latest_tag, assets = _get_latest_release()
     latest_version = Version(_get_version_from_release_name(latest_release))
     if app_version != latest_version:
         raise Exit(
             f'App version `{app_version}` does not match '
             f'the latest release in GitHub `{latest_version}`.`'
+        )
+
+    # Verify asset does not yet exist in the GH release
+    asset = next((asset for asset in assets if asset['name'] == zip_file.name), None)
+    if asset:
+        raise Exit(
+            f'File `{zip_file.name}` already exists in release `{latest_release}`.\n'
+            'To re-upload, the file needs to be deleted from the release first.'
         )
 
     # Create label
