@@ -33,6 +33,8 @@ def read_file(file_path):
         raise RuntimeError(f'Cannot open file: `{file_path}`')
     stream = QTextStream(file)
     content = stream.readAll()
+    file.close()
+
     return content
 
 

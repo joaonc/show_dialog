@@ -24,8 +24,8 @@ class TestListResources:
             list_resources(TEST_ASSETS_DIR / 'foo')
 
 
-class TestReadResourceFile:
-    def test_read_resource_file(self, testing_resources):
+class TestReadFile:
+    def test_read_file(self, testing_resources):
         file_content = read_file(':/stylesheets/style_01.css')
         assert 'Test stylesheet' in file_content
 
