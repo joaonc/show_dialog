@@ -8,13 +8,6 @@ import os
 import sys
 from pathlib import Path
 
-import yaml
-
-
-def read_manifest_file(manifest) -> dict:
-    with open(manifest) as f:
-        return yaml.safe_load(f)  # type: ignore
-
 
 def is_truthy(value) -> bool:
     return str(value).strip().lower() in ['true', '1']

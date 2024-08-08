@@ -8,8 +8,11 @@ os.environ.setdefault('INVOKE_RUN_ECHO', '1')  # Show commands by default
 
 PROJECT_ROOT = Path(__file__).parent
 PROJECT_NAME = PROJECT_ROOT.name
+PROJECT_SOURCE_DIR = PROJECT_ROOT / 'src'
+"""Source code for the whole project."""
+SOURCE_DIR = PROJECT_SOURCE_DIR / PROJECT_NAME
+"""Source code for the this project's package."""
 ASSETS_DIR = PROJECT_ROOT / 'assets'
-SOURCE_DIR = PROJECT_ROOT / 'src' / PROJECT_NAME
 
 # Requirements files
 REQUIREMENTS_MAIN = 'main'
@@ -52,8 +55,6 @@ Qt ``.qrc`` resource files.
 
 # region Executable build configs
 BUILD_SPEC_FILE = ASSETS_DIR / 'pyinstaller.spec'
-BUILD_IN_FILE = SOURCE_DIR / 'main.py'
-"""Executable input file."""
 BUILD_WORK_DIR = PROJECT_ROOT / 'build'
 BUILD_WORK_APP_DIR = BUILD_WORK_DIR / 'app'
 """See ``BUILD_DIST_APP_DIR`` for more info."""
@@ -168,7 +169,7 @@ def _get_project_version() -> str:
     return list(versions.values())[0]
 
 
-def _re_sub_file(file: Path, regex: str, repl: str):
+def _re_sub_file(file: str | Path, regex: str, repl: str, save: bool = True) -> str:
     """
     Regex search/replace text in a file.
 
@@ -177,6 +178,8 @@ def _re_sub_file(file: Path, regex: str, repl: str):
         The regex needs to return 3 capturing groups: text before, text to replace, text after
         (per line).
     :param repl: Text to replace with.
+    :param save: Whether to save the file with the new text.
+    :return: Updated text.
     """
     import re
 
@@ -184,8 +187,12 @@ def _re_sub_file(file: Path, regex: str, repl: str):
     with open(file) as f:
         text = f.read()
     new_text = pattern.sub(lambda match: f'{match.group(1)}{repl}{match.group(3)}', text)
-    with open(file, 'w') as f:
-        f.write(new_text)
+
+    if save:
+        with open(file, 'w') as f:
+            f.write(new_text)
+
+    return new_text
 
 
 def _update_project_version(version: str):
@@ -221,6 +228,49 @@ def _get_latest_release() -> tuple[str, str]:
     release_info_json = subprocess.check_output(['gh', 'release', 'view', '--json', 'name,tagName'])
     release_info = json.loads(release_info_json)
     return release_info['name'], release_info['tagName']
+
+
+def _module_path_from_file(file: Path, base_dir: Path) -> str:
+    if file.is_file():
+        _dir = file.parent
+    elif file.is_dir():
+        _dir = file
+    else:
+        raise Exit(f'File {file} is not a file or directory.')
+
+    return str(_dir.relative_to(base_dir)).replace(os.sep, '.').strip('.')
+
+
+def _update_imports():
+    import shutil
+
+    # Copy code to build dir
+
+    build_source_dir = BUILD_WORK_APP_DIR / PROJECT_SOURCE_DIR.relative_to(PROJECT_ROOT)
+    shutil.copytree(
+        PROJECT_SOURCE_DIR, build_source_dir, ignore=shutil.ignore_patterns('__pycache__')
+    )
+
+    # Update imports
+    for root, dirs, files in os.walk(build_source_dir):
+        root_path = Path(root)
+        module = _module_path_from_file(root_path, build_source_dir.parent)
+        for file in files:
+            file_path = root_path / file
+
+            regex_replace = [
+                (r'''^(from[ ]+)(\.)( .*)''', module),  # from . import <module>
+                (
+                    r'''^(from[ ]+)(\.{2})(.*)''',
+                    '.'.join(module.split('.')[:-1]) + '.',
+                ),
+                (
+                    r'''^(from[ ]+)(\.{1})(.*)''',
+                    module + '.',
+                ),
+            ]
+            for regex in regex_replace:
+                _re_sub_file(file_path, regex[0], regex[1])
 
 
 @task
@@ -295,11 +345,15 @@ def build_app(c, no_spec: bool = False, no_zip: bool = False):
     """
     Build the executable (app) file(s).
     """
+    _update_imports()
+
     # Build executable
     if no_spec:
+        build_source_dir = BUILD_WORK_APP_DIR / PROJECT_SOURCE_DIR.relative_to(PROJECT_ROOT)
+        build_in_file = build_source_dir / PROJECT_NAME / 'main.py'
         c.run(
             f'pyinstaller '
-            f'--onefile "{BUILD_IN_FILE}" --distpath "{BUILD_DIST_APP_DIR}" '
+            f'--onefile "{build_in_file}" --distpath "{BUILD_DIST_APP_DIR}" '
             f'--workpath "{BUILD_WORK_APP_DIR}" --specpath "{BUILD_WORK_APP_DIR}"'
         )
     else:
