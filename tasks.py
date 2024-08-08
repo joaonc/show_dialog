@@ -8,8 +8,11 @@ os.environ.setdefault('INVOKE_RUN_ECHO', '1')  # Show commands by default
 
 PROJECT_ROOT = Path(__file__).parent
 PROJECT_NAME = PROJECT_ROOT.name
+PROJECT_SOURCE_DIR = PROJECT_ROOT / 'src'
+"""Source code for the whole project."""
+SOURCE_DIR = PROJECT_SOURCE_DIR / PROJECT_NAME
+"""Source code for the this project's package."""
 ASSETS_DIR = PROJECT_ROOT / 'assets'
-SOURCE_DIR = PROJECT_ROOT / 'src' / PROJECT_NAME
 
 # Requirements files
 REQUIREMENTS_MAIN = 'main'
@@ -33,7 +36,6 @@ REQUIREMENTS_TASK_HELP = {
 
 VERSION_FILES = [
     PROJECT_ROOT / 'pyproject.toml',
-    ASSETS_DIR / 'app.yaml',
     SOURCE_DIR / '__init__.py',
 ]
 """
@@ -53,9 +55,6 @@ Qt ``.qrc`` resource files.
 
 # region Executable build configs
 BUILD_SPEC_FILE = ASSETS_DIR / 'pyinstaller.spec'
-BUILD_APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
-BUILD_IN_FILE = SOURCE_DIR / 'main.py'
-"""Executable input file."""
 BUILD_WORK_DIR = PROJECT_ROOT / 'build'
 BUILD_WORK_APP_DIR = BUILD_WORK_DIR / 'app'
 """See ``BUILD_DIST_APP_DIR`` for more info."""
@@ -123,19 +122,13 @@ def _get_os_name():
     return {'darwin': 'mac'}.get(system, system)
 
 
-def _get_build_app_files() -> tuple[Path, Path, Path]:
-    import yaml
+def _get_build_app_files() -> tuple[Path, Path]:
+    import src.show_dialog
 
-    manifest_file = BUILD_DIST_APP_DIR / BUILD_APP_MANIFEST_FILE.name
-    with open(BUILD_APP_MANIFEST_FILE) as f:
-        manifest = yaml.safe_load(f)
+    version = src.show_dialog.__version__
 
     # Assumes the distribution directory is empty prior to creating the app
-    files = [
-        f
-        for f in BUILD_DIST_APP_DIR.glob('*')
-        if f.is_file() and f != manifest_file and f.suffix.lower() != '.zip'
-    ]
+    files = [f for f in BUILD_DIST_APP_DIR.glob('*') if f.is_file() and f.suffix.lower() != '.zip']
     if not files:
         raise Exit(f'App file not found in {BUILD_DIST_APP_DIR}')
     if len(files) > 1:
@@ -144,29 +137,9 @@ def _get_build_app_files() -> tuple[Path, Path, Path]:
             f'{len(files)} files found:\n' + '\n'.join(str(file) for file in files)
         )
     app_file = files[0]
-    zip_file = BUILD_DIST_APP_DIR / f'{app_file.stem}_{manifest["version"]}_{_get_os_name()}.zip'
+    zip_file = BUILD_DIST_APP_DIR / f'{app_file.stem}_{version}_{_get_os_name()}.zip'
 
-    return app_file, manifest_file, zip_file
-
-
-def _get_git_commit() -> str:
-    import subprocess
-
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip().lower()
-
-
-def _calculate_sha1(file_path):
-    import hashlib
-
-    # Initialize SHA1 hash object
-    hasher = hashlib.sha1()
-
-    with open(file_path, 'rb') as file:
-        # Read and update hash in chunks of 4K
-        for byte_block in iter(lambda: file.read(4096), b''):
-            hasher.update(byte_block)
-
-    return hasher.hexdigest()
+    return app_file, zip_file
 
 
 def _get_project_version() -> str:
@@ -196,16 +169,36 @@ def _get_project_version() -> str:
     return list(versions.values())[0]
 
 
-def _update_project_version(version: str):
+def _re_sub_file(file: str | Path, regex: str, repl: str, save: bool = True) -> str:
+    """
+    Regex search/replace text in a file.
+
+    :param file: File to update.
+    :param regex: Regex pattern, as a string.
+        The regex needs to return 3 capturing groups: text before, text to replace, text after
+        (per line).
+    :param repl: Text to replace with.
+    :param save: Whether to save the file with the new text.
+    :return: Updated text.
+    """
     import re
 
-    pattern = re.compile('''^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$''', re.MULTILINE)
-    for file in VERSION_FILES:
-        with open(file) as f:
-            text = f.read()
-        new_text = pattern.sub(lambda match: f'{match.group(1)}{version}{match.group(3)}', text)
+    pattern = re.compile(regex, re.MULTILINE)
+    with open(file) as f:
+        text = f.read()
+    new_text = pattern.sub(lambda match: f'{match.group(1)}{repl}{match.group(3)}', text)
+
+    if save:
         with open(file, 'w') as f:
             f.write(new_text)
+
+    return new_text
+
+
+def _update_project_version(version: str):
+    regex = r'''^([ _]*version[ _]*[:=] *['"])(.*)(['"].*)$'''
+    for file in VERSION_FILES:
+        _re_sub_file(file, regex, version)
 
 
 def _get_release_name_and_tag(version: str) -> tuple[str, str]:
@@ -223,18 +216,63 @@ def _get_version_from_release_name(release_name: str) -> str:
     return release_name[1:]
 
 
-def _get_latest_release() -> tuple[str, str]:
+def _get_latest_release() -> tuple[str, str, list[dict]]:
     """
     Retrieves the latest release from GitHub.
 
-    :return: Tuple with release name (ex 'v1.2.3') and tag (ex '1.2.3').
+    :return: Tuple with: release name (ex 'v1.2.3'), tag (ex '1.2.3') and list of assets uploaded.
     """
     import json
     import subprocess
 
-    release_info_json = subprocess.check_output(['gh', 'release', 'view', '--json', 'name,tagName'])
+    release_info_json = subprocess.check_output(
+        ['gh', 'release', 'view', '--json', 'name,tagName,assets']
+    )
     release_info = json.loads(release_info_json)
-    return release_info['name'], release_info['tagName']
+    return release_info['name'], release_info['tagName'], release_info['assets']
+
+
+def _module_path_from_file(file: Path, base_dir: Path) -> str:
+    if file.is_file():
+        _dir = file.parent
+    elif file.is_dir():
+        _dir = file
+    else:
+        raise Exit(f'File {file} is not a file or directory.')
+
+    return str(_dir.relative_to(base_dir)).replace(os.sep, '.').strip('.')
+
+
+def _update_imports():
+    import shutil
+
+    # Copy code to build dir
+
+    build_source_dir = BUILD_WORK_APP_DIR / PROJECT_SOURCE_DIR.relative_to(PROJECT_ROOT)
+    shutil.copytree(
+        PROJECT_SOURCE_DIR, build_source_dir, ignore=shutil.ignore_patterns('__pycache__')
+    )
+
+    # Update imports
+    for root, dirs, files in os.walk(build_source_dir):
+        root_path = Path(root)
+        module = _module_path_from_file(root_path, build_source_dir.parent)
+        for file in files:
+            file_path = root_path / file
+
+            regex_replace = [
+                (r'''^(from[ ]+)(\.)( .*)''', module),  # from . import <module>
+                (
+                    r'''^(from[ ]+)(\.{2})(.*)''',
+                    '.'.join(module.split('.')[:-1]) + '.',
+                ),
+                (
+                    r'''^(from[ ]+)(\.{1})(.*)''',
+                    module + '.',
+                ),
+            ]
+            for regex in regex_replace:
+                _re_sub_file(file_path, regex[0], regex[1])
 
 
 @task
@@ -309,15 +347,15 @@ def build_app(c, no_spec: bool = False, no_zip: bool = False):
     """
     Build the executable (app) file(s).
     """
-    from datetime import datetime, timezone
-
-    import yaml
+    _update_imports()
 
     # Build executable
     if no_spec:
+        build_source_dir = BUILD_WORK_APP_DIR / PROJECT_SOURCE_DIR.relative_to(PROJECT_ROOT)
+        build_input_file = build_source_dir / PROJECT_NAME / 'main.py'
         c.run(
             f'pyinstaller '
-            f'--onefile "{BUILD_IN_FILE}" --distpath "{BUILD_DIST_APP_DIR}" '
+            f'--onefile "{build_input_file}" --distpath "{BUILD_DIST_APP_DIR}" '
             f'--workpath "{BUILD_WORK_APP_DIR}" --specpath "{BUILD_WORK_APP_DIR}"'
         )
     else:
@@ -326,21 +364,7 @@ def build_app(c, no_spec: bool = False, no_zip: bool = False):
             f'--distpath "{BUILD_DIST_APP_DIR}" --workpath "{BUILD_WORK_APP_DIR}"'
         )
 
-    app_file, manifest_file, zip_file = _get_build_app_files()
-
-    # App manifest file
-    with open(BUILD_APP_MANIFEST_FILE) as f:
-        manifest = yaml.safe_load(f)
-    manifest |= {
-        'build_time': datetime.now(timezone.utc),
-        'git_commit': _get_git_commit(),
-        'file_name': app_file.name,
-        'file_sha1': _calculate_sha1(app_file),
-    }
-
-    with open(manifest_file, 'w') as f:
-        f.write('# App manifest\n\n')
-        yaml.safe_dump(manifest, f)
+    app_file, zip_file = _get_build_app_files()
 
     # Zip file
     if no_zip:
@@ -350,7 +374,6 @@ def build_app(c, no_spec: bool = False, no_zip: bool = False):
 
         with zipfile.ZipFile(zip_file, 'w') as f:
             f.write(app_file, arcname=app_file.name)
-            f.write(manifest_file, arcname=manifest_file.name)
 
     print(f'App files created in {BUILD_DIST_APP_DIR}')
 
@@ -405,7 +428,7 @@ def build_release(
 
     # Check that there's no release with the current version
     version = Version(_get_project_version())
-    latest_release, latest_tag = _get_latest_release()
+    latest_release, latest_tag, _ = _get_latest_release()
     latest_version = Version(_get_version_from_release_name(latest_release))
     if str(latest_version) != latest_tag:
         raise Exit(
@@ -453,12 +476,12 @@ def build_upload(c, label: str = 'none'):
       * The artifact (`inv build.exe`).
       * The release in GitHub (`inv build.release`).
     """
-    import zipfile
-
-    import yaml
     from packaging.version import Version
 
-    _, manifest_file, zip_file = _get_build_app_files()
+    import src.show_dialog
+
+    _, zip_file = _get_build_app_files()
+    app_version = Version(src.show_dialog.__version__)
 
     if not zip_file.exists():
         raise Exit(
@@ -466,19 +489,21 @@ def build_upload(c, label: str = 'none'):
             'Rebuild the app with `inv build.dist` and without the `--no-zip` option.'
         )
 
-    # Get build info from manifest inside Zip
-    with zipfile.ZipFile(zip_file) as f:
-        manifest_str = f.read(manifest_file.name).decode()
-    manifest = yaml.safe_load(manifest_str)
-    app_version = Version(manifest['version'])
-
-    # Verify executable is being uploaded to the correct GH release
-    latest_release, latest_tag = _get_latest_release()
+    # Verify asset is being uploaded to the correct GH release
+    latest_release, latest_tag, assets = _get_latest_release()
     latest_version = Version(_get_version_from_release_name(latest_release))
     if app_version != latest_version:
         raise Exit(
             f'App version `{app_version}` does not match '
             f'the latest release in GitHub `{latest_version}`.`'
+        )
+
+    # Verify asset does not yet exist in the GH release
+    asset = next((asset for asset in assets if asset['name'] == zip_file.name), None)
+    if asset:
+        raise Exit(
+            f'File `{zip_file.name}` already exists in release `{latest_release}`.\n'
+            'To re-upload, the file needs to be deleted from the release first.'
         )
 
     # Create label

@@ -100,6 +100,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         new_value = self.timeout_progress_bar.value() - self.timer.interval() / 1000
         self.timeout_progress_bar.setValue(new_value)
         if new_value <= 0:
+            logging.debug('Timeout.')
             if self.inputs.timeout_pass:
                 self.pass_clicked()
             else:

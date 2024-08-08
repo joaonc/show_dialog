@@ -5,7 +5,7 @@ import types
 
 from PySide6.QtWidgets import QApplication
 
-from . import config
+from . import __version__, config
 from .inputs import Inputs
 from .ui.show_dialog import ShowDialog
 from .utils_qt import list_resources, read_resource_file
@@ -27,7 +27,7 @@ def _set_config_values() -> tuple[Inputs, str | None]:
     """
     from argparse import ArgumentParser, RawTextHelpFormatter
 
-    description = f'Show Dialog {config.version}'
+    description = f'Show Dialog {__version__}'
 
     parser = ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)
     parser.add_argument(
@@ -60,14 +60,14 @@ def _set_config_values() -> tuple[Inputs, str | None]:
         '-v',
         '--version',
         action='version',
-        version=str(config.version),
+        version=__version__,
     )
 
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.getLevelName(args.log_level.upper()))
     logging.debug(
-        f'Show Dialog.\n  App version: {config.version}\n  Log level: {args.log_level}\n  '
+        f'Show Dialog.\n  App version: {__version__}\n  Log level: {args.log_level}\n  '
         f'File: {sys.executable}'
     )
 

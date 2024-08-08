@@ -8,14 +8,6 @@ import os
 import sys
 from pathlib import Path
 
-import yaml
-from packaging.version import Version
-
-
-def read_manifest_file(manifest) -> dict:
-    with open(manifest) as f:
-        return yaml.safe_load(f)  # type: ignore
-
 
 def is_truthy(value) -> bool:
     return str(value).strip().lower() in ['true', '1']
@@ -46,21 +38,10 @@ else:
     PROJECT_ROOT = Path(__file__).parents[2]
 
 ASSETS_DIR = PROJECT_ROOT / 'assets'
-APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
 # endregion
 
 # region Global constants
 ORGANIZATION_NAME = 'Show Dialog'
 ORGANIZATION_DOMAIN = 'qt-show-dialog.app'  # Does not exist. To avoid build issues on Mac.
 APPLICATION_NAME = 'Show Dialog'
-# endregion
-
-# region General configs
-app_manifest = read_manifest_file(APP_MANIFEST_FILE)
-"""
-App manifest contents (as a dict).
-"""
-
-version = Version(app_manifest['version'])
-"""App version."""
 # endregion

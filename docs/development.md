@@ -94,10 +94,8 @@ You can authenticate in other ways, see
 [docs](https://cli.github.com/manual/gh_auth_login) for more info.
 
 #### Create release
-1. Update (increase) the app version in `assets/app.yaml`.
-2. Create and merge a new PR called _"Preparing for v1.2.3"_ release.  
-   This merges the new version, which will be used to create the release and set it to the right
-   commit hash.
+1. Update (increase) version with `inv build.version`.
+2. Create and merge a new PR called _"Release 1.2.3"_.  
 3. Run `inv build.release`
    Use the `--notes` or `--notes-file` to add more details to the release.  
 
