@@ -1,6 +1,6 @@
 import pytest
 
-from src.show_dialog.utils_qt import list_resources, read_resource_file
+from src.show_dialog.utils_qt import list_resources, read_file
 from tests.libs.config import TEST_ASSETS_DIR
 from tests.libs.fixtures import testing_resources  # noqa: F401
 
@@ -26,13 +26,13 @@ class TestListResources:
 
 class TestReadResourceFile:
     def test_read_resource_file(self, testing_resources):
-        file_content = read_resource_file(':/stylesheets/style_01.css')
+        file_content = read_file(':/stylesheets/style_01.css')
         assert 'Test stylesheet' in file_content
 
     def test_absolute_path(self):
-        file_content = read_resource_file(TEST_ASSETS_DIR / 'stylesheets/style_01.css')
+        file_content = read_file(TEST_ASSETS_DIR / 'stylesheets/style_01.css')
         assert 'Test stylesheet' in file_content
 
     def test_file_does_not_exist(self):
         with pytest.raises(FileNotFoundError):
-            read_resource_file('foo')
+            read_file('foo')
