@@ -1,20 +1,18 @@
 from pathlib import Path
 
-import yaml
 from setuptools import setup
+
+import src.show_dialog
 
 PROJECT_ROOT = Path(__file__).parent
 ASSETS_DIR = PROJECT_ROOT / 'assets'
-
-with open(ASSETS_DIR / 'app.yaml') as f:
-    manifest = yaml.safe_load(f)
 
 with open(PROJECT_ROOT / 'README.md') as f:
     long_description = f.read()
 
 setup(
     name='show-dialog',
-    version=manifest['version'],
+    version=src.show_dialog.__version__,
     py_modules=['show_dialog'],
     provides=['show_dialog'],
     description='Easily show a dialog',

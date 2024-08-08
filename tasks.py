@@ -33,7 +33,6 @@ REQUIREMENTS_TASK_HELP = {
 
 VERSION_FILES = [
     PROJECT_ROOT / 'pyproject.toml',
-    ASSETS_DIR / 'app.yaml',
     SOURCE_DIR / '__init__.py',
 ]
 """
@@ -53,7 +52,6 @@ Qt ``.qrc`` resource files.
 
 # region Executable build configs
 BUILD_SPEC_FILE = ASSETS_DIR / 'pyinstaller.spec'
-BUILD_APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
 BUILD_IN_FILE = SOURCE_DIR / 'main.py'
 """Executable input file."""
 BUILD_WORK_DIR = PROJECT_ROOT / 'build'
@@ -123,19 +121,13 @@ def _get_os_name():
     return {'darwin': 'mac'}.get(system, system)
 
 
-def _get_build_app_files() -> tuple[Path, Path, Path]:
-    import yaml
+def _get_build_app_files() -> tuple[Path, Path]:
+    import show_dialog
 
-    manifest_file = BUILD_DIST_APP_DIR / BUILD_APP_MANIFEST_FILE.name
-    with open(BUILD_APP_MANIFEST_FILE) as f:
-        manifest = yaml.safe_load(f)
+    version = show_dialog.__version__
 
     # Assumes the distribution directory is empty prior to creating the app
-    files = [
-        f
-        for f in BUILD_DIST_APP_DIR.glob('*')
-        if f.is_file() and f != manifest_file and f.suffix.lower() != '.zip'
-    ]
+    files = [f for f in BUILD_DIST_APP_DIR.glob('*') if f.is_file() and f.suffix.lower() != '.zip']
     if not files:
         raise Exit(f'App file not found in {BUILD_DIST_APP_DIR}')
     if len(files) > 1:
@@ -144,9 +136,9 @@ def _get_build_app_files() -> tuple[Path, Path, Path]:
             f'{len(files)} files found:\n' + '\n'.join(str(file) for file in files)
         )
     app_file = files[0]
-    zip_file = BUILD_DIST_APP_DIR / f'{app_file.stem}_{manifest["version"]}_{_get_os_name()}.zip'
+    zip_file = BUILD_DIST_APP_DIR / f'{app_file.stem}_{version}_{_get_os_name()}.zip'
 
-    return app_file, manifest_file, zip_file
+    return app_file, zip_file
 
 
 def _get_git_commit() -> str:
@@ -309,10 +301,6 @@ def build_app(c, no_spec: bool = False, no_zip: bool = False):
     """
     Build the executable (app) file(s).
     """
-    from datetime import datetime, timezone
-
-    import yaml
-
     # Build executable
     if no_spec:
         c.run(
@@ -326,21 +314,7 @@ def build_app(c, no_spec: bool = False, no_zip: bool = False):
             f'--distpath "{BUILD_DIST_APP_DIR}" --workpath "{BUILD_WORK_APP_DIR}"'
         )
 
-    app_file, manifest_file, zip_file = _get_build_app_files()
-
-    # App manifest file
-    with open(BUILD_APP_MANIFEST_FILE) as f:
-        manifest = yaml.safe_load(f)
-    manifest |= {
-        'build_time': datetime.now(timezone.utc),
-        'git_commit': _get_git_commit(),
-        'file_name': app_file.name,
-        'file_sha1': _calculate_sha1(app_file),
-    }
-
-    with open(manifest_file, 'w') as f:
-        f.write('# App manifest\n\n')
-        yaml.safe_dump(manifest, f)
+    app_file, zip_file = _get_build_app_files()
 
     # Zip file
     if no_zip:
@@ -350,7 +324,6 @@ def build_app(c, no_spec: bool = False, no_zip: bool = False):
 
         with zipfile.ZipFile(zip_file, 'w') as f:
             f.write(app_file, arcname=app_file.name)
-            f.write(manifest_file, arcname=manifest_file.name)
 
     print(f'App files created in {BUILD_DIST_APP_DIR}')
 
@@ -453,24 +426,18 @@ def build_upload(c, label: str = 'none'):
       * The artifact (`inv build.exe`).
       * The release in GitHub (`inv build.release`).
     """
-    import zipfile
-
-    import yaml
     from packaging.version import Version
 
-    _, manifest_file, zip_file = _get_build_app_files()
+    import src.show_dialog
+
+    _, zip_file = _get_build_app_files()
+    app_version = Version(src.show_dialog.__version__)
 
     if not zip_file.exists():
         raise Exit(
             f'Zip file not found: {zip_file}\n'
             'Rebuild the app with `inv build.dist` and without the `--no-zip` option.'
         )
-
-    # Get build info from manifest inside Zip
-    with zipfile.ZipFile(zip_file) as f:
-        manifest_str = f.read(manifest_file.name).decode()
-    manifest = yaml.safe_load(manifest_str)
-    app_version = Version(manifest['version'])
 
     # Verify executable is being uploaded to the correct GH release
     latest_release, latest_tag = _get_latest_release()

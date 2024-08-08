@@ -14,7 +14,7 @@ which includes _Qt Designer_, a WYSIWYG UI editor.
 ## Getting started
 ### Requirements
 ```
-pip install -r requirements-dev.txt
+pip install qt-show-dialog
 ```
 
 Documentation: [https://joaonc.github.io/show_dialog](https://joaonc.github.io/show_dialog/)

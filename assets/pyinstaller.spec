@@ -10,20 +10,14 @@ PROJECT_ROOT = Path(SPECPATH).parent.resolve(strict=True)
 PROJECT_NAME = PROJECT_ROOT.name
 ASSETS_DIR = PROJECT_ROOT / 'assets'
 SOURCE_DIR = PROJECT_ROOT / 'src' / PROJECT_NAME
-APP_MANIFEST_FILE = ASSETS_DIR / 'app.yaml'
 
 
 a = Analysis(
-    [str(SOURCE_DIR / 'main.py')],
+    [str('src/show_dialog/main.py')],
     pathex=[],
     binaries=[],
     # https://pyinstaller.org/en/stable/spec-files.html#adding-data-files
-    datas=[
-        (
-            str(APP_MANIFEST_FILE),
-            str(ASSETS_DIR.relative_to(PROJECT_ROOT)),
-        ),
-    ],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

@@ -27,7 +27,9 @@ def _set_config_values() -> tuple[Inputs, str | None]:
     """
     from argparse import ArgumentParser, RawTextHelpFormatter
 
-    description = f'Show Dialog {config.version}'
+    from . import __version__
+
+    description = f'Show Dialog {__version__}'
 
     parser = ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)
     parser.add_argument(
@@ -60,14 +62,14 @@ def _set_config_values() -> tuple[Inputs, str | None]:
         '-v',
         '--version',
         action='version',
-        version=str(config.version),
+        version=__version__,
     )
 
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.getLevelName(args.log_level.upper()))
     logging.debug(
-        f'Show Dialog.\n  App version: {config.version}\n  Log level: {args.log_level}\n  '
+        f'Show Dialog.\n  App version: {__version__}\n  Log level: {args.log_level}\n  '
         f'File: {sys.executable}'
     )
 
