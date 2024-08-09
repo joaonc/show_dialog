@@ -97,8 +97,6 @@ description: |
     More info on that light [here](#some-path).
 description_md: true
 timeout: 20
-timeout_pass: false
-timeout_text: '%v'
 ```
 !!! Note
 
