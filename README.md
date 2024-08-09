@@ -12,9 +12,15 @@ Uses [Qt 6](https://www.qt.io) and [Qt for Python](https://wiki.qt.io/Qt_for_Pyt
 which includes _Qt Designer_, a WYSIWYG UI editor.
 
 ## Getting started
+Documentation: [https://joaonc.github.io/show_dialog](https://joaonc.github.io/show_dialog/)
+
 ### Requirements
 ```
 pip install qt-show-dialog
 ```
 
-Documentation: [https://joaonc.github.io/show_dialog](https://joaonc.github.io/show_dialog/)
+### Example
+[![show dialog](https://github.com/joaonc/show_dialog/blob/main/docs/images/show_dialog_example.png)](https://joaonc.github.io/show_dialog/#example)
+
+Documentation [here](https://joaonc.github.io/show_dialog/#example) to see the inputs that generated
+the dialog 👆.
