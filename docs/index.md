@@ -70,6 +70,7 @@ def test_something():
 * Can be used as a library or an external executable.
 * Inputs can be in `yaml` or `json`.  
   As an external file or string.
+* Logging.
 
 ## Example
 The example below has this `yaml` input:
@@ -93,7 +94,7 @@ description: |
     
     **Do not touch** the button next to that light.
     
-    More info on that light [here](#qwe).
+    More info on that light [here](#some-path).
 description_md: true
 timeout: 20
 timeout_pass: false
