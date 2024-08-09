@@ -22,7 +22,7 @@ def list_resources(base_path: str = ':/', recursive: bool = False) -> list[str]:
     return [f'{base_path}/{entry}' for entry in entries if entry not in ['.', '..']]
 
 
-def read_resource_file(file_path):
+def read_file(file_path):
     """
     Read both regular files (from a path) and resource files (file inside a resource).
     """
@@ -33,6 +33,8 @@ def read_resource_file(file_path):
         raise RuntimeError(f'Cannot open file: `{file_path}`')
     stream = QTextStream(file)
     content = stream.readAll()
+    file.close()
+
     return content
 
 

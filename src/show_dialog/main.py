@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QApplication
 from . import __version__, config
 from .inputs import Inputs
 from .ui.show_dialog import ShowDialog
-from .utils_qt import list_resources, read_resource_file
+from .utils_qt import list_resources, read_file
 
 
 def main(inputs: Inputs, stylesheet: str | None):
@@ -109,7 +109,7 @@ def _set_config_values() -> tuple[Inputs, str | None]:
 
     css = None
     if args.stylesheet:
-        css = read_resource_file(args.stylesheet)
+        css = read_file(args.stylesheet)
 
     return inputs, css
 

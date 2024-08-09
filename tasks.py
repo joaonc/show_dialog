@@ -392,7 +392,7 @@ def build_publish(c, no_upload: bool = False):
     # Upload to pypi
     if not no_upload:
         version = _get_project_version()
-        response = input(f'Publishing version {version} to Pypi. Press Y to confirm. ')
+        response = input(f'Publishing version `{version}` to Pypi. Press Y to confirm. ')
         if response.lower().strip() == 'y':
             c.run('flit publish')
         else:
