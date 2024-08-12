@@ -56,7 +56,7 @@ description = 'Easily show a dialog window for miscellaneous purposes.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
 license = {file = 'LICENSE'}
-dependencies = ['mashumaro', 'pyside6', 'pyyaml']
+dependencies = ['markdown', 'mashumaro', 'pyside6', 'pyyaml']
 
 [project.urls]
 Home = 'https://github.com/joaonc/show_dialog'
