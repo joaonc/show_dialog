@@ -99,9 +99,9 @@ pyflakes==3.2.0
     # via flake8
 pygments==2.18.0
     # via rich
-pyinstaller==6.9.0
+pyinstaller==6.10.0
     # via -r requirements-dev.in
-pyinstaller-hooks-contrib==2024.7
+pyinstaller-hooks-contrib==2024.8
     # via pyinstaller
 pyproject-hooks==1.1.0
     # via
@@ -152,7 +152,7 @@ tomli-w==1.0.0
     # via flit
 types-markdown==3.6.0.20240316
     # via -r requirements-dev.in
-types-pyyaml==6.0.12.20240724
+types-pyyaml==6.0.12.20240808
     # via -r requirements-dev.in
 types-setuptools==71.1.0.20240806
     # via -r requirements-dev.in
