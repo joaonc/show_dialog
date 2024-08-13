@@ -8,6 +8,8 @@ import os
 import sys
 from pathlib import Path
 
+from .style import Style
+
 
 def is_truthy(value) -> bool:
     return str(value).strip().lower() in ['true', '1']
@@ -38,6 +40,8 @@ else:
     PROJECT_ROOT = Path(__file__).parents[2]
 
 ASSETS_DIR = PROJECT_ROOT / 'assets'
+
+DEFAULT_STYLE = os.environ.get('SHOW_DIALOG_DEFAULT_STYLE', Style.style_02.value)
 # endregion
 
 # region Global constants

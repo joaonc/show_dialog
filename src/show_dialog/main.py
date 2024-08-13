@@ -45,7 +45,7 @@ def _set_config_values() -> tuple[Inputs, str | None]:
     parser.add_argument(
         '--stylesheet',
         type=str,
-        default=':/stylesheets/style_01.css',
+        default=config.DEFAULT_STYLE,
         help=f'Path to CSS file to apply. Can be a path to an external file or one of the included '
         f'{", ".join("`"+file+"`" for file in list_resources(":/stylesheets"))}',
     )

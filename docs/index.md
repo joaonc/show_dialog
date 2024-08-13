@@ -46,7 +46,7 @@ def test_something():
 
     # Manual step
     inputs_1 = Inputs.from_file('tests/inputs/input_10.yml')
-    css = read_file('assets/stylesheets/style_01.css')
+    css = read_file('assets/stylesheets/style_02.css')
     show_dialog(inputs_1, css)
 
     # More automated steps
