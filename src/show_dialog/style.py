@@ -15,5 +15,7 @@ class Style(str, Enum):  # StrEnum is Python 3.11+
        starting with ``:/``.
     """
 
-    no_style = ':/stylesheets/style_01.css'
-    style_02 = ':/stylesheets/style_02.css'
+    Style01 = ':/stylesheets/style_01.css'
+    """No style."""
+    Style02 = ':/stylesheets/style_02.css'
+    """Default style."""

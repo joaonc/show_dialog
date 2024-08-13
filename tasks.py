@@ -244,6 +244,12 @@ def _module_path_from_file(file: Path, base_dir: Path) -> str:
 
 
 def _update_imports():
+    """
+    Update the relative imports in the project to absolute imports.
+
+    When being used as a package, this project works with relative imports, but as an app built
+    with PyInstaller, relative imports do not work.
+    """
     import shutil
 
     # Copy code to build dir

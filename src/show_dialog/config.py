@@ -41,7 +41,7 @@ else:
 
 ASSETS_DIR = PROJECT_ROOT / 'assets'
 
-DEFAULT_STYLE = os.environ.get('SHOW_DIALOG_DEFAULT_STYLE', Style.style_02.value)
+DEFAULT_STYLE = os.environ.get('SHOW_DIALOG_DEFAULT_STYLE', Style.Style02.value)
 # endregion
 
 # region Global constants
