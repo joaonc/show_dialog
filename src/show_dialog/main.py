@@ -24,9 +24,9 @@ def show_dialog(inputs: Inputs, stylesheet: str | None):
         sys.exit(app_response)
 
 
-def _set_config_values() -> tuple[Inputs, str | None]:
+def _parse_args():
     """
-    Parse CLI arguments and set ``config`` values.
+    Parse CLI arguments.
     """
     from argparse import ArgumentParser, RawTextHelpFormatter
 
@@ -66,8 +66,13 @@ def _set_config_values() -> tuple[Inputs, str | None]:
         version=__version__,
     )
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def _set_config_values(args) -> tuple[Inputs, str | None]:
+    """
+    Set ``config`` values.
+    """
     logging.basicConfig(level=logging.getLevelName(args.log_level.upper()))
     logging.debug(
         f'Show Dialog.\n  App version: {__version__}\n  Log level: {args.log_level}\n  '
@@ -117,7 +122,12 @@ def _set_config_values() -> tuple[Inputs, str | None]:
     return inputs, css
 
 
-if __name__ == '__main__':
-    _inputs, _stylesheet = _set_config_values()
+def main():
+    _args = _parse_args()
+    _inputs, _stylesheet = _set_config_values(_args)
     show_dialog(_inputs, _stylesheet)
     logging.debug('App exiting.')
+
+
+if __name__ == '__main__':
+    main()

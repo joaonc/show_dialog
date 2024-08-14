@@ -63,7 +63,7 @@ Home = 'https://github.com/joaonc/show_dialog'
 Documentation = 'https://joaonc.github.io/show_dialog'
 
 [project.scripts]
-show_dialog = 'show_dialog.main:show_dialog'
+show_dialog = 'show_dialog.main:main'
 
 [tool.flit.module]
 name = 'show_dialog'
