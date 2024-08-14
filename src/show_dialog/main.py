@@ -11,7 +11,10 @@ from .ui.show_dialog import ShowDialog
 from .utils_qt import list_resources, read_file
 
 
-def main(inputs: Inputs, stylesheet: str | None):
+def show_dialog(inputs: Inputs, stylesheet: str | None):
+    """
+    Create an instance of ``ShowDialog`` and show it.
+    """
     app = QApplication()
     window = ShowDialog(app, inputs, stylesheet)
     window.show()
@@ -116,5 +119,5 @@ def _set_config_values() -> tuple[Inputs, str | None]:
 
 if __name__ == '__main__':
     _inputs, _stylesheet = _set_config_values()
-    main(_inputs, _stylesheet)
+    show_dialog(_inputs, _stylesheet)
     logging.debug('App exiting.')
