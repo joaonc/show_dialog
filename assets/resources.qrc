@@ -7,5 +7,6 @@
     <file>images/pass_icon.png</file>
     <file>images/window_icon.png</file>
     <file>stylesheets/style_01.css</file>
+    <file>stylesheets/style_02.css</file>
   </qresource>
 </RCC>

@@ -23,7 +23,7 @@ Can also be used as an [executable app](https://joaonc.github.io/show_dialog/#ex
 no dependencies.
 
 ### Example
-[![show dialog](https://github.com/joaonc/show_dialog/blob/main/docs/images/show_dialog_example.png)](https://joaonc.github.io/show_dialog/#example)
+[![show dialog](https://raw.githubusercontent.com/joaonc/show_dialog/main/docs/images/show_dialog_example.png)](https://joaonc.github.io/show_dialog/#example)
 
 Inputs that generated the dialog 👆
 ```yaml
