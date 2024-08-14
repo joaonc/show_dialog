@@ -5,13 +5,13 @@ import types
 
 from PySide6.QtWidgets import QApplication
 
-from . import __version__, config
+from . import config
 from .inputs import Inputs
 from .ui.show_dialog import ShowDialog
 from .utils_qt import list_resources, read_file
 
 
-def show_dialog(inputs: Inputs, stylesheet: str | None):
+def show_dialog(inputs: Inputs, stylesheet: str = config.DEFAULT_STYLE):
     """
     Create an instance of ``ShowDialog`` and show it.
     """
@@ -29,6 +29,8 @@ def _parse_args():
     Parse CLI arguments.
     """
     from argparse import ArgumentParser, RawTextHelpFormatter
+
+    from . import __version__
 
     description = f'Show Dialog {__version__}'
 
@@ -73,6 +75,8 @@ def _set_config_values(args) -> tuple[Inputs, str | None]:
     """
     Set ``config`` values.
     """
+    from . import __version__
+
     logging.basicConfig(level=logging.getLevelName(args.log_level.upper()))
     logging.debug(
         f'Show Dialog.\n  App version: {__version__}\n  Log level: {args.log_level}\n  '
