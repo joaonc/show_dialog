@@ -4,7 +4,7 @@ import pytest
 import yaml
 from pytest_params import params
 
-from src.show_dialog.inputs import DataFileType, Inputs
+from src.show_dialog import DataFileType, Inputs
 from tests.libs.fixtures import inputs_instance  # noqa: F401
 
 
