@@ -6,32 +6,52 @@ The initial use case is to show instructions in manual steps in tests.
 See [features](#features) and [example](#example) for quick details.
 
 ## Getting started
-### Library
+### Installation
+#### Library
 ```
 pip install qt-show-dialog
 ```
 
-### Executable app
-Go to the [release](https://github.com/joaonc/show_dialog/releases/latest) page and download the
-file for your OS.
+```python
+from show_dialog import show_dialog, Inputs
 
-You might want to use the executable when you don't want to add more dependencies to your project
-(see [requirements.in](https://github.com/joaonc/show_dialog/blob/main/requirements.in) for a list
-of dependencies).
+def test_manual():
+    show_dialog(Inputs(
+        title='The Title',
+        description='The Description',
+        timeout=10
+    ))
+```
 
-The options using the executable are the same as when using the library.
-
-For more info:
+#### CLI
+After installing the `qt-show-dialog`, the `show_dialog` command becomes available in the terminal
+(Command Line Interface).
 ```
 show_dialog --help
 ```
+Quick example:
+```
+show_dialog --inputs '{"title": "The Title", "description": "The Description", "timeout": 10}'
+```
+The options using the CLI are the same as when using the library.
 
-### Use case: testing
+#### Executable app
+Go to the [release](https://github.com/joaonc/show_dialog/releases/latest) page and download the
+file for your OS.
+
+You can use the executable with working with languages other than Python or when you don't want to
+add more dependencies to your project (see
+[requirements.in](https://github.com/joaonc/show_dialog/blob/main/requirements.in) for a list of
+dependencies).
+
+See the [CLI](#cli) section above for more info. The interface is the same.
+
+### Use case
+#### Testing
 The main use case for which this project was created is to add in manual steps in tests.
 
 ```python
-from show_dialog import show_dialog
-from show_dialog.inputs import Inputs
+from show_dialog import Inputs, show_dialog
 from show_dialog.utils_qt import read_file
 
 def test_something():
@@ -46,7 +66,7 @@ def test_something():
 
     # Manual step
     inputs_1 = Inputs.from_file('tests/inputs/input_10.yml')
-    css = read_file('assets/stylesheets/style_02.css')
+    css = read_file('my_custom_style.css')
     show_dialog(inputs_1, css)
 
     # More automated steps
@@ -54,6 +74,7 @@ def test_something():
     
     # Another manual step
     inputs_2 = inputs_1.create(
+      title='Submit readout',
       description='Submit the readout by uploading the file.'
     )
     show_dialog(inputs_2, css)
@@ -62,14 +83,36 @@ def test_something():
     verify_readout()
 ```
 
+#### Script
+The dialog can also be shown in a script (bash, bat, powershell) or any other (non-Python) language
+that can run an executable.
+
+```shell
+#!/bin/bash
+
+# Do some stuff
+
+# Show the dialog
+./show_dialog --inputs \
+    '{"title": "The Title", "description": "The Description", "timeout": 10}'
+
+# Handle the exit status
+status=$?
+if [ $status -ne 0 ]; then
+    echo "show_dialog exited with status $status"
+    exit $status
+fi
+
+# Do more stuff
+```
+
 ## Features
 
 * Big UI (by default) for easy readability.
 * UI highly configurable via CSS and options.
 * Timeout (optional).
 * Can be used as a library or an external executable.
-* Inputs can be in `yaml` or `json`.  
-  As an external file or string.
+* Inputs can be in `yaml` or `json`, from file or string.
 * Logging.
 
 ## Example

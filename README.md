@@ -19,8 +19,11 @@ Documentation: [https://joaonc.github.io/show_dialog](https://joaonc.github.io/s
 ```
 pip install qt-show-dialog
 ```
+
+It can be used as a package or in the CLI with the `show_dialog` command.
+
 Can also be used as an [executable app](https://joaonc.github.io/show_dialog/#executable-app) with
-no dependencies.
+no dependencies (ie, no need for Python or a virtual environment).
 
 ### Example
 [![show dialog](https://raw.githubusercontent.com/joaonc/show_dialog/main/docs/images/show_dialog_example.png)](https://joaonc.github.io/show_dialog/#example)

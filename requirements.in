@@ -2,4 +2,4 @@ pyside6             # Qt
 pyyaml              # YAML functionality
 
 markdown            # Convert markdown to html
-mashumaro           # JSON to class serialization
+mashumaro           # JSON/YAML class serialization
