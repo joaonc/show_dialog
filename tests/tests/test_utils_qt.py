@@ -1,7 +1,7 @@
 import pytest
 
 from src.show_dialog.config import ASSETS_DIR
-from src.show_dialog.ui.forms import resources_rc  # noqa: F401  # Initialize resources
+from src.show_dialog.ui.forms import resources_rc  # noqa: F401  # Initialize Qt resources
 from src.show_dialog.utils_qt import list_resources, read_file
 from tests.libs.config import TEST_ASSETS_DIR
 

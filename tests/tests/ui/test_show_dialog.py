@@ -121,5 +121,5 @@ def test_pass_fail_buttons_text(show_dialog: ShowDialog, expected_pass_fail_text
 )
 def test_timeout_no_timeout(show_dialog: ShowDialog):
     """Timeout UI should not appear if there's no timeout."""
-    assert show_dialog.timeout_progress_bar.isVisible() is False
-    assert show_dialog.timeout_increase_button.isVisible() is False
+    assert not show_dialog.timeout_progress_bar.isVisible()
+    assert not show_dialog.timeout_increase_button.isVisible()
