@@ -5,13 +5,16 @@ import types
 
 from PySide6.QtWidgets import QApplication
 
-from . import __version__, config
+from . import config
 from .inputs import Inputs
 from .ui.show_dialog import ShowDialog
 from .utils_qt import list_resources, read_file
 
 
-def main(inputs: Inputs, stylesheet: str | None):
+def show_dialog(inputs: Inputs, stylesheet: str = config.DEFAULT_STYLE):
+    """
+    Create an instance of ``ShowDialog`` and show it.
+    """
     app = QApplication()
     window = ShowDialog(app, inputs, stylesheet)
     window.show()
@@ -21,11 +24,13 @@ def main(inputs: Inputs, stylesheet: str | None):
         sys.exit(app_response)
 
 
-def _set_config_values() -> tuple[Inputs, str | None]:
+def _parse_args():
     """
-    Parse CLI arguments and set ``config`` values.
+    Parse CLI arguments.
     """
     from argparse import ArgumentParser, RawTextHelpFormatter
+
+    from . import __version__
 
     description = f'Show Dialog {__version__}'
 
@@ -63,7 +68,14 @@ def _set_config_values() -> tuple[Inputs, str | None]:
         version=__version__,
     )
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def _set_config_values(args) -> tuple[Inputs, str | None]:
+    """
+    Set ``config`` values.
+    """
+    from . import __version__
 
     logging.basicConfig(level=logging.getLevelName(args.log_level.upper()))
     logging.debug(
@@ -114,7 +126,12 @@ def _set_config_values() -> tuple[Inputs, str | None]:
     return inputs, css
 
 
-if __name__ == '__main__':
-    _inputs, _stylesheet = _set_config_values()
-    main(_inputs, _stylesheet)
+def main():
+    _args = _parse_args()
+    _inputs, _stylesheet = _set_config_values(_args)
+    show_dialog(_inputs, _stylesheet)
     logging.debug('App exiting.')
+
+
+if __name__ == '__main__':
+    main()
