@@ -1,4 +1,4 @@
-name: linting
+name: Linting
 # Linting tools use `pyproject.toml` and `setup.cfg` for config.
 
 on:

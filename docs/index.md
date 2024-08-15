@@ -39,7 +39,7 @@ The options using the CLI are the same as when using the library.
 Go to the [release](https://github.com/joaonc/show_dialog/releases/latest) page and download the
 file for your OS.
 
-You can use the executable with working with languages other than Python or when you don't want to
+You can use the executable when working with languages other than Python or when you don't want to
 add more dependencies to your project (see
 [requirements.in](https://github.com/joaonc/show_dialog/blob/main/requirements.in) for a list of
 dependencies).
