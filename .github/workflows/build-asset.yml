@@ -1,0 +1,44 @@
+# Build executable app and upload to GitHub release (under Assets).
+# This Action is purposefully kept manual as to not potentially create assets by mistake.
+#
+# The upload step requires GitHub CLI and that preinstalled on all GitHub-hosted runners.
+name: Build app
+
+on:
+  workflow_dispatch:
+    inputs:
+      os:
+        description: 'OS to build the app for'
+        required: true
+        type: choice
+        options:
+          - macos-latest
+          - windows-latest
+          - ubuntu-latest
+
+jobs:
+  build-app:
+    runs-on: ${{ github.event.inputs.os }}
+
+    steps:
+      - name: Print OS
+        run: echo "Running on ${{ github.event.inputs.os }}"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install requirements
+        run: pip install -r requirements-dev.txt
+
+      - name: Build app
+        run: inv build.app
+
+      - name: Upload to GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: inv build.upload
