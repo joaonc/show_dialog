@@ -288,20 +288,14 @@ def _commit(message: str):
     if result.returncode != 0:
         raise Exit(f'Error on commit: {result.returncode}\n{result.stderr}')
 
-def _create_pr(title: str, description: str, commit: str | None = None):
+
+def _create_pr(title: str, description: str):
     """
     Creates a PR in GitHub and merges it after checks pass.
 
     If checks fail, the PR will remain open and will need to be dealt with manually.
-
-    :param title: Title of the PR.
-    :param description: Description of the PR.
-    :param commit: If set, commit the local changes before opening the PR.
     """
     import subprocess
-
-    if commit:
-        _commit(commit)
 
     # Push current branch
     command_1 = ['git', 'branch', '--show-current']
@@ -318,11 +312,11 @@ def _create_pr(title: str, description: str, commit: str | None = None):
         raise Exit(f'Error on PR create: {result_3.returncode}\n{result_3.stderr}')
 
     # Merge PR after checks pass
-    # PR number or branch not specified, so the PR that belongs to the current branch is selected.
-    command_4 = ['gh', 'pr', 'merge', '--squash', '--auto']
+    command_4 = ['gh', 'pr', 'merge', branch, '--squash', '--auto']
     result_4 = subprocess.run(command_4, capture_output=True, text=True)
     if result_4.returncode != 0:
         raise Exit(f'Error on PR merge: {result_4.returncode}\n{result_4.stderr}')
+
 
 @task
 def build_clean(c):
@@ -343,16 +337,24 @@ def build_clean(c):
     help={
         'version': 'Version in semantic versioning format (ex 1.5.0). '
         'If `version` is set, then `bump` cannot be used.',
-        'bump': 'Portion of the version to increase, can be "major", "minor", or "patch".'
+        'bump': 'Portion of the version to increase, can be "major", "minor", or "patch".\n'
         'If `bump` is set, then `version` cannot be used.',
-        'pr': 'Create and merge PR.',
+        'mode': 'What do do after the files are updated:\n"nothing": do nothing and the changes '
+        'are not committed (default).\n"commit": commit the changes with the message "bump '
+        'version".\n"pr": Create and merge PR after checks pass.',
     },
 )
-def build_version(c, version: str = '', bump: str = '', yes: bool = False):
+def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing'):
     """
     Updates the files that contain the project version to the new version.
+
+    Optionally, commit the changes, create a PR and merge it after checks pass.
     """
     from semantic_version import Version
+
+    mode = mode.strip().lower()
+    if mode not in ['nothing', 'commit', 'pr']:
+        raise Exit('Invalid `mode` choice.')
 
     v1 = Version(_get_project_version())
     if version and bump:
@@ -380,9 +382,15 @@ def build_version(c, version: str = '', bump: str = '', yes: bool = False):
 
     _update_project_version(str(v2))
     print(
-        f'New version is `{v2}`. Modified files have not been commited:\n'
+        f'New version is `{v2}`. Modified files :\n'
         + '\n'.join(f'  {file.relative_to(PROJECT_ROOT)}' for file in VERSION_FILES)
     )
+    if mode == 'nothing':
+        print('Files not committed, PR not created.')
+    if mode in ['commit', 'pr']:
+        _commit(f'bump version to {v2}')
+    if mode == 'pr':
+        _create_pr(f'Release {v2}', f'Preparing for release {v2}')
 
 
 @task(
