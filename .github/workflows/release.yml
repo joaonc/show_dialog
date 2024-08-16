@@ -1,0 +1,54 @@
+# This action does the following:
+#
+# 1. Bump version
+#    This creates a new PR
+# 2. Create release in GitHub
+# 3. Publish to Pypi
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Version to bump'
+        required: true
+        type: choice
+        options:
+          - Major
+          - Minor
+          - Patch
+      create_release:
+        description: 'Create release in GitHub'
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+          - {text: 'Yes', value: 'yes'}
+          - {text: 'No', value: 'no'}
+      publish:
+        description: 'Publish to Pypi'
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+          - {text: 'Yes', value: 'yes'}
+          - {text: 'No', value: 'no'}
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bump version
