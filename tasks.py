@@ -279,14 +279,26 @@ def _update_imports():
             for regex in regex_replace:
                 _re_sub_file(file_path, regex[0], regex[1])
 
+def _get_branch():
+    import subprocess
+
+    return subprocess.check_output(['git', 'branch', '--show-current'], text=True)
 
 def _commit(message: str):
     import subprocess
 
-    command = ['git', 'commit', '-m', message]
-    result = subprocess.run(command, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise Exit(f'Error on commit: {result.returncode}\n{result.stderr}')
+    # Commit
+    command_commit = ['git', 'commit', '-m', message]
+    result_commit = subprocess.run(command_commit, capture_output=True, text=True)
+    if result_commit.returncode != 0:
+        raise Exit(f'Error on commit: {result_commit.returncode}\n{result_commit.stderr}')
+
+    # Push current branch
+    branch = _get_branch()
+    command_push = ['git', 'push', 'origin', branch]
+    result_push = subprocess.run(command_push, capture_output=True, text=True)
+    if result_push.returncode != 0:
+        raise Exit(f'Error on push: {result_push.returncode}\n{result_push.stderr}')
 
 
 def _create_pr(title: str, description: str):
@@ -297,25 +309,18 @@ def _create_pr(title: str, description: str):
     """
     import subprocess
 
-    # Push current branch
-    command_1 = ['git', 'branch', '--show-current']
-    branch = subprocess.check_output(command_1, text=True)
-    command_2 = ['git', 'push', 'origin', branch]
-    result_2 = subprocess.run(command_2, capture_output=True, text=True)
-    if result_2.returncode != 0:
-        raise Exit(f'Error on push: {result_2.returncode}\n{result_2.stderr}')
-
     # Create PR
-    command_3 = ['gh', 'pr', 'create', '--title', title, '--body', description, '--base', branch]
-    result_3 = subprocess.run(command_3, capture_output=True, text=True)
-    if result_3.returncode != 0:
-        raise Exit(f'Error on PR create: {result_3.returncode}\n{result_3.stderr}')
+    branch = _get_branch()
+    command_pr = ['gh', 'pr', 'create', '--title', title, '--body', description, '--base', branch]
+    result_pr = subprocess.run(command_pr, capture_output=True, text=True)
+    if result_pr.returncode != 0:
+        raise Exit(f'Error on PR create: {result_pr.returncode}\n{result_pr.stderr}')
 
     # Merge PR after checks pass
-    command_4 = ['gh', 'pr', 'merge', branch, '--squash', '--auto']
-    result_4 = subprocess.run(command_4, capture_output=True, text=True)
-    if result_4.returncode != 0:
-        raise Exit(f'Error on PR merge: {result_4.returncode}\n{result_4.stderr}')
+    command_merge = ['gh', 'pr', 'merge', branch, '--squash', '--auto']
+    result_merge = subprocess.run(command_merge, capture_output=True, text=True)
+    if result_merge.returncode != 0:
+        raise Exit(f'Error on PR merge: {result_merge.returncode}\n{result_merge.stderr}')
 
 
 @task
@@ -340,8 +345,8 @@ def build_clean(c):
         'bump': 'Portion of the version to increase, can be "major", "minor", or "patch".\n'
         'If `bump` is set, then `version` cannot be used.',
         'mode': 'What do do after the files are updated:\n"nothing": do nothing and the changes '
-        'are not committed (default).\n"commit": commit the changes with the message "bump '
-        'version".\n"pr": Create and merge PR after checks pass.',
+        'are not committed (default).\n"commit": commit and push the changes with the message '
+        '"bump version".\n"pr": Commit, push, create and merge PR after checks pass.',
     },
 )
 def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing'):
@@ -388,9 +393,12 @@ def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing'):
     if mode == 'nothing':
         print('Files not committed, PR not created.')
     if mode in ['commit', 'pr']:
+        print('Commit and push changes.')
         _commit(f'bump version to {v2}')
     if mode == 'pr':
-        _create_pr(f'Release {v2}', f'Preparing for release {v2}')
+        pr_title = f'Release {v2}'
+        print(f'Create and merge PR `{pr_title}`.')
+        _create_pr(pr_title, f'Preparing for release {v2}')
 
 
 @task(
