@@ -282,7 +282,7 @@ def _update_imports():
 def _get_branch():
     import subprocess
 
-    return subprocess.check_output(['git', 'branch', '--show-current'], text=True)
+    return subprocess.check_output(['git', 'branch', '--show-current'], text=True).strip()
 
 def _commit(message: str):
     import subprocess
