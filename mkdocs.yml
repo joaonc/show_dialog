@@ -42,7 +42,7 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji  # https://emojipedia.org/twitter/
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - tables
+  - tables                      # Create tables in Markdown by using a simple syntax
   - mdx_truly_sane_lists        # 2-space indented nested lists
   - attr_list                   # More functionality for images (align, lazy load, etc.)
   - md_in_html                  # MD/HTML interop. Also helps with images (caption, center alignment)
