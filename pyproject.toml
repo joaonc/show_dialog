@@ -55,7 +55,7 @@ version = '0.3.2'
 description = 'Easily show a dialog window for miscellaneous purposes.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
-license = {file = 'LICENSE'}
+license = {file = 'LICENSE.txt'}
 dependencies = ['markdown', 'mashumaro', 'pyside6', 'pyyaml']
 classifiers = [
     "License :: OSI Approved :: MIT License",
