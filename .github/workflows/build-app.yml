@@ -12,9 +12,9 @@ on:
         required: true
         type: choice
         options:
-          - { text: 'macOS', value: 'macos-latest' }
-          - { text: 'Windows', value: 'windows-latest' }
-          - { text: 'Linux (Ubuntu)', value: 'ubuntu-latest' }
+          - macos-latest
+          - windows-latest
+          - ubuntu-latest
 
 permissions:
   contents: write
