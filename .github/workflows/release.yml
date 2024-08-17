@@ -17,6 +17,7 @@ on:
       version_bump:
         description: 'Version to bump'
         required: true
+        default: Minor
         type: choice
         options:
           - Major
