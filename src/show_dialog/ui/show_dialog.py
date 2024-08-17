@@ -74,7 +74,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
 
         # UI bindings
         self.pass_button.clicked.connect(self.pass_clicked)
-        self.fail_button.clicked.connect(self.fail_clicked)
+        self.fail_button.clicked.connect(lambda: self.fail_clicked(1))
         self.exit_shortcut = QShortcut(QKeySequence('Ctrl+Q'), self)
         self.exit_shortcut.activated.connect(self.fail_clicked)
         self.pass_shortcut = QShortcut(QKeySequence('Ctrl+P'), self)
@@ -90,7 +90,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         """
         When closing the app (``X`` button), mark as fail instead of pass.
         """
-        self.fail_clicked()
+        self.fail_clicked(2)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
@@ -108,7 +108,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             if self.inputs.timeout_pass:
                 self.pass_clicked()
             else:
-                self.fail_clicked()
+                self.fail_clicked(3)
 
     def timeout_increase_clicked(self):
         timeout_increase = 10
@@ -122,5 +122,5 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         # Using `QApplication.exit(0)` to enable testing exit code.
         self.app.exit(0)
 
-    def fail_clicked(self):
-        self.app.exit(1)
+    def fail_clicked(self, exit_code):
+        self.app.exit(exit_code)
