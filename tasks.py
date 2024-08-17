@@ -280,11 +280,9 @@ def _update_imports():
                 _re_sub_file(file_path, regex[0], regex[1])
 
 
-def _get_branch():
+def _get_branch(c):
     """Returns the current branch."""
-    import subprocess
-
-    return subprocess.check_output(['git', 'branch', '--show-current'], text=True).strip()
+    return c.run(['git branch --show-current']).stdout.strip()
 
 
 def _get_default_branch():
@@ -297,18 +295,11 @@ def _get_default_branch():
     ).strip()
 
 
-def _commit(message: str):
+def _commit(c, message: str):
     import subprocess
 
     # Commit
-    command_add = ['git', 'add', *VERSION_FILES]
-    result_add = subprocess.run(command_add, capture_output=True, text=True)
-    if result_add.returncode != 0:
-        raise Exit(
-            f'Error on add: {result_add.returncode}\n'
-            f'stdout: {result_add.stdout}\n'
-            f'stderr: {result_add.stderr}'
-        )
+    c.run('git add ' + ' '.join(f'"{file}"' for file in VERSION_FILES))
 
     command_commit = ['git', 'commit', '-m', message]
     result_commit = subprocess.run(command_commit, capture_output=True, text=True)
@@ -320,7 +311,7 @@ def _commit(message: str):
         )
 
     # Push current branch
-    branch = _get_branch()
+    branch = _get_branch(c)
     command_push = ['git', 'push', 'origin', branch]
     result_push = subprocess.run(command_push, capture_output=True, text=True)
     if result_push.returncode != 0:
@@ -331,26 +322,18 @@ def _commit(message: str):
         )
 
 
-def _create_pr(title: str, description: str):
+def _create_pr(c, title: str, description: str):
     """
     Creates a PR in GitHub and merges it after checks pass.
 
     If checks fail, the PR will remain open and will need to be dealt with manually.
     """
-    import subprocess
-
     # Create PR
-    branch = _get_branch()
-    command_pr = ['gh', 'pr', 'create', '--title', title, '--body', description, '--base', branch]
-    result_pr = subprocess.run(command_pr, capture_output=True, text=True)
-    if result_pr.returncode != 0:
-        raise Exit(f'Error on PR create: {result_pr.returncode}\n{result_pr.stderr}')
+    branch = _get_branch(c)
+    c.run(f'gh pr create --title "{title}" --body "{description}" --base {branch}')
 
     # Merge PR after checks pass
-    command_merge = ['gh', 'pr', 'merge', branch, '--squash', '--auto']
-    result_merge = subprocess.run(command_merge, capture_output=True, text=True)
-    if result_merge.returncode != 0:
-        raise Exit(f'Error on PR merge: {result_merge.returncode}\n{result_merge.stderr}')
+    c.run(f'gh pr merge {branch} --squash --auto')
 
 
 @task
@@ -417,7 +400,7 @@ def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing', y
             raise Exit('Invalid `bump` choice.')
 
     # Verify branch is not default
-    branch = _get_branch()
+    branch = _get_branch(c)
     default_branch = _get_default_branch()
     if branch == default_branch:
         branch_ok = False
@@ -445,11 +428,11 @@ def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing', y
         print('Files not committed, PR not created.')
     if mode in ['commit', 'pr']:
         print('Commit and push changes.')
-        _commit(f'bump version to {v2}')
+        _commit(c, f'bump version to {v2}')
     if mode == 'pr':
         pr_title = f'Release {v2}'
         print(f'Create and merge PR `{pr_title}`.')
-        _create_pr(pr_title, f'Preparing for release {v2}')
+        _create_pr(c, pr_title, f'Preparing for release {v2}')
 
 
 @task(
