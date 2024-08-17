@@ -25,19 +25,19 @@ on:
       create_release:
         description: 'Create release in GitHub'
         required: true
-        default: 'yes'
+        default: Yes
         type: choice
         options:
-          - {text: 'Yes', value: 'yes'}
-          - {text: 'No', value: 'no'}
+          - Yes
+          - No
       publish:
         description: 'Publish to Pypi'
         required: true
-        default: 'yes'
+        default: Yes
         type: choice
         options:
-          - {text: 'Yes', value: 'yes'}
-          - {text: 'No', value: 'no'}
+          - Yes
+          - No
 
 permissions:
   contents: write
