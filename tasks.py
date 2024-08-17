@@ -216,18 +216,15 @@ def _get_version_from_release_name(release_name: str) -> str:
     return release_name[1:]
 
 
-def _get_latest_release() -> tuple[str, str, list[dict]]:
+def _get_latest_release(c) -> tuple[str, str, list[dict]]:
     """
     Retrieves the latest release from GitHub.
 
     :return: Tuple with: release name (ex 'v1.2.3'), tag (ex '1.2.3') and list of assets uploaded.
     """
     import json
-    import subprocess
 
-    release_info_json = subprocess.check_output(
-        ['gh', 'release', 'view', '--json', 'name,tagName,assets']
-    )
+    release_info_json = c.run('gh release view --json name,tagName,assets').stdout.strip()
     release_info = json.loads(release_info_json)
     return release_info['name'], release_info['tagName'], release_info['assets']
 
@@ -291,30 +288,14 @@ def _get_default_branch(c):
 
 
 def _commit(c, message: str):
-    import subprocess
 
     # Commit
     c.run('git add ' + ' '.join(f'"{file}"' for file in VERSION_FILES))
-
-    command_commit = ['git', 'commit', '-m', message]
-    result_commit = subprocess.run(command_commit, capture_output=True, text=True)
-    if result_commit.returncode != 0:
-        raise Exit(
-            f'Error on commit: {result_commit.returncode}\n'
-            f'stdout: {result_commit.stdout}\n'
-            f'stderr: {result_commit.stderr}'
-        )
+    c.run(f'git commit -m "{message}"')
 
     # Push current branch
     branch = _get_branch(c)
-    command_push = ['git', 'push', 'origin', branch]
-    result_push = subprocess.run(command_push, capture_output=True, text=True)
-    if result_push.returncode != 0:
-        raise Exit(
-            f'Error on push: {result_push.returncode}\n'
-            f'stdout: {result_push.stdout}\n'
-            f'stderr: {result_push.stderr}'
-        )
+    c.run(f'git push origin {branch}')
 
 
 def _create_pr(c, title: str, description: str):
@@ -523,7 +504,7 @@ def build_release(
 
     # Check that there's no release with the current version
     version = Version(_get_project_version())
-    latest_release, latest_tag, _ = _get_latest_release()
+    latest_release, latest_tag, _ = _get_latest_release(c)
     latest_version = Version(_get_version_from_release_name(latest_release))
     if str(latest_version) != latest_tag:
         raise Exit(
@@ -585,7 +566,7 @@ def build_upload(c, label: str = 'none'):
         )
 
     # Verify asset is being uploaded to the correct GH release
-    latest_release, latest_tag, assets = _get_latest_release()
+    latest_release, latest_tag, assets = _get_latest_release(c)
     latest_version = Version(_get_version_from_release_name(latest_release))
     if app_version != latest_version:
         raise Exit(
