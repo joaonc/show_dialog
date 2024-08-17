@@ -28,11 +28,11 @@ on:
       create_release:
         description: 'Create release in GitHub'
         required: true
-        default: Yes
+        default: 'true'
         type: choice
         options:
-          - Yes
-          - No
+          - 'true'
+          - 'false'
       release_notes:
         description: 'If creating a release, add notes here'
         required: false
@@ -40,11 +40,11 @@ on:
       publish:
         description: 'Publish to Pypi'
         required: true
-        default: Yes
+        default: 'true'
         type: choice
         options:
-          - Yes
-          - No
+          - 'true'
+          - 'false'
 
 permissions:
   contents: write
@@ -78,13 +78,13 @@ jobs:
         run: inv build.version --bump ${{ github.event.inputs.version_bump }} --mode pr --yes
 
       - name: Create release
-        if: github.event.inputs.create_release == 'Yes'
+        if: github.event.inputs.create_release == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: inv build.release --notes "${{ github.event.inputs.release_notes }}" --yes
 
       - name: Publish to Pypi
-        if: github.event.inputs.publish == 'Yes'
+        if: github.event.inputs.publish == 'true'
         env:
           FLIT_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: inv build.publish --yes
