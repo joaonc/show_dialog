@@ -279,10 +279,12 @@ def _update_imports():
             for regex in regex_replace:
                 _re_sub_file(file_path, regex[0], regex[1])
 
+
 def _get_branch():
     import subprocess
 
     return subprocess.check_output(['git', 'branch', '--show-current'], text=True).strip()
+
 
 def _commit(message: str):
     import subprocess
@@ -291,14 +293,22 @@ def _commit(message: str):
     command_commit = ['git', 'commit', '-m', message]
     result_commit = subprocess.run(command_commit, capture_output=True, text=True)
     if result_commit.returncode != 0:
-        raise Exit(f'Error on commit: {result_commit.returncode}\n{result_commit.stderr}')
+        raise Exit(
+            f'Error on commit: {result_commit.returncode}\n'
+            f'stdout: {result_commit.stdout}\n'
+            f'stderr: {result_commit.stderr}'
+        )
 
     # Push current branch
     branch = _get_branch()
     command_push = ['git', 'push', 'origin', branch]
     result_push = subprocess.run(command_push, capture_output=True, text=True)
     if result_push.returncode != 0:
-        raise Exit(f'Error on push: {result_push.returncode}\n{result_push.stderr}')
+        raise Exit(
+            f'Error on push: {result_push.returncode}\n'
+            f'stdout: {result_push.stdout}\n'
+            f'stderr: {result_push.stderr}'
+        )
 
 
 def _create_pr(title: str, description: str):
