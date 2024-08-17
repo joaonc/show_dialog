@@ -282,17 +282,12 @@ def _update_imports():
 
 def _get_branch(c):
     """Returns the current branch."""
-    return c.run(['git branch --show-current']).stdout.strip()
+    return c.run('git branch --show-current').stdout.strip()
 
 
-def _get_default_branch():
+def _get_default_branch(c):
     """Returns the default branch (usually ``main``)."""
-    import subprocess
-
-    return subprocess.check_output(
-        ['gh', 'repo', 'view', '--json', 'defaultBranchRef', '--jq', '.defaultBranchRef.name'],
-        text=True,
-    ).strip()
+    return c.run('gh repo view --json defaultBranchRef --jq .defaultBranchRef.name').stdout.strip()
 
 
 def _commit(c, message: str):
@@ -401,16 +396,12 @@ def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing', y
 
     # Verify branch is not default
     branch = _get_branch(c)
-    default_branch = _get_default_branch()
+    default_branch = _get_default_branch(c)
     if branch == default_branch:
         branch_ok = False
-        if (
-            yes
-            or input(f'Current branch `{branch}` is the default branch, create new branch? [Y/n] ')
-            .lower()
-            .strip()
-            in ['', 'y', 'yes']
-        ):
+        if yes or input(
+            f'Current branch `{branch}` is the default branch, create new branch? [Y/n] '
+        ).lower().strip() in ['', 'y', 'yes']:
             c.run(f'git checkout -b release-{v2}')
             branch_ok = True
         if not branch_ok:
