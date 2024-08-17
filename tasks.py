@@ -290,6 +290,15 @@ def _commit(message: str):
     import subprocess
 
     # Commit
+    command_add = ['git', 'add', *VERSION_FILES]
+    result_add = subprocess.run(command_add, capture_output=True, text=True)
+    if result_add.returncode != 0:
+        raise Exit(
+            f'Error on add: {result_add.returncode}\n'
+            f'stdout: {result_add.stdout}\n'
+            f'stderr: {result_add.stderr}'
+        )
+
     command_commit = ['git', 'commit', '-m', message]
     result_commit = subprocess.run(command_commit, capture_output=True, text=True)
     if result_commit.returncode != 0:

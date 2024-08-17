@@ -1,9 +1,14 @@
+# Create a GitHub release and publish to Pypi.
+#
 # This action does the following:
 #
-# 1. Bump version
-#    This creates a new PR
-# 2. Create release in GitHub
-# 3. Publish to Pypi
+# 1. Bump version.
+#    This creates a new PR and merges it.
+# 2. Create release in GitHub.
+# 3. Publish to Pypi.
+#
+# At this point, does not add assets to the release.
+# Use the `build-asset` action.
 name: Release
 
 on:
