@@ -77,6 +77,8 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.fail_button.clicked.connect(self.fail_clicked)
         self.exit_shortcut = QShortcut(QKeySequence('Ctrl+Q'), self)
         self.exit_shortcut.activated.connect(self.fail_clicked)
+        self.timeout_shortcut = QShortcut(QKeySequence('+'), self)
+        self.timeout_shortcut.activated.connect(self.timeout_increase_clicked)
 
     def resizeEvent(self, event):
         self.pass_button.setIconSize(self.pass_button.size())
