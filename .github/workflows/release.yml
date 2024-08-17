@@ -86,5 +86,6 @@ jobs:
       - name: Publish to Pypi
         if: github.event.inputs.publish == 'true'
         env:
-          FLIT_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          FLIT_USERNAME: "__token__"
+          FLIT_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: inv build.publish --yes
