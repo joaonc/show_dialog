@@ -324,8 +324,12 @@ def _create_pr(c, title: str, description: str):
     If checks fail, the PR will remain open and will need to be dealt with manually.
     """
     # Create PR
+    default_branch = _get_default_branch(c)
     branch = _get_branch(c)
-    c.run(f'gh pr create --title "{title}" --body "{description}" --base {branch}')
+    c.run(
+        f'gh pr create --title "{title}" --body "{description}" '
+        f'--head {branch} --base {default_branch}'
+    )
 
     # Merge PR after checks pass
     c.run(f'gh pr merge {branch} --squash --auto')
