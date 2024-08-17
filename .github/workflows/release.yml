@@ -30,6 +30,10 @@ on:
         options:
           - Yes
           - No
+      release_notes:
+        description: 'If creating a release, add notes here'
+        required: false
+        default: ''
       publish:
         description: 'Publish to Pypi'
         required: true
@@ -56,4 +60,22 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install requirements
+        run: pip install -r requirements-dev.txt
+
       - name: Bump version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: inv build.version --bump ${{ github.event.inputs.version_bump }} --mode pr --yes
+
+      - name: Create release
+        if: github.event.inputs.create_release == 'Yes'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: inv build.release --notes "${{ github.event.inputs.release_notes }}"
+
+      - name: Publish to Pypi
+        if: github.event.inputs.publish == 'Yes'
+        env:
+          FLIT_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: inv build.publish
