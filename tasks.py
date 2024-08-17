@@ -281,9 +281,20 @@ def _update_imports():
 
 
 def _get_branch():
+    """Returns the current branch."""
     import subprocess
 
     return subprocess.check_output(['git', 'branch', '--show-current'], text=True).strip()
+
+
+def _get_default_branch():
+    """Returns the default branch (usually ``main``)."""
+    import subprocess
+
+    return subprocess.check_output(
+        ['gh', 'repo', 'view', '--json', 'defaultBranchRef', '--jq', '.defaultBranchRef.name'],
+        text=True,
+    ).strip()
 
 
 def _commit(message: str):
@@ -366,9 +377,10 @@ def build_clean(c):
         'mode': 'What do do after the files are updated:\n"nothing": do nothing and the changes '
         'are not committed (default).\n"commit": commit and push the changes with the message '
         '"bump version".\n"pr": Commit, push, create and merge PR after checks pass.',
+        'yes': 'Don\'t ask confirmation to create new branch if necessary.',
     },
 )
-def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing'):
+def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing', yes: bool = False):
     """
     Updates the files that contain the project version to the new version.
 
@@ -404,11 +416,31 @@ def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing'):
         except AttributeError:
             raise Exit('Invalid `bump` choice.')
 
+    # Verify branch is not default
+    branch = _get_branch()
+    default_branch = _get_default_branch()
+    if branch == default_branch:
+        branch_ok = False
+        if (
+            yes
+            or input(f'Current branch `{branch}` is the default branch, create new branch? [Y/n] ')
+            .lower()
+            .strip()
+            in ['', 'y', 'yes']
+        ):
+            c.run(f'git checkout -b release-{v2}')
+            branch_ok = True
+        if not branch_ok:
+            raise Exit(f'Cannot make changes in the default branch `{branch}`.')
+
+    # Update files to new version
     _update_project_version(str(v2))
     print(
         f'New version is `{v2}`. Modified files :\n'
         + '\n'.join(f'  {file.relative_to(PROJECT_ROOT)}' for file in VERSION_FILES)
     )
+
+    # Commit/push/pr
     if mode == 'nothing':
         print('Files not committed, PR not created.')
     if mode in ['commit', 'pr']:
