@@ -375,7 +375,7 @@ def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing', y
             raise Exit(f'New version `{v2}` needs to be greater than the existing version `{v1}`.')
     else:
         try:
-            v2 = getattr(v1, f'next_{bump.lower().strip()}')()
+            v2 = getattr(v1, f'next_{bump.strip().lower()}')()
         except AttributeError:
             raise Exit('Invalid `bump` choice.')
 
@@ -386,7 +386,7 @@ def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing', y
         branch_ok = False
         if yes or input(
             f'Current branch `{branch}` is the default branch, create new branch? [Y/n] '
-        ).lower().strip() in ['', 'y', 'yes']:
+        ).strip().lower() in ['', 'y', 'yes']:
             c.run(f'git checkout -b release-{v2}')
             branch_ok = True
         if not branch_ok:
@@ -455,9 +455,12 @@ def build_app(c, no_spec: bool = False, no_zip: bool = False):
 
 
 @task(
-    help={'no_upload': 'Do not upload to Pypi.'},
+    help={
+        'no_upload': 'Do not upload to Pypi.',
+        'yes': 'Don\'t request confirmation to publish to Pypi.',
+    },
 )
-def build_publish(c, no_upload: bool = False):
+def build_publish(c, no_upload: bool = False, yes: bool = False):
     """
     Build package and publish (upload) to Pypi.
 
@@ -467,9 +470,13 @@ def build_publish(c, no_upload: bool = False):
     c.run('flit build')
     # Upload to pypi
     if not no_upload:
-        version = _get_project_version()
-        response = input(f'Publishing version `{version}` to Pypi. Press Y to confirm. ')
-        if response.lower().strip() == 'y':
+        if (
+            yes
+            or input(f'Publishing version `{_get_project_version()}` to Pypi. Press Y to confirm. ')
+            .strip()
+            .lower()
+            == 'y'
+        ):
             c.run('flit publish')
         else:
             print('Package not published to Pypi.')
@@ -479,12 +486,14 @@ def build_publish(c, no_upload: bool = False):
     help={
         'notes': 'Release notes.',
         'notes_file': 'Read release notes from file. Ignores the `-notes` parameter.',
+        'yes': 'Don\'t request confirmation to create the release.',
     },
 )
 def build_release(
     c,
     notes: str = '',
     notes_file: str = '',
+    yes: bool = False,
 ):
     """
     Create a release and tag in GitHub from the current project version.
@@ -496,7 +505,7 @@ def build_release(
     if notes and notes_file:
         raise Exit('Both `--notes` and `--notes-file` are specified. Only one can be specified.')
 
-    if not notes and not notes_file:
+    if not notes and not notes_file and not yes:
         response = input('No release notes or notes file specified, continue? [Y/n]')
         response = response.strip().lower() or 'y'
         if response not in ['yes', 'y']:
@@ -526,8 +535,11 @@ def build_release(
         notes_file_path = Path(notes_file)
         command += f' --notes-file "{notes_file_path.resolve(strict=True)}"'
 
-    response = input(f'Creating GitHub release `{new_release}`. Press Y to confirm. ')
-    if response.lower().strip() == 'y':
+    if (
+        yes
+        or input(f'Creating GitHub release `{new_release}`. Press Y to confirm. ').strip().lower()
+        == 'y'
+    ):
         c.run(command)
         print('GitHub release created. Upload artifacts with `build.upload`.')
     else:

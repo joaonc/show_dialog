@@ -73,10 +73,10 @@ jobs:
         if: github.event.inputs.create_release == 'Yes'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: inv build.release --notes "${{ github.event.inputs.release_notes }}"
+        run: inv build.release --notes "${{ github.event.inputs.release_notes }}" --yes
 
       - name: Publish to Pypi
         if: github.event.inputs.publish == 'Yes'
         env:
           FLIT_PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: inv build.publish
+        run: inv build.publish --yes
