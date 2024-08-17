@@ -1,7 +1,7 @@
 # qt-show-dialog
 
 [![pypi](https://img.shields.io/pypi/v/qt-show-dialog.svg)](https://pypi.python.org/pypi/qt-show-dialog)
-[![Project License - MIT](https://img.shields.io/pypi/l/qt-show-dialog.svg)](./LICENSE.txt)
+[![Project License - MIT](https://img.shields.io/pypi/l/qt-show-dialog.svg)](https://github.com/joaonc/show_dialog/blob/main/LICENSE.txt)
 
 Easily show a dialog window for miscellaneous purposes
 ([features](https://joaonc.github.io/show_dialog/#features)).
