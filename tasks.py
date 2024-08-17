@@ -253,7 +253,6 @@ def _update_imports():
     import shutil
 
     # Copy code to build dir
-
     build_source_dir = BUILD_WORK_APP_DIR / PROJECT_SOURCE_DIR.relative_to(PROJECT_ROOT)
     shutil.copytree(
         PROJECT_SOURCE_DIR, build_source_dir, ignore=shutil.ignore_patterns('__pycache__')
@@ -281,6 +280,68 @@ def _update_imports():
                 _re_sub_file(file_path, regex[0], regex[1])
 
 
+def _get_branch():
+    import subprocess
+
+    return subprocess.check_output(['git', 'branch', '--show-current'], text=True).strip()
+
+
+def _commit(message: str):
+    import subprocess
+
+    # Commit
+    command_add = ['git', 'add', *VERSION_FILES]
+    result_add = subprocess.run(command_add, capture_output=True, text=True)
+    if result_add.returncode != 0:
+        raise Exit(
+            f'Error on add: {result_add.returncode}\n'
+            f'stdout: {result_add.stdout}\n'
+            f'stderr: {result_add.stderr}'
+        )
+
+    command_commit = ['git', 'commit', '-m', message]
+    result_commit = subprocess.run(command_commit, capture_output=True, text=True)
+    if result_commit.returncode != 0:
+        raise Exit(
+            f'Error on commit: {result_commit.returncode}\n'
+            f'stdout: {result_commit.stdout}\n'
+            f'stderr: {result_commit.stderr}'
+        )
+
+    # Push current branch
+    branch = _get_branch()
+    command_push = ['git', 'push', 'origin', branch]
+    result_push = subprocess.run(command_push, capture_output=True, text=True)
+    if result_push.returncode != 0:
+        raise Exit(
+            f'Error on push: {result_push.returncode}\n'
+            f'stdout: {result_push.stdout}\n'
+            f'stderr: {result_push.stderr}'
+        )
+
+
+def _create_pr(title: str, description: str):
+    """
+    Creates a PR in GitHub and merges it after checks pass.
+
+    If checks fail, the PR will remain open and will need to be dealt with manually.
+    """
+    import subprocess
+
+    # Create PR
+    branch = _get_branch()
+    command_pr = ['gh', 'pr', 'create', '--title', title, '--body', description, '--base', branch]
+    result_pr = subprocess.run(command_pr, capture_output=True, text=True)
+    if result_pr.returncode != 0:
+        raise Exit(f'Error on PR create: {result_pr.returncode}\n{result_pr.stderr}')
+
+    # Merge PR after checks pass
+    command_merge = ['gh', 'pr', 'merge', branch, '--squash', '--auto']
+    result_merge = subprocess.run(command_merge, capture_output=True, text=True)
+    if result_merge.returncode != 0:
+        raise Exit(f'Error on PR merge: {result_merge.returncode}\n{result_merge.stderr}')
+
+
 @task
 def build_clean(c):
     """
@@ -300,15 +361,24 @@ def build_clean(c):
     help={
         'version': 'Version in semantic versioning format (ex 1.5.0). '
         'If `version` is set, then `bump` cannot be used.',
-        'bump': 'Portion of the version to increase, can be "major", "minor", or "patch".'
+        'bump': 'Portion of the version to increase, can be "major", "minor", or "patch".\n'
         'If `bump` is set, then `version` cannot be used.',
+        'mode': 'What do do after the files are updated:\n"nothing": do nothing and the changes '
+        'are not committed (default).\n"commit": commit and push the changes with the message '
+        '"bump version".\n"pr": Commit, push, create and merge PR after checks pass.',
     },
 )
-def build_version(c, version: str = '', bump: str = ''):
+def build_version(c, version: str = '', bump: str = '', mode: str = 'nothing'):
     """
     Updates the files that contain the project version to the new version.
+
+    Optionally, commit the changes, create a PR and merge it after checks pass.
     """
     from semantic_version import Version
+
+    mode = mode.strip().lower()
+    if mode not in ['nothing', 'commit', 'pr']:
+        raise Exit('Invalid `mode` choice.')
 
     v1 = Version(_get_project_version())
     if version and bump:
@@ -336,9 +406,18 @@ def build_version(c, version: str = '', bump: str = ''):
 
     _update_project_version(str(v2))
     print(
-        f'New version is `{v2}`. Modified files have not been commited:\n'
+        f'New version is `{v2}`. Modified files :\n'
         + '\n'.join(f'  {file.relative_to(PROJECT_ROOT)}' for file in VERSION_FILES)
     )
+    if mode == 'nothing':
+        print('Files not committed, PR not created.')
+    if mode in ['commit', 'pr']:
+        print('Commit and push changes.')
+        _commit(f'bump version to {v2}')
+    if mode == 'pr':
+        pr_title = f'Release {v2}'
+        print(f'Create and merge PR `{pr_title}`.')
+        _create_pr(pr_title, f'Preparing for release {v2}')
 
 
 @task(

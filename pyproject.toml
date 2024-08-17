@@ -51,12 +51,15 @@ build-backend = 'flit_core.buildapi'
 
 [project]
 name = 'qt-show-dialog'
-version = '0.3.0'
+version = '0.3.1'
 description = 'Easily show a dialog window for miscellaneous purposes.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
 license = {file = 'LICENSE'}
 dependencies = ['markdown', 'mashumaro', 'pyside6', 'pyyaml']
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+]
 
 [project.urls]
 Home = 'https://github.com/joaonc/show_dialog'
