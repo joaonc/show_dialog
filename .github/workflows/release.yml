@@ -9,6 +9,8 @@
 #
 # At this point, does not add assets to the release.
 # Use the `build-asset` action.
+#
+# Requires the Pypi token in the `PYPI_TOKEN` secret.
 name: Release
 
 on:
@@ -49,7 +51,7 @@ permissions:
   actions: read
 
 jobs:
-  bump-version:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -63,6 +65,11 @@ jobs:
 
       - name: Install requirements
         run: pip install -r requirements-dev.txt
+
+      - name: Set git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Bump version
         env:
