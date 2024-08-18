@@ -6,8 +6,7 @@ from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
 from pytest_params import params
 
-from src.show_dialog import Inputs, ShowDialog
-from src.show_dialog.exit_code import ExitCode
+from src.show_dialog import ExitCode, Inputs, ShowDialog
 from tests.libs import config
 
 
