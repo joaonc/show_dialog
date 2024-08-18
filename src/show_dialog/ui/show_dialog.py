@@ -121,7 +121,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
     def pass_clicked(self):
         # Equivalent to `self.close()` and `self.done(0)`.
         # Using `QApplication.exit(0)` to enable testing exit code.
-        self.app.exit(ExitCode.Success)
+        self.app.exit(ExitCode.Pass)
 
     def fail_clicked(self, exit_code: ExitCode | int):
         self.app.exit(int(exit_code))

@@ -7,7 +7,7 @@ class ExitCode(IntEnum):
     ``0`` represents success, otherwise failure.
     """
 
-    Success = 0
+    Pass = 0
     """
     One of:
 
@@ -23,7 +23,7 @@ class ExitCode(IntEnum):
     """
     One of:
 
-    * Dialog was closed with the ``X`` button
+    * Dialog was closed with the ``X`` button.
     * ``Ctrl+Q`` shortcut was used.
     """
     Timeout = 3

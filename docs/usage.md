@@ -24,10 +24,14 @@ This section applies to both the executable app and the CLI script after pip ins
 **TODO**
 
 ### Exit codes
-| Exit code |                                                    |
-|:---------:|----------------------------------------------------|
-|    `0`    | Pass                                               |
-|    `1`    | Fail. The _Fail_ button was clicked.               |
-|    `2`    | Fail. App was exited in the `X` button.            |
-|    `3`    | Fail. Timeout and input `timeout_pass` is `False`. |
+`0` represents success, otherwise failure.
 
+| Exit code |                                                                                                                                  |
+|:---------:|----------------------------------------------------------------------------------------------------------------------------------|
+|    `0`    | One of:<li>`Pass` button was clicked.<li>Timeout occurred but `timeout_pass` is `True` in inputs.<li>`Ctrl+P` shortcut was used. |
+|    `1`    | `Fail` button was clicked.                                                                                                       |
+|    `2`    | One of:<li>Dialog was closed with the `X` button.<li>`Ctrl+Q` shortcut was used.                                                 |
+|    `3`    | Timeout occurred and `timeout_pass` is `False` in inputs.                                                                        |
+
+These exit codes are represented in the
+[`ExitCode`](https://github.com/joaonc/show_dialog/blob/main/src/show_dialog/exit_code.py) class.
