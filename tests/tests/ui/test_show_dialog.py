@@ -1,12 +1,13 @@
 from unittest.mock import patch
 
 import pytest
-from PySide6 import QtCore
+from PySide6.QtCore import Qt
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
 from pytest_params import params
 
 from src.show_dialog import Inputs, ShowDialog
+from src.show_dialog.exit_code import ExitCode
 from tests.libs import config
 
 
@@ -84,15 +85,32 @@ def test_description_multi_lines(show_dialog: ShowDialog, expected_description: 
 @patch('PySide6.QtWidgets.QApplication.exit')
 def test_pass_clicked(exit_mock, show_dialog: ShowDialog):
     """Clicking PASS button application exits with code 0."""
-    QTest.mouseClick(show_dialog.pass_button, QtCore.Qt.MouseButton.LeftButton)
-    exit_mock.assert_called_once_with(0)
+    QTest.mouseClick(show_dialog.pass_button, Qt.MouseButton.LeftButton)
+    exit_mock.assert_called_once_with(ExitCode.Pass)
 
 
 @patch('PySide6.QtWidgets.QApplication.exit')
 def test_fail_clicked(exit_mock, show_dialog: ShowDialog):
     """Clicking FAIL button application exits with code 1."""
-    QTest.mouseClick(show_dialog.fail_button, QtCore.Qt.MouseButton.LeftButton)
-    exit_mock.assert_called_once_with(1)
+    QTest.mouseClick(show_dialog.fail_button, Qt.MouseButton.LeftButton)
+    exit_mock.assert_called_once_with(ExitCode.Fail)
+
+
+@pytest.mark.skip('Not working.')
+@patch('PySide6.QtWidgets.QApplication.exit')
+def test_pass_shortcut(exit_mock, show_dialog: ShowDialog):
+    # key_event_press = QKeyEvent(
+    #     QKeyEvent.Type.KeyPress, Qt.Key.Key_Q, Qt.KeyboardModifier.ControlModifier
+    # )
+    # key_event_release = QKeyEvent(
+    #     QKeyEvent.Type.KeyRelease, Qt.Key.Key_Q, Qt.KeyboardModifier.ControlModifier
+    # )
+    #
+    # show_dialog.app.postEvent(show_dialog, key_event_press)
+    # show_dialog.app.postEvent(show_dialog, key_event_release)
+
+    QTest.keyClick(show_dialog, Qt.Key.Key_P, Qt.KeyboardModifier.ControlModifier)
+    exit_mock.assert_called_once_with(ExitCode.Pass)
 
 
 @params(
