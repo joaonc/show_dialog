@@ -46,6 +46,22 @@ dependencies).
 
 See the [CLI](#cli) section above for more info. The interface is the same.
 
+#### Pipx
+[Pipx](https://pipx.pypa.io/stable/) installs Python applications globally in an isolated
+environment, meaning the Python app will run as any other app installed in the OS.
+
+To install with pipx (note that pipx needs to be installed first):
+```
+pipx install qt-show-dialog
+```
+To later upgrade to a newer version:
+```
+pipx upgrade qt-show-dialog
+```
+
+The command `show_dialog` will be available in the terminal. See the [CLI](#cli) section above for
+more info.
+
 ### Use case
 #### Testing
 The main use case for which this project was created is to add in manual steps in tests.
