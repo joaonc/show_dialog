@@ -91,6 +91,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install libEGL
+        # Implementation of the EGL (Embedded-Systems Graphics Library) API.
+        # Linux only. No need to install on Windows or Mac.
+        run: |
+          sudo apt-get update -yqq
+          sudo apt-get install -y libegl1-mesa
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

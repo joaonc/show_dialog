@@ -179,9 +179,13 @@ To run the _Build app_ action:
 2. Click _Run workflow_.
 3. Select the tag (version) to build the app(s) for.  
    By default is `main`, which works, but is not what we want as an app may be created with 
-   functionality not in the release if `main` has new commits.  
+   functionality not in the release if `main` has new commits.
+4. Select which OS's to build the apps for.  
+   The apps will be added to the assets in the release corresponding to the tag in the previous
+   step.
+5. Click _Run workflow_.
 
-**TODO: Finish**
+![Build app workflow](images/gh_action_build_app.png)
 
 ## More info
 [Managing releases in a repository](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository).
