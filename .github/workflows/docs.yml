@@ -1,4 +1,5 @@
-name: Deploy GitHub Pages
+# Deploy documentation to GitHub Pages
+name: Deploy documentation
 
 on:
   push:
