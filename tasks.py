@@ -45,7 +45,7 @@ This version needs to be updated with each release.
 
 UI_FILES = tuple((ASSETS_DIR / 'ui').glob("**/*.ui"))
 """
-QT ``.ui`` files.
+Qt ``.ui`` files.
 """
 
 QRC_FILES = tuple(ASSETS_DIR.glob("**/*.qrc"))
