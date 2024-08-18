@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
 
+from ..exit_code import ExitCode
 from ..inputs import Inputs
 from ..utils_qt import set_layout_visibility
 from .forms.ui_show_dialog import Ui_ShowDialog
@@ -74,9 +75,9 @@ class ShowDialog(QDialog, Ui_ShowDialog):
 
         # UI bindings
         self.pass_button.clicked.connect(self.pass_clicked)
-        self.fail_button.clicked.connect(self.fail_clicked)
+        self.fail_button.clicked.connect(lambda: self.fail_clicked(ExitCode.Fail))
         self.exit_shortcut = QShortcut(QKeySequence('Ctrl+Q'), self)
-        self.exit_shortcut.activated.connect(self.fail_clicked)
+        self.exit_shortcut.activated.connect(lambda: self.fail_clicked(ExitCode.Cancel))
         self.pass_shortcut = QShortcut(QKeySequence('Ctrl+P'), self)
         self.pass_shortcut.activated.connect(self.pass_clicked)
         self.timeout_shortcut = QShortcut(QKeySequence('+'), self)
@@ -90,7 +91,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         """
         When closing the app (``X`` button), mark as fail instead of pass.
         """
-        self.fail_clicked()
+        self.fail_clicked(ExitCode.Cancel)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
@@ -108,7 +109,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             if self.inputs.timeout_pass:
                 self.pass_clicked()
             else:
-                self.fail_clicked()
+                self.fail_clicked(ExitCode.Timeout)
 
     def timeout_increase_clicked(self):
         timeout_increase = 10
@@ -120,7 +121,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
     def pass_clicked(self):
         # Equivalent to `self.close()` and `self.done(0)`.
         # Using `QApplication.exit(0)` to enable testing exit code.
-        self.app.exit(0)
+        self.app.exit(ExitCode.Pass)
 
-    def fail_clicked(self):
-        self.app.exit(1)
+    def fail_clicked(self, exit_code: ExitCode | int):
+        self.app.exit(int(exit_code))
