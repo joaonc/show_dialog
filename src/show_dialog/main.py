@@ -2,27 +2,50 @@ import logging
 import pprint
 import sys
 import types
+from typing import Literal
 
 from PySide6.QtWidgets import QApplication
 
 from . import config
+from .exit_code import ExitCode
 from .inputs import Inputs
 from .ui.show_dialog import ShowDialog
 from .utils_qt import list_resources, read_file
 
 
-def show_dialog(inputs: Inputs, stylesheet: str = config.DEFAULT_STYLE):
+def show_dialog(
+    inputs: Inputs,
+    stylesheet: str = config.DEFAULT_STYLE,
+    mode: Literal['exit', 'raise', 'return'] = 'exit',
+) -> ExitCode:
     """
     Create an instance of ``ShowDialog`` and show it.
+
+    :param inputs: Inputs to the dialog.
+    :param stylesheet: Stylesheet to be used. This is the whole stylesheet as a string, not a path
+        to a stylesheet file.
+    :param mode: One of:
+        * ``exit``: Exit with ``sys.exit(code)``.
+        * ``raise``: Raise a ``ValueError`` exception if there was an error.
+        * ``return``: Return an ``ExitCode``, regardless of whether there was an error.
     """
 
     app = QApplication()
     window = ShowDialog(app, inputs, stylesheet)
     window.show()
     app_response = app.exec()
-    if app_response != 0:
-        logging.error(f'An error occurred. Exiting with status {app_response}.')
-        sys.exit(app_response)
+    exit_code = ExitCode(app_response)
+
+    if exit_code is not ExitCode.Pass:
+        msg = f'Error: {exit_code} - {exit_code.name}'
+        if mode == 'raise':
+            raise ValueError(msg)
+        logging.error(msg)
+
+    if mode == 'exit':
+        sys.exit(exit_code)
+
+    return exit_code
 
 
 def _parse_args():
