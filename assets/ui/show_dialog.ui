@@ -12,7 +12,9 @@
   </property>
   <property name="font">
    <font>
+    <family>Arial</family>
     <pointsize>50</pointsize>
+    <kerning>true</kerning>
    </font>
   </property>
   <property name="windowTitle">
@@ -43,7 +45,9 @@
     <widget class="QLabel" name="description_label">
      <property name="font">
       <font>
+       <family>Arial</family>
        <pointsize>20</pointsize>
+       <kerning>true</kerning>
       </font>
      </property>
      <property name="text">
@@ -70,7 +74,7 @@ multiline</string>
        </property>
        <property name="font">
         <font>
-         <family>Consolas</family>
+         <family>Arial</family>
          <pointsize>20</pointsize>
          <bold>false</bold>
          <kerning>true</kerning>
@@ -94,7 +98,9 @@ multiline</string>
        </property>
        <property name="font">
         <font>
+         <family>Arial</family>
          <pointsize>30</pointsize>
+         <kerning>true</kerning>
         </font>
        </property>
        <property name="text">
