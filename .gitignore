@@ -91,3 +91,4 @@ dmypy.json
 # Misc
 .DS_Store
 release-notes.md
+release_notes.md
