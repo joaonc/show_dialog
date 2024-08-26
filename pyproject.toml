@@ -8,8 +8,8 @@ exclude='''
 (
     src/show_dialog/ui/forms
   | tests/libs/resources_rc\.py
-  | \.venv.*
-  | \venv.*
+  | .venv.*
+  | venv.*
 )
 '''
 
