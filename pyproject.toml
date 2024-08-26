@@ -52,7 +52,7 @@ build-backend = 'flit_core.buildapi'
 
 [project]
 name = 'qt-show-dialog'
-version = '0.6.1'
+version = '0.7.0'
 description = 'Easily show a dialog window for miscellaneous purposes.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
