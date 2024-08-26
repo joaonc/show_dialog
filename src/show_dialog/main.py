@@ -15,6 +15,7 @@ def show_dialog(inputs: Inputs, stylesheet: str = config.DEFAULT_STYLE):
     """
     Create an instance of ``ShowDialog`` and show it.
     """
+
     app = QApplication()
     window = ShowDialog(app, inputs, stylesheet)
     window.show()
