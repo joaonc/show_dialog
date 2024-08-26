@@ -15,12 +15,8 @@ def show_dialog(inputs: Inputs, stylesheet: str = config.DEFAULT_STYLE):
     """
     Create an instance of ``ShowDialog`` and show it.
     """
-    import qdarkstyle
-    from qdarkstyle.light.palette import LightPalette
 
     app = QApplication()
-    stylesheet = qdarkstyle.load_stylesheet(palette=LightPalette)
-    app.setStyleSheet(stylesheet)
     window = ShowDialog(app, inputs, stylesheet)
     window.show()
     app_response = app.exec()

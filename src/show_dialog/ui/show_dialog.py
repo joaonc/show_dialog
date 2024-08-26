@@ -1,9 +1,11 @@
 import logging
 
 import markdown
+import qdarkstyle
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
+from qdarkstyle.light.palette import LightPalette
 
 from ..exit_code import ExitCode
 from ..inputs import Inputs
@@ -70,8 +72,11 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         else:
             set_layout_visibility(self.timeout_h_layout, False)
 
+        stylesheet_app = qdarkstyle.load_stylesheet(palette=LightPalette)
         if self.stylesheet:
-            self.app.setStyleSheet(self.stylesheet)
+            # Combine the two stylesheets
+            stylesheet_app += self.stylesheet
+        self.app.setStyleSheet(stylesheet_app)
 
         # UI bindings
         self.pass_button.clicked.connect(self.pass_clicked)

@@ -39,7 +39,7 @@ disable_error_code = 'annotation-unchecked'
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
-module = ['invoke', 'pytest_params', 'semantic_version', 'PySide6']
+module = ['invoke', 'pytest_params', 'qdarkstyle.*', 'semantic_version', 'PySide6']
 
 [tool.pytest.ini_options]
 markers = ['pri_1', 'flaky', 'nightly', 'performance', 'manual']
