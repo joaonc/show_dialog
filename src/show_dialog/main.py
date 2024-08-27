@@ -30,7 +30,7 @@ def show_dialog(
         * ``return``: Return an ``ExitCode``, regardless of whether there was an error.
     """
 
-    app = QApplication.instance()
+    app: QApplication = QApplication.instance()  # type: ignore
     if not app:
         app = QApplication()
     window = ShowDialog(app, inputs, stylesheet)
