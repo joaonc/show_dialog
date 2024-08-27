@@ -59,6 +59,13 @@ class Buttons(str, Enum):
     Text can be modified with the input options ``pass_button_text`` and ``fail_button_text``.
     """
 
+class Theme(str, Enum):
+    Light = 'Light'
+    """A light theme is applied."""
+    Dark = 'Dark'
+    """A dark theme is applied."""
+    System = 'System'
+    """No theme is applied and uses the system theme."""
 
 class JSONFileMixin(DataClassJSONMixin):
     """
@@ -184,4 +191,12 @@ class Inputs(JSONFileMixin, DefaultsMixin):
     Set the icon for the _Fail_ button.
 
     Can be a resource path, relative path or absolute path. See examples under ``assets/inputs``.
+    """
+    theme: Theme = Theme.Light
+    """
+    Theme to be applied.
+
+    This theme is a style and can be overridden with styling options.
+
+    See the ``Theme`` class for available options.
     """

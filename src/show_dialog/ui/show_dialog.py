@@ -6,9 +6,10 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
 from qdarkstyle.light.palette import LightPalette
+from qdarkstyle.dark.palette import DarkPalette
 
 from ..exit_code import ExitCode
-from ..inputs import Buttons, Inputs
+from ..inputs import Buttons, Inputs, Theme
 from ..utils_qt import set_layout_visibility
 from .forms.ui_show_dialog import Ui_ShowDialog
 
@@ -91,7 +92,11 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             set_layout_visibility(self.timeout_h_layout, False)
 
         # Stylesheet
-        stylesheet_app = qdarkstyle.load_stylesheet(palette=LightPalette)
+        stylesheet_app = {
+            Theme.Light: qdarkstyle.load_stylesheet(palette=LightPalette),
+            Theme.Dark: qdarkstyle.load_stylesheet(palette=DarkPalette),
+            Theme.System: '',
+        }[inputs.theme]
         if self.stylesheet:
             # Combine the two stylesheets
             stylesheet_app += self.stylesheet + local_stylesheet
