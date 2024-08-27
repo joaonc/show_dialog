@@ -30,6 +30,30 @@ class DataFileType(Enum):
         return file_type
 
 
+class Buttons(str, Enum):
+    """Buttons displayed in the dialog."""
+
+    OK = 'Ok'
+    """
+    Show only an OK button.
+
+    * If ``pass_button_text`` is not specified, the text will be ``'Ok'``.
+    * If ``pass_button_icon`` is not specified, no icon will be shown.
+    """
+    PASS_FAIL = 'Pass/Fail'
+    """
+    Pass/Fail buttons.
+
+    Text can be modified with the input options ``pass_button_text`` and ``fail_button_text``.
+    """
+    OK_CANCEL = 'Ok/Cancel'
+    """
+    Ok/Cancel buttons.
+
+    Text can be modified with the input options ``pass_button_text`` and ``fail_button_text``.
+    """
+
+
 class JSONFileMixin(DataClassJSONMixin):
     """
     Adds the ability to load from file and save to file.
@@ -134,6 +158,12 @@ class Inputs(JSONFileMixin, DefaultsMixin):
 
     * ``'%p%'`` to show percentage completed, ex '15%'
     * ``'%vs'`` to show the number of seconds elapsed, ex '15s'
+    """
+    buttons: Buttons = Buttons.PASS_FAIL
+    """
+    Set the buttons displayed.
+
+    See the ``Buttons`` class for available options.
     """
     pass_button_text: str = ''
     pass_button_icon: str = ''

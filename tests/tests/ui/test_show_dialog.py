@@ -6,7 +6,7 @@ from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
 from pytest_params import params
 
-from src.show_dialog import ExitCode, Inputs, ShowDialog
+from src.show_dialog import Buttons, ExitCode, Inputs, ShowDialog
 from tests.libs import config
 
 
@@ -126,6 +126,39 @@ def test_pass_shortcut(exit_mock, show_dialog: ShowDialog):
 def test_pass_fail_buttons_text(show_dialog: ShowDialog, expected_pass_fail_text: tuple[str, str]):
     assert show_dialog.pass_button.text() == expected_pass_fail_text[0]
     assert show_dialog.fail_button.text() == expected_pass_fail_text[1]
+
+
+@params(
+    'show_dialog, expected_button_text',
+    [
+        ('default text', Inputs(buttons=Buttons.OK), 'Ok'),
+        ('custom text', Inputs(buttons=Buttons.OK, pass_button_text='Foo'), 'Foo'),
+    ],
+    indirect=['show_dialog'],
+)
+def test_ok_button(show_dialog: ShowDialog, expected_button_text: str):
+    assert not show_dialog.fail_button.isVisible()
+    assert show_dialog.pass_button.text() == expected_button_text
+
+
+@params(
+    'show_dialog, expected_pass_button_text, expected_fail_button_text',
+    [
+        ('default text', Inputs(buttons=Buttons.OK_CANCEL), 'Ok', 'Cancel'),
+        (
+            'custom text',
+            Inputs(buttons=Buttons.OK_CANCEL, pass_button_text='Foo', fail_button_text='Bar'),
+            'Foo',
+            'Bar',
+        ),
+    ],
+    indirect=['show_dialog'],
+)
+def test_ok_cancel_button(
+    show_dialog: ShowDialog, expected_pass_button_text: str, expected_fail_button_text: str
+):
+    assert show_dialog.pass_button.text() == expected_pass_button_text
+    assert show_dialog.fail_button.text() == expected_fail_button_text
 
 
 @params(

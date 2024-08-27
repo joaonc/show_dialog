@@ -21,7 +21,8 @@ description: |
         </style>
     </head>
     <body>
-        <p>This is <span class="strike">trike through and red</span> text.</p>
+        <p>This is <span class="strike">strike through and red</span> text.</p>
         <p>This is <span class="highlight">highlighted</span> text.</p>
     </body>
     </html>
+buttons: Ok/Cancel

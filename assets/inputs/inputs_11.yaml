@@ -5,6 +5,6 @@ description: |
     This dialog has a timeout,
     after which it is dismissed
     and returns an error code.
-timeout: 10
+timeout: 20
 timeout_pass: false
 timeout_text: '%v'
