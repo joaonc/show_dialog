@@ -1,5 +1,5 @@
 from .exit_code import ExitCode
-from .inputs import Buttons, DataFileType, Inputs
+from .inputs import Buttons, DataFileType, Inputs, Theme
 from .main import main, show_dialog
 from .style import Style
 from .ui.show_dialog import ShowDialog
@@ -13,6 +13,7 @@ __all__ = [
     'Inputs',
     'ShowDialog',
     'Style',
+    'Theme',
     'main',
     'show_dialog',
 ]

@@ -59,6 +59,7 @@ class Buttons(str, Enum):
     Text can be modified with the input options ``pass_button_text`` and ``fail_button_text``.
     """
 
+
 class Theme(str, Enum):
     Light = 'Light'
     """A light theme is applied."""
@@ -66,6 +67,7 @@ class Theme(str, Enum):
     """A dark theme is applied."""
     System = 'System'
     """No theme is applied and uses the system theme."""
+
 
 class JSONFileMixin(DataClassJSONMixin):
     """

@@ -5,8 +5,8 @@ import qdarkstyle
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon, QKeySequence, QShortcut
 from PySide6.QtWidgets import QApplication, QDialog
-from qdarkstyle.light.palette import LightPalette
 from qdarkstyle.dark.palette import DarkPalette
+from qdarkstyle.light.palette import LightPalette
 
 from ..exit_code import ExitCode
 from ..inputs import Buttons, Inputs, Theme
