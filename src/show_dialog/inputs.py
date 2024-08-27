@@ -52,6 +52,12 @@ class Buttons(str, Enum):
 
     Text can be modified with the input options ``pass_button_text`` and ``fail_button_text``.
     """
+    YES_NO = 'Yes/No'
+    """
+    Yes/No buttons.
+
+    Text can be modified with the input options ``pass_button_text`` and ``fail_button_text``.
+    """
 
 
 class JSONFileMixin(DataClassJSONMixin):

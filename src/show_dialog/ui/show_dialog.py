@@ -48,8 +48,8 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             self.pass_button.setText(Buttons.OK)
             self.pass_button.setIcon(QIcon())
             local_stylesheet += 'QPushButton#pass_button { color : black; }'
-        elif inputs.buttons == Buttons.OK_CANCEL:
-            pass_text, fail_text = Buttons.OK_CANCEL.split('/')
+        else:
+            pass_text, fail_text = inputs.buttons.split('/')
             self.pass_button.setText(pass_text)
             self.fail_button.setText(fail_text)
 

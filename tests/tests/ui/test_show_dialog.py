@@ -144,7 +144,10 @@ def test_ok_button(show_dialog: ShowDialog, expected_button_text: str):
 @params(
     'show_dialog, expected_pass_button_text, expected_fail_button_text',
     [
-        ('default text', Inputs(buttons=Buttons.OK_CANCEL), 'Ok', 'Cancel'),
+        ('defaults', Inputs(), 'Pass', 'Fail'),
+        ('ok cancel', Inputs(buttons=Buttons.OK_CANCEL), 'Ok', 'Cancel'),
+        ('pass fail', Inputs(buttons=Buttons.PASS_FAIL), 'Pass', 'Fail'),
+        ('yes no', Inputs(buttons=Buttons.YES_NO), 'Yes', 'No'),
         (
             'custom text',
             Inputs(buttons=Buttons.OK_CANCEL, pass_button_text='Foo', fail_button_text='Bar'),
@@ -154,7 +157,7 @@ def test_ok_button(show_dialog: ShowDialog, expected_button_text: str):
     ],
     indirect=['show_dialog'],
 )
-def test_ok_cancel_button(
+def test_two_buttons(
     show_dialog: ShowDialog, expected_pass_button_text: str, expected_fail_button_text: str
 ):
     assert show_dialog.pass_button.text() == expected_pass_button_text
