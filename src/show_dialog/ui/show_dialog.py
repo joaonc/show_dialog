@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QApplication, QDialog
 from qdarkstyle.light.palette import LightPalette
 
 from ..exit_code import ExitCode
-from ..inputs import Inputs
+from ..inputs import Buttons, Inputs
 from ..utils_qt import set_layout_visibility
 from .forms.ui_show_dialog import Ui_ShowDialog
 
@@ -28,6 +28,9 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.timer = None
 
         # UI adjustments
+        local_stylesheet = ''
+        """Stylesheet modifications that depend on inputs."""
+
         self.title_label.setText(self.inputs.title)
         if self.inputs.description_md:
             description = markdown.markdown(self.inputs.description)
@@ -37,6 +40,15 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.description_label.setText(description)
         if self.inputs.dialog_title:
             self.setWindowTitle(self.inputs.dialog_title)
+
+        # Buttons
+        if inputs.buttons == Buttons.OK:
+            # These settings may be overridden further below from `inputs`
+            self.fail_button.setVisible(False)
+            self.pass_button.setText('Ok')
+            self.pass_button.setIcon(QIcon.fromTheme(QIcon.ThemeIcon.InputGaming))
+            local_stylesheet += 'QPushButton#pass_button { color : black; }'
+
         if self.inputs.pass_button_text:
             self.pass_button.setText(self.inputs.pass_button_text)
         if self.inputs.pass_button_icon:
@@ -55,6 +67,8 @@ class ShowDialog(QDialog, Ui_ShowDialog):
                     f'Icon image for FAIL button not found: {self.inputs.fail_button_icon}'
                 )
             self.fail_button.setIcon(icon)
+
+        # Timeout
         if self.inputs.timeout:
             self.timeout_increase_button.setIconSize(self.timeout_increase_button.size())
             self.timeout_increase_button.clicked.connect(self.timeout_increase_clicked)
@@ -72,10 +86,11 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         else:
             set_layout_visibility(self.timeout_h_layout, False)
 
+        # Stylesheet
         stylesheet_app = qdarkstyle.load_stylesheet(palette=LightPalette)
         if self.stylesheet:
             # Combine the two stylesheets
-            stylesheet_app += self.stylesheet
+            stylesheet_app += self.stylesheet + local_stylesheet
         self.app.setStyleSheet(stylesheet_app)
 
         # UI bindings
