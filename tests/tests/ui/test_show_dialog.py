@@ -142,6 +142,26 @@ def test_ok_button(show_dialog: ShowDialog, expected_button_text: str):
 
 
 @params(
+    'show_dialog, expected_pass_button_text, expected_fail_button_text',
+    [
+        ('default text', Inputs(buttons=Buttons.OK_CANCEL), 'Ok', 'Cancel'),
+        (
+            'custom text',
+            Inputs(buttons=Buttons.OK_CANCEL, pass_button_text='Foo', fail_button_text='Bar'),
+            'Foo',
+            'Bar',
+        ),
+    ],
+    indirect=['show_dialog'],
+)
+def test_ok_cancel_button(
+    show_dialog: ShowDialog, expected_pass_button_text: str, expected_fail_button_text: str
+):
+    assert show_dialog.pass_button.text() == expected_pass_button_text
+    assert show_dialog.fail_button.text() == expected_fail_button_text
+
+
+@params(
     'show_dialog',
     [
         ('no timeout - default', Inputs()),

@@ -45,9 +45,13 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         if inputs.buttons == Buttons.OK:
             # These settings may be overridden further below from `inputs`
             self.fail_button.setVisible(False)
-            self.pass_button.setText('Ok')
-            self.pass_button.setIcon(QIcon.fromTheme(QIcon.ThemeIcon.InputGaming))
+            self.pass_button.setText(Buttons.OK)
+            self.pass_button.setIcon(QIcon())
             local_stylesheet += 'QPushButton#pass_button { color : black; }'
+        elif inputs.buttons == Buttons.OK_CANCEL:
+            pass_text, fail_text = Buttons.OK_CANCEL.split('/')
+            self.pass_button.setText(pass_text)
+            self.fail_button.setText(fail_text)
 
         if self.inputs.pass_button_text:
             self.pass_button.setText(self.inputs.pass_button_text)

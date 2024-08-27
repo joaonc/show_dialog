@@ -25,4 +25,4 @@ description: |
         <p>This is <span class="highlight">highlighted</span> text.</p>
     </body>
     </html>
-buttons: Ok
+buttons: Ok/Cancel

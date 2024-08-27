@@ -37,11 +37,18 @@ class Buttons(str, Enum):
     """
     Show only an OK button.
 
-    If the input option ``pass_button_text`` is not specified, the text will be ``'Ok'``.
+    * If ``pass_button_text`` is not specified, the text will be ``'Ok'``.
+    * If ``pass_button_icon`` is not specified, no icon will be shown.
     """
     PASS_FAIL = 'Pass/Fail'
     """
     Pass/Fail buttons.
+
+    Text can be modified with the input options ``pass_button_text`` and ``fail_button_text``.
+    """
+    OK_CANCEL = 'Ok/Cancel'
+    """
+    Ok/Cancel buttons.
 
     Text can be modified with the input options ``pass_button_text`` and ``fail_button_text``.
     """
