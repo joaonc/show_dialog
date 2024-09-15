@@ -1,14 +1,18 @@
 import logging
 import selectors
 import socket
+from typing import Callable
 
 from .ipc_params import IpcParams
+from .message import Message, MessageType
 
 
 class IpcServer:
-    def __init__(self, params: IpcParams):
+    def __init__(self, params: IpcParams, process: Callable[[Message], bool]):
         self.params = params
+        self.process = process
         self.sel = selectors.DefaultSelector()
+        self.loop = True
 
     def start(self):
         # Create a TCP socket
@@ -24,7 +28,7 @@ class IpcServer:
 
         # Event loop
         try:
-            while True:
+            while self.loop:
                 logging.debug('Server loop.')
                 events = self.sel.select(timeout=self.params.timeout)
                 if not events:  # `events == []`
@@ -38,6 +42,10 @@ class IpcServer:
             logging.debug('Server is closing.')
             self.sel.close()
 
+    def stop(self):
+        logging.debug('Server is stopping.')
+        self.loop = False
+
     def accept(self, sock):
         """Callback function to handle incoming connections."""
         conn, addr = sock.accept()  # Accept the connection
@@ -50,11 +58,20 @@ class IpcServer:
         try:
             data = conn.recv(self.params.buffer_size)  # Receive data from the client
             if data:
-                logging.debug(f'Server received: {data.decode()}')
-                conn.sendall(f'Server received: {data.decode()}'.encode())
+                data_str = data.decode()
+                logging.debug(f'Server received: {data_str}')
+                message = Message.from_json(data.decode())
+                self.send(conn, Message(MessageType.ACK))
+                result = self.process(message)
+                if not result:
+                    self.stop()
             else:
                 logging.debug('Server closing connection.')
+                self.send(conn, Message(MessageType.TIMEOUT))
                 self.sel.unregister(conn)
                 conn.close()
         except BlockingIOError:
             pass  # Non-blocking, continue if there's no data
+
+    def send(self, conn, message: Message):
+        conn.sendall(message.to_json().encode())

@@ -129,11 +129,3 @@ class Inputs(JSONFileMixin, DefaultsMixin):
 
     See the ``Theme`` class for available options.
     """
-
-    start_server: bool = False
-    """
-    Whether to start the server for Inter-Process Communication.
-
-    This will allow the dialog to receive commands from the same or different processes.
-    Uses socket primitives.
-    """

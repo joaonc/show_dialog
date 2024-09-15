@@ -10,6 +10,9 @@ from qdarkstyle.light.palette import LightPalette
 
 from ..exit_code import ExitCode
 from ..inputs import Buttons, Inputs, Theme
+from ..ipc.ipc_params import IpcParams
+from ..ipc.message import Message, MessageType
+from ..ipc.server import IpcServer
 from ..utils_qt import set_layout_visibility
 from .forms.ui_show_dialog import Ui_ShowDialog
 
@@ -20,12 +23,14 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         app: QApplication,
         inputs: Inputs,
         stylesheet: str | None = None,
+        ipc_params: IpcParams | None = None,
     ):
         super().__init__()
         self.app = app
         self.stylesheet = stylesheet
         self.setupUi(self)
         self.inputs = inputs
+        self.ipc_params = ipc_params
         self.timer = None
 
         # UI adjustments
@@ -112,6 +117,23 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.timeout_shortcut = QShortcut(QKeySequence('+'), self)
         self.timeout_shortcut.activated.connect(self.timeout_increase_clicked)
 
+        # Inter-Process Communication server
+        self.ipc_server = None
+        if self.ipc_params is not None:
+            self.ipc_server = IpcServer(self.ipc_params, self.process_ipc_message)
+            self.ipc_server.start()
+
+    def process_ipc_message(self, message:Message) -> bool:
+        if message.type is MessageType.TIMEOUT:
+            self.timeout()
+            return False
+        elif message.type is MessageType.PASS:
+            self.pass_clicked()
+            return False
+        elif message.type is MessageType.FAIL:
+            self.fail_clicked(ExitCode.Timeout)
+            return False
+
     def resizeEvent(self, event):
         self.pass_button.setIconSize(self.pass_button.size())
         self.fail_button.setIconSize(self.fail_button.size())
@@ -130,15 +152,19 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         else:
             super().keyPressEvent(event)
 
+    def timeout(self):
+        """Timeout occurred. Process it."""
+        logging.debug('Timeout.')
+        if self.inputs.timeout_pass:
+            self.pass_clicked()
+        else:
+            self.fail_clicked(ExitCode.Timeout)
+
     def timer_timeout(self):
         new_value = self.timeout_progress_bar.value() - self.timer.interval() / 1000
         self.timeout_progress_bar.setValue(new_value)
         if new_value <= 0:
-            logging.debug('Timeout.')
-            if self.inputs.timeout_pass:
-                self.pass_clicked()
-            else:
-                self.fail_clicked(ExitCode.Timeout)
+            self.timeout()
 
     def timeout_increase_clicked(self):
         timeout_increase = 10
