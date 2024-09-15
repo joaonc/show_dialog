@@ -145,9 +145,9 @@ class ShowDialog(QDialog, Ui_ShowDialog):
     def exit(self, exit_code: ExitCode):
         if self.ipc_server:
             self.ipc_server.stop()
-            timeout = 3
+            timeout = 3.0
             timeout_step = 0.3
-            while self.ipc_thread.is_alive():
+            while self.ipc_thread.is_alive():  # type: ignore
                 time.sleep(timeout_step)
                 timeout -= timeout_step
                 if timeout <= 0:

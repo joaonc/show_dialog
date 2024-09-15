@@ -2,8 +2,7 @@ import json
 
 from pytest_params import params
 
-from show_dialog.ipc.message import MessageId
-from src.show_dialog.ipc.message import Message, MessageType
+from src.show_dialog.ipc.message import Message, MessageId, MessageType
 
 
 @params(
