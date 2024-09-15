@@ -43,7 +43,7 @@ class Theme(str, Enum):
     """No theme is applied and uses the system theme."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class Inputs(JSONFileMixin, DefaultsMixin):
     """
     Inputs to the app.
