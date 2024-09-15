@@ -5,6 +5,7 @@ nav:
       - Introduction: index.md
       - Usage: usage.md
       - Inputs: inputs.md
+      - IPC: ipc.md
       - Development: development.md
 
 theme:

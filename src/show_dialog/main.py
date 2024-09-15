@@ -82,6 +82,13 @@ def _parse_args():
         f'{", ".join("`"+file+"`" for file in list_resources(":/stylesheets"))}',
     )
     parser.add_argument(
+        '--ipc',
+        type=str,
+        help='Inter-Process Communication parameters in the form of a JSON string that maps to the '
+        '`IpcParams` class.\nIf specified, this process will start listening to the host:port '
+        'specified for messages and respond to them. This can come from a different process.',
+    )
+    parser.add_argument(
         '--log-level',
         # Can use `logging.getLevelNamesMapping()` instead of `_nameToLevel` on python 3.11+
         choices=[level.lower() for level in logging._nameToLevel],  # noqa
