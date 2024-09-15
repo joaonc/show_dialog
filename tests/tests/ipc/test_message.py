@@ -1,5 +1,8 @@
+import json
+
 from pytest_params import params
 
+from show_dialog.ipc.message import MessageId
 from src.show_dialog.ipc.message import Message, MessageType
 
 
@@ -26,5 +29,21 @@ from src.show_dialog.ipc.message import Message, MessageType
     ),
 )
 def test_to_json(message, expected):
+    """
+    Verify the ``to_json()`` method.
+    ``id`` is not compared.
+    """
     message_json = message.to_json()
-    assert message_json == expected
+    message_dict = json.loads(message_json)
+    del message_dict['id']
+    message_json_no_id = json.dumps(message_dict)
+    assert message_json_no_id == expected
+
+
+def test_to_json_with_id():
+    message_id = MessageId()
+    message = Message(MessageType.ACK, message='foo', data={'bar': 0}, id=message_id)
+    assert (
+        message.to_json()
+        == f'{{"type": "ack", "message": "foo", "data": {{"bar": 0}}, "id": "{message_id}"}}'
+    )

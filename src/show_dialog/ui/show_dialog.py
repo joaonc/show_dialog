@@ -1,5 +1,6 @@
 import logging
 import threading
+import time
 
 import markdown
 import qdarkstyle
@@ -121,12 +122,13 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.timeout_shortcut.activated.connect(self.timeout_increase_clicked)
 
         # Inter-Process Communication server
-        self.ipc_server = None
+        self.ipc_server = self.ipc_thread = None
         if self.ipc_params is not None:
             self.ipc_server = IpcServer(self.ipc_params, self.process_ipc_message)
-            thread = threading.Thread(target=self.ipc_server.start, name='show_dialog_ipc_server')
-            # self.ipc_server.start()
-            thread.start()
+            self.ipc_thread = threading.Thread(
+                target=self.ipc_server.start, name='show_dialog_ipc_server'
+            )
+            self.ipc_thread.start()
 
     def process_ipc_message(self, message: Message) -> bool:
         if message.type is MessageType.TIMEOUT:
@@ -139,6 +141,21 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             self.fail_clicked(ExitCode.Timeout)
             return False
         return True
+
+    def exit(self, exit_code: ExitCode):
+        if self.ipc_server:
+            self.ipc_server.stop()
+            timeout = 3
+            timeout_step = 0.3
+            while self.ipc_thread.is_alive():
+                time.sleep(timeout_step)
+                timeout -= timeout_step
+                if timeout <= 0:
+                    raise ValueError('Error stopping IPC server.')
+            logging.debug('IPC server sopped successfully.')
+
+        logging.debug(f'Exiting with code {exit_code.value}: {exit_code.name}.')
+        self.app.exit(int(exit_code))
 
     def resizeEvent(self, event):
         self.pass_button.setIconSize(self.pass_button.size())
@@ -182,7 +199,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
     def pass_clicked(self):
         # Equivalent to `self.close()` and `self.done(0)`.
         # Using `QApplication.exit(0)` to enable testing exit code.
-        self.app.exit(ExitCode.Pass)
+        self.exit(ExitCode.Pass)
 
-    def fail_clicked(self, exit_code: ExitCode | int):
-        self.app.exit(int(exit_code))
+    def fail_clicked(self, exit_code: ExitCode):
+        self.exit(exit_code)
