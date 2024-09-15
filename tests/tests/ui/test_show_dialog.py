@@ -4,9 +4,12 @@ import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
-from pytest_params import params, get_request_param
+from pytest_params import get_request_param, params
 
 from src.show_dialog import Buttons, ExitCode, Inputs, ShowDialog
+from src.show_dialog.ipc.client import IpcClient
+from src.show_dialog.ipc.ipc_params import IpcParams
+from src.show_dialog.ipc.message import Message, MessageType
 from tests.libs import config
 
 
@@ -19,13 +22,16 @@ def app():
 @pytest.fixture
 def show_dialog(request, app, qtbot):
     inputs = get_request_param(request, 'inputs', Inputs())
-    dialog = ShowDialog(app, inputs)
+    ipc_params = get_request_param(request, 'ipc_params')
+    dialog = ShowDialog(app, inputs, ipc_params=ipc_params)
     qtbot.addWidget(dialog)
 
     yield dialog
 
 
-@params('show_dialog', [('dialog title', {'inputs': Inputs(dialog_title='foo bar')})], indirect=True)
+@params(
+    'show_dialog', [('dialog title', {'inputs': Inputs(dialog_title='foo bar')})], indirect=True
+)
 def test_dialog_title(show_dialog: ShowDialog):
     assert show_dialog.windowTitle() == 'foo bar'
 
@@ -35,7 +41,11 @@ def test_title(show_dialog: ShowDialog):
     assert show_dialog.title_label.text() == 'foo bar'
 
 
-@params('show_dialog', [('simple description', {'inputs': Inputs(description='foo bar')})], indirect=True)
+@params(
+    'show_dialog',
+    [('simple description', {'inputs': Inputs(description='foo bar')})],
+    indirect=True,
+)
 def test_description(show_dialog: ShowDialog):
     assert show_dialog.description_label.text() == 'foo bar'
 
@@ -43,7 +53,10 @@ def test_description(show_dialog: ShowDialog):
 @params(
     'show_dialog',
     [
-        ('markdown description', {'inputs': Inputs(description='# Title\ntext', description_md=True)}),
+        (
+            'markdown description',
+            {'inputs': Inputs(description='# Title\ntext', description_md=True)},
+        ),
     ],
     indirect=True,
 )
@@ -150,7 +163,11 @@ def test_ok_button(show_dialog: ShowDialog, expected_button_text: str):
         ('yes no', {'inputs': Inputs(buttons=Buttons.YES_NO)}, 'Yes', 'No'),
         (
             'custom text',
-            {'inputs': Inputs(buttons=Buttons.OK_CANCEL, pass_button_text='Foo', fail_button_text='Bar')},
+            {
+                'inputs': Inputs(
+                    buttons=Buttons.OK_CANCEL, pass_button_text='Foo', fail_button_text='Bar'
+                )
+            },
             'Foo',
             'Bar',
         ),
@@ -176,3 +193,22 @@ def test_timeout_no_timeout(show_dialog: ShowDialog):
     """Timeout UI should not appear if there's no timeout."""
     assert not show_dialog.timeout_progress_bar.isVisible()
     assert not show_dialog.timeout_increase_button.isVisible()
+
+
+@params(
+    'show_dialog',
+    [
+        (
+            'ipc server',
+            {
+                'inputs': Inputs(title='ipc'),
+                'ipc_params': IpcParams(host='localhost', port=12345, timeout=5),
+            },
+        )
+    ],
+    indirect=True,
+)
+def test_ipc(show_dialog: ShowDialog):
+    client = IpcClient(show_dialog.ipc_params)  # type: ignore
+    client.send(Message(MessageType.PASS))
+    assert False, 'ZZZZ'

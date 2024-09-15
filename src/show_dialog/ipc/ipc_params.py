@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from ..data_class import DefaultsMixin, JSONFileMixin
 
 
-@dataclass
+@dataclass(frozen=True)
 class IpcParams(JSONFileMixin, DefaultsMixin):
     """
     Inter-Process Communication parameters.

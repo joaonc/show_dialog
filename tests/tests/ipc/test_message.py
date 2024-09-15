@@ -1,4 +1,4 @@
-from show_dialog.ipc.message import Message, MessageType
+from src.show_dialog.ipc.message import Message, MessageType
 
 
 def test_to_json():

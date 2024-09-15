@@ -33,9 +33,12 @@ class IpcServer:
                 events = self.sel.select(timeout=self.params.timeout)
                 if not events:  # `events == []`
                     logging.warning('Server timeout.')
+                    self.stop()
                 for key, mask in events:
                     callback = key.data  # Get the callback function (`accept` or `read`)
                     callback(key.fileobj)
+        except ConnectionResetError:
+            logging.warning('Client disconnected.')
         except KeyboardInterrupt:
             logging.warning('Server is closing from keyboard interrupt.')
         finally:

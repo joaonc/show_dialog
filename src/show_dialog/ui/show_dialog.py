@@ -1,4 +1,5 @@
 import logging
+import threading
 
 import markdown
 import qdarkstyle
@@ -22,6 +23,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self,
         app: QApplication,
         inputs: Inputs,
+        *,
         stylesheet: str | None = None,
         ipc_params: IpcParams | None = None,
     ):
@@ -97,6 +99,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             set_layout_visibility(self.timeout_h_layout, False)
 
         # Stylesheet
+        logging.getLogger('qdarkstyle').setLevel(logging.ERROR)  # Disable `qdarkstyle` logging
         stylesheet_app = {
             Theme.Light: qdarkstyle.load_stylesheet(palette=LightPalette),
             Theme.Dark: qdarkstyle.load_stylesheet(palette=DarkPalette),
@@ -121,9 +124,11 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.ipc_server = None
         if self.ipc_params is not None:
             self.ipc_server = IpcServer(self.ipc_params, self.process_ipc_message)
-            self.ipc_server.start()
+            thread = threading.Thread(target=self.ipc_server.start, name='show_dialog_ipc_server')
+            # self.ipc_server.start()
+            thread.start()
 
-    def process_ipc_message(self, message:Message) -> bool:
+    def process_ipc_message(self, message: Message) -> bool:
         if message.type is MessageType.TIMEOUT:
             self.timeout()
             return False
@@ -133,6 +138,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         elif message.type is MessageType.FAIL:
             self.fail_clicked(ExitCode.Timeout)
             return False
+        return True
 
     def resizeEvent(self, event):
         self.pass_button.setIconSize(self.pass_button.size())

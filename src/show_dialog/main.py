@@ -33,7 +33,7 @@ def show_dialog(
     app: QApplication = QApplication.instance()  # type: ignore
     if not app:
         app = QApplication()
-    window = ShowDialog(app, inputs, stylesheet)
+    window = ShowDialog(app, inputs, stylesheet=stylesheet)
     window.show()
     app_response = app.exec()
     app.closeAllWindows()

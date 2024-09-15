@@ -2,6 +2,7 @@ import logging
 import socket
 
 from .ipc_params import IpcParams
+from .message import Message
 
 
 class IpcClient:
@@ -15,15 +16,17 @@ class IpcClient:
         # Connect to the server
         self.client_socket.connect((self.params.host, self.params.port))
 
-    def send(self, message: str):
+    def send(self, message: Message):
         """Send a message ot the server."""
         try:
-            logging.debug(f'Sending: {message}')
-            self.client_socket.sendall(message.encode())
+            message_json = message.to_json()
+            logging.debug(f'Client sending: {message_json}')
+            self.client_socket.sendall(message_json.encode())
 
             # Receive a response from the server
             response = self.client_socket.recv(self.params.buffer_size).decode()
-            logging.debug(f'Received from server: {response}')
+            message_response = Message.from_json(response)
+            logging.debug(f'Client received: {message_response.to_json()}')
 
         finally:
             # Close the connection
