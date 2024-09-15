@@ -1,5 +1,6 @@
+from .data_class import DataFileType
 from .exit_code import ExitCode
-from .inputs import Buttons, DataFileType, Inputs, Theme
+from .inputs import Buttons, Inputs, Theme
 from .main import main, show_dialog
 from .style import Style
 from .ui.show_dialog import ShowDialog
