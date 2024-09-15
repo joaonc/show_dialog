@@ -1,0 +1,5 @@
+# Inter-Process Communication default parameters
+---
+host: localhost
+port: 23344
+timeout: 5
