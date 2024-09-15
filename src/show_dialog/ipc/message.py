@@ -25,7 +25,12 @@ class Message:
         return asdict(self)
 
     def to_json(self):
-        return json.dumps(self.to_dict())
+        obj_dict = self.to_dict()
+        if not self.message:
+            del obj_dict['message']
+        if not self.data:
+            del obj_dict['data']
+        return json.dumps(obj_dict)
 
     @classmethod
     def from_json(cls, json_str: str) -> 'Message':
