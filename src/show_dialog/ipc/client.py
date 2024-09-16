@@ -2,7 +2,7 @@ import logging
 import socket
 
 from .ipc_params import IpcParams
-from .message import Message
+from .message import Message, MessageType
 
 
 class IpcClient:
@@ -32,3 +32,58 @@ class IpcClient:
             # Close the connection
             self.client_socket.close()
             logging.debug('Client closed the connection.')
+
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser, RawTextHelpFormatter
+
+    parser = ArgumentParser(
+        description="IPC client for show-dialog.", formatter_class=RawTextHelpFormatter
+    )
+    parser.add_argument(
+        '--ipc',
+        type=str,
+        help='Inter-Process Communication parameters in the form of a JSON string that maps to the '
+        '`IpcParams` class.\nIf specified, this process will start listening to the host:port '
+        'specified for messages and respond to them. This can come from a different process.',
+    )
+    parser.add_argument(
+        '--ipc-file',
+        type=str,
+        help='Path to JSON file that maps to the `IpcParams` class.\n'
+        'If both `--ipc` and `--ipc-file` are specified, `--ipc` takes precedence.',
+    )
+    parser.add_argument(
+        '--log-level',
+        # Can use `logging.getLevelNamesMapping()` instead of `_nameToLevel` on python 3.11+
+        choices=[level.lower() for level in logging._nameToLevel],  # noqa
+        default='debug',
+        help='Log level to use.',
+    )
+
+    args = parser.parse_args()
+    logging.basicConfig(level=logging.getLevelName(args.log_level.upper()))
+
+    ipc_params_json = args.ipc
+    ipc_params_file = args.ipc_file
+    ipc_params = None
+    if ipc_params_json:
+        ipc_params = IpcParams.from_json(ipc_params_json)
+    if ipc_params_file:
+        ipc_params_from_file = IpcParams.from_file(ipc_params_file)
+        if ipc_params_json:
+            ipc_params = IpcParams.from_dict(ipc_params_from_file.to_dict() | ipc_params.to_dict())
+        else:
+            ipc_params = ipc_params_from_file
+    if not ipc_params:
+        raise ValueError('Either `--ipc` or `--ipc-file` must be specified.')
+
+    print(f'Connecting to Show Dialog server at {ipc_params.host}:{ipc_params.port}.')
+    client = IpcClient(ipc_params)
+
+    commands = {f'{i+1}': message_type.value for i, message_type in enumerate(MessageType)}
+    commands['6'] = 'Exit client'
+    print('Select one of the commands:\n' + '\n'.join(f'{k}: {v}' for k,v in commands.items()))
+    while command := commands[input('> ')] != 'exit':
+        message = Message(MessageType(command))
+        client.send(message)

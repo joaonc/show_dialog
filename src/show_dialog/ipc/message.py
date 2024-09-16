@@ -23,6 +23,7 @@ class MessageId:
     Time based ID.
     Timestamp in milliseconds.
     """
+
     _num_random_chars = 2
     """Additional random chars in case ID's are generated with the exact same timestamp."""
 
@@ -37,6 +38,7 @@ class MessageId:
 
     def __str__(self):
         return self.id
+
     def __repr__(self):
         return f"{self.__class__.__name__}('{self.id}')"
 
