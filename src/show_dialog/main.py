@@ -176,7 +176,7 @@ def _set_config_values(args) -> tuple[Inputs, str | None, IpcParams | None]:
         ipc_params = IpcParams.from_json(ipc_params_json)
     if ipc_params_file:
         ipc_params_from_file = IpcParams.from_file(ipc_params_file)
-        if ipc_params_json:
+        if ipc_params:
             ipc_params = IpcParams.from_dict(ipc_params_from_file.to_dict() | ipc_params.to_dict())
         else:
             ipc_params = ipc_params_from_file

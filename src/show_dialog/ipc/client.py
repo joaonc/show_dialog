@@ -27,11 +27,14 @@ class IpcClient:
             response = self.client_socket.recv(self.params.buffer_size).decode()
             message_response = Message.from_json(response)
             logging.debug(f'Client received: {message_response.to_json()}')
+        except Exception as e:
+            logging.error(e)
+            self.close()
 
-        finally:
-            # Close the connection
-            self.client_socket.close()
-            logging.debug('Client closed the connection.')
+    def close(self):
+        """Close the connection"""
+        self.client_socket.close()
+        logging.debug('Client closed the connection.')
 
 
 if __name__ == '__main__':
@@ -71,7 +74,7 @@ if __name__ == '__main__':
         ipc_params = IpcParams.from_json(ipc_params_json)
     if ipc_params_file:
         ipc_params_from_file = IpcParams.from_file(ipc_params_file)
-        if ipc_params_json:
+        if ipc_params:
             ipc_params = IpcParams.from_dict(ipc_params_from_file.to_dict() | ipc_params.to_dict())
         else:
             ipc_params = ipc_params_from_file
@@ -81,9 +84,9 @@ if __name__ == '__main__':
     print(f'Connecting to Show Dialog server at {ipc_params.host}:{ipc_params.port}.')
     client = IpcClient(ipc_params)
 
-    commands = {f'{i+1}': message_type.value for i, message_type in enumerate(MessageType)}
-    commands['6'] = 'Exit client'
-    print('Select one of the commands:\n' + '\n'.join(f'{k}: {v}' for k,v in commands.items()))
-    while command := commands[input('> ')] != 'exit':
-        message = Message(MessageType(command))
+    commands = {'0': 'Exit client'}
+    commands |= {f'{i+1}': message_type for i, message_type in enumerate(MessageType)}
+    print('Select one of the commands:\n' + '\n'.join(f'{k}: {v}' for k, v in commands.items()))
+    while (command := input('> ').strip()) != '0':
+        message = Message(commands[command])
         client.send(message)
