@@ -65,7 +65,7 @@ class Message:
     type: str | MessageType
     message: str = ''
     data: dict = field(default_factory=dict)
-    id: MessageId = MessageId()
+    id: MessageId = field(default_factory=MessageId)
 
     def __post_init__(self):
         if isinstance(self.type, str):

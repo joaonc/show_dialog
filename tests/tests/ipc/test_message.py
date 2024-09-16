@@ -7,12 +7,17 @@ from src.show_dialog.ipc.message import Message, MessageId, MessageType
 
 class TestMessageId:
     def test_id_generation(self):
-        m1 = MessageId()
-        m2 = MessageId()
-        assert m1.id != m2.id
+        id1 = MessageId()
+        id2 = MessageId()
+        assert id1.id != id2.id
 
 
 class TestMessage:
+    def test_id(self):
+        m1 = Message(MessageType.MESSAGE)
+        m2 = Message(MessageType.MESSAGE)
+        assert m1.id != m2.id
+
     @params(
         'message, expected',
         (
