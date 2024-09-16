@@ -8,6 +8,6 @@
     <file>images/window_icon.png</file>
     <file>stylesheets/style_01.css</file>
     <file>stylesheets/style_02.css</file>
-    <file>ipc.yaml</file>
+    <file>ipc.json</file>
   </qresource>
 </RCC>
