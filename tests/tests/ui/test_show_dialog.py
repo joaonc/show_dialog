@@ -211,4 +211,5 @@ def test_timeout_no_timeout(show_dialog: ShowDialog):
 def test_ipc(show_dialog: ShowDialog):
     client = IpcClient(show_dialog.ipc_params)  # type: ignore
     client.send(Message(MessageType.PASS))
+    client.close()
     assert False, 'ZZZZ'
