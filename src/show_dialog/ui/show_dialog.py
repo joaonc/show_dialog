@@ -1,4 +1,6 @@
 import logging
+import threading
+import time
 
 import markdown
 import qdarkstyle
@@ -10,6 +12,9 @@ from qdarkstyle.light.palette import LightPalette
 
 from ..exit_code import ExitCode
 from ..inputs import Buttons, Inputs, Theme
+from ..ipc.ipc_params import IpcParams
+from ..ipc.message import Message, MessageType
+from ..ipc.server import IpcServer
 from ..utils_qt import set_layout_visibility
 from .forms.ui_show_dialog import Ui_ShowDialog
 
@@ -19,13 +24,16 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self,
         app: QApplication,
         inputs: Inputs,
+        *,
         stylesheet: str | None = None,
+        ipc_params: IpcParams | None = None,
     ):
         super().__init__()
         self.app = app
         self.stylesheet = stylesheet
         self.setupUi(self)
         self.inputs = inputs
+        self.ipc_params = ipc_params
         self.timer = None
 
         # UI adjustments
@@ -92,6 +100,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
             set_layout_visibility(self.timeout_h_layout, False)
 
         # Stylesheet
+        logging.getLogger('qdarkstyle').setLevel(logging.ERROR)  # Disable `qdarkstyle` logging
         stylesheet_app = {
             Theme.Light: qdarkstyle.load_stylesheet(palette=LightPalette),
             Theme.Dark: qdarkstyle.load_stylesheet(palette=DarkPalette),
@@ -112,6 +121,42 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.timeout_shortcut = QShortcut(QKeySequence('+'), self)
         self.timeout_shortcut.activated.connect(self.timeout_increase_clicked)
 
+        # Inter-Process Communication server
+        self.ipc_server = self.ipc_thread = None
+        if self.ipc_params is not None:
+            self.ipc_server = IpcServer(self.ipc_params, self.process_ipc_message)
+            self.ipc_thread = threading.Thread(
+                target=self.ipc_server.start, name='show_dialog_ipc_server'
+            )
+            self.ipc_thread.start()
+
+    def process_ipc_message(self, message: Message) -> bool:
+        if message.type is MessageType.TIMEOUT:
+            self.timeout()
+            return False
+        elif message.type is MessageType.PASS:
+            self.pass_clicked()
+            return False
+        elif message.type is MessageType.FAIL:
+            self.fail_clicked(ExitCode.Timeout)
+            return False
+        return True
+
+    def exit(self, exit_code: ExitCode):
+        if self.ipc_server:
+            self.ipc_server.stop()
+            timeout = 3.0
+            timeout_step = 0.3
+            while self.ipc_thread.is_alive():  # type: ignore
+                time.sleep(timeout_step)
+                timeout -= timeout_step
+                if timeout <= 0:
+                    raise ValueError('Error stopping IPC server.')
+            logging.debug('IPC server sopped successfully.')
+
+        logging.debug(f'Exiting with code {exit_code.value}: {exit_code.name}.')
+        self.app.exit(int(exit_code))
+
     def resizeEvent(self, event):
         self.pass_button.setIconSize(self.pass_button.size())
         self.fail_button.setIconSize(self.fail_button.size())
@@ -130,15 +175,19 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         else:
             super().keyPressEvent(event)
 
+    def timeout(self):
+        """Timeout occurred. Process it."""
+        logging.debug('Timeout.')
+        if self.inputs.timeout_pass:
+            self.pass_clicked()
+        else:
+            self.fail_clicked(ExitCode.Timeout)
+
     def timer_timeout(self):
         new_value = self.timeout_progress_bar.value() - self.timer.interval() / 1000
         self.timeout_progress_bar.setValue(new_value)
         if new_value <= 0:
-            logging.debug('Timeout.')
-            if self.inputs.timeout_pass:
-                self.pass_clicked()
-            else:
-                self.fail_clicked(ExitCode.Timeout)
+            self.timeout()
 
     def timeout_increase_clicked(self):
         timeout_increase = 10
@@ -150,7 +199,7 @@ class ShowDialog(QDialog, Ui_ShowDialog):
     def pass_clicked(self):
         # Equivalent to `self.close()` and `self.done(0)`.
         # Using `QApplication.exit(0)` to enable testing exit code.
-        self.app.exit(ExitCode.Pass)
+        self.exit(ExitCode.Pass)
 
-    def fail_clicked(self, exit_code: ExitCode | int):
-        self.app.exit(int(exit_code))
+    def fail_clicked(self, exit_code: ExitCode):
+        self.exit(exit_code)

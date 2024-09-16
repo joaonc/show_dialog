@@ -43,7 +43,7 @@ class Theme(str, Enum):
     """No theme is applied and uses the system theme."""
 
 
-@dataclass
+@dataclass(frozen=True)
 class Inputs(JSONFileMixin, DefaultsMixin):
     """
     Inputs to the app.
@@ -51,29 +51,35 @@ class Inputs(JSONFileMixin, DefaultsMixin):
 
     dialog_title: str = ''
     """Title of the window."""
+
     title: str = ''
+
     description: str = ''
     """
     Text to display in the description section.
 
     Can be plain text or HTML. For markdown, set ``description_md`` to ``True``.
     """
+
     description_md: bool = False
     """
     Whether the text in the ``description`` field is markdown.
 
     Text in ``description`` can be plain text or HTML.
     """
+
     timeout: int = 0
     """
     Timeout in seconds for the dialog to be automatically dismissed.
 
     ``0`` for no timeout.
     """
+
     timeout_pass: bool = False
     """
     Result at the end of timeout: Pass (``True``) or fail (``False``).
     """
+
     timeout_text: str = '%v'
     """
     Text format for timeout.
@@ -89,26 +95,32 @@ class Inputs(JSONFileMixin, DefaultsMixin):
     * ``'%p%'`` to show percentage completed, ex '15%'
     * ``'%vs'`` to show the number of seconds elapsed, ex '15s'
     """
+
     buttons: Buttons = Buttons.PASS_FAIL
     """
     Set the buttons displayed.
 
     See the ``Buttons`` class for available options.
     """
+
     pass_button_text: str = ''
+
     pass_button_icon: str = ''
     """
     Set the icon for the _Pass_ button.
 
     Can be a resource path, relative path or absolute path. See examples under ``assets/inputs``.
     """
+
     fail_button_text: str = ''
+
     fail_button_icon: str = ''
     """
     Set the icon for the _Fail_ button.
 
     Can be a resource path, relative path or absolute path. See examples under ``assets/inputs``.
     """
+
     theme: Theme = Theme.Light
     """
     Theme to be applied.

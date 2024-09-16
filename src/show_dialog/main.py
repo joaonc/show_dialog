@@ -9,13 +9,16 @@ from PySide6.QtWidgets import QApplication
 from . import config
 from .exit_code import ExitCode
 from .inputs import Inputs
+from .ipc.ipc_params import IpcParams
 from .ui.show_dialog import ShowDialog
 from .utils_qt import list_resources, read_file
 
 
 def show_dialog(
     inputs: Inputs,
+    *,
     stylesheet: str = config.DEFAULT_STYLE,
+    ipc_params: IpcParams | None = None,
     mode: Literal['exit', 'raise', 'return'] = 'exit',
 ) -> ExitCode:
     """
@@ -24,6 +27,7 @@ def show_dialog(
     :param inputs: Inputs to the dialog.
     :param stylesheet: Stylesheet to be used. This is the whole stylesheet as a string, not a path
         to a stylesheet file.
+    :param ipc_params: Inter-Process Communication parameters.
     :param mode: One of:
         * ``exit``: Exit with ``sys.exit(code)``.
         * ``raise``: Raise a ``ValueError`` exception if there was an error.
@@ -33,7 +37,7 @@ def show_dialog(
     app: QApplication = QApplication.instance()  # type: ignore
     if not app:
         app = QApplication()
-    window = ShowDialog(app, inputs, stylesheet)
+    window = ShowDialog(app, inputs, stylesheet=stylesheet, ipc_params=ipc_params)
     window.show()
     app_response = app.exec()
     app.closeAllWindows()
@@ -71,7 +75,7 @@ def _parse_args():
     parser.add_argument(
         '--inputs-file',
         type=str,
-        help='Path to JSON file that maps to the `Inputs` class.\n'
+        help='Path to JSON or YAML file that maps to the `Inputs` class.\n'
         'If both `--inputs` and `--inputs-file` are specified, `--inputs` takes precedence.',
     )
     parser.add_argument(
@@ -80,6 +84,19 @@ def _parse_args():
         default=config.DEFAULT_STYLE,
         help=f'Path to CSS file to apply. Can be a path to an external file or one of the included '
         f'{", ".join("`"+file+"`" for file in list_resources(":/stylesheets"))}',
+    )
+    parser.add_argument(
+        '--ipc',
+        type=str,
+        help='Inter-Process Communication parameters in the form of a JSON string that maps to the '
+        '`IpcParams` class.\nIf specified, this process will start listening to the host:port '
+        'specified for messages and respond to them. This can come from a different process.',
+    )
+    parser.add_argument(
+        '--ipc-file',
+        type=str,
+        help='Path to JSON file that maps to the `IpcParams` class.\n'
+        'If both `--ipc` and `--ipc-file` are specified, `--ipc` takes precedence.',
     )
     parser.add_argument(
         '--log-level',
@@ -98,7 +115,7 @@ def _parse_args():
     return parser.parse_args()
 
 
-def _set_config_values(args) -> tuple[Inputs, str | None]:
+def _set_config_values(args) -> tuple[Inputs, str | None, IpcParams | None]:
     """
     Set ``config`` values.
     """
@@ -146,18 +163,34 @@ def _set_config_values(args) -> tuple[Inputs, str | None]:
             inputs = inputs_from_file
     logging.debug(f'Inputs:\n{pprint.pformat(inputs.to_dict(), indent=2)}')
 
+    # Stylesheet
     css = None
     if args.stylesheet:
         css = read_file(args.stylesheet)
 
-    return inputs, css
+    # IPC params
+    ipc_params_json = args.ipc
+    ipc_params_file = args.ipc_file
+    ipc_params = None
+    if ipc_params_json:
+        ipc_params = IpcParams.from_json(ipc_params_json)
+    if ipc_params_file:
+        ipc_params_from_file = IpcParams.from_file(ipc_params_file)
+        if ipc_params:
+            ipc_params = IpcParams.from_dict(ipc_params_from_file.to_dict() | ipc_params.to_dict())
+        else:
+            ipc_params = ipc_params_from_file
+    if ipc_params:
+        logging.debug(f'IPC params:\n{pprint.pformat(ipc_params.to_dict(), indent=2)}')
+
+    return inputs, css, ipc_params
 
 
 def main():
     _args = _parse_args()
-    _inputs, _stylesheet = _set_config_values(_args)
-    show_dialog(_inputs, _stylesheet)
-    logging.debug('App exiting.')
+    _inputs, _stylesheet, _ipc_params = _set_config_values(_args)
+    _exit_code = show_dialog(_inputs, stylesheet=_stylesheet, ipc_params=_ipc_params, mode='return')
+    logging.debug(f'App exiting with code {_exit_code} - {_exit_code.name}.')
 
 
 if __name__ == '__main__':
