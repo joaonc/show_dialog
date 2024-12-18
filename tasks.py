@@ -811,6 +811,17 @@ def pip_upgrade(c, requirements):
         c.run(f'pip-compile --upgrade {filename}')
 
 
+@task(help=REQUIREMENTS_TASK_HELP)
+def pip_install(c, requirements=None):
+    """
+    Equivalent to ``pip install <requirements*.txt>``, but for the current OS.
+
+    Does not require ``pip-tools``.
+    """
+    requirements_files = _get_requirements_files(requirements, 'txt')
+    c.run(f'pip install -r {" -r ".join(requirements_files)} ')
+
+
 @task
 def precommit_install(c):
     """
@@ -887,6 +898,7 @@ lint_collection.add_task(lint_mypy, 'mypy')
 
 pip_collection = Collection('pip')
 pip_collection.add_task(pip_compile, 'compile')
+pip_collection.add_task(pip_install, 'install')
 pip_collection.add_task(pip_package, 'package')
 pip_collection.add_task(pip_sync, 'sync')
 pip_collection.add_task(pip_upgrade, 'upgrade')
