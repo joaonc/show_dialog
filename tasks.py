@@ -718,22 +718,37 @@ def ui_rc(c, file=None):
 
 @task(
     help={
-        'file': f'`.ui` file to be edited. Available files: {", ".join(p.stem for p in UI_FILES)}.'
+        'file': f'`.ui` file to be edited. Available files: {", ".join(p.stem for p in UI_FILES)}.',
+        'convert': 'Process the `.ui` file to `.py` after editing.',
     }
 )
-def ui_edit(c, file):
+def ui_edit(c, file, convert: bool = True):
     """
     Edit a file in QT Designer.
     """
     file_stem = file[:-3] if file.lower().endswith('.ui') else file
     try:
-        ui_file_path = next(p for p in UI_FILES if p.stem == file_stem)
+        ui_file_path: Path = next(p for p in UI_FILES if p.stem == file_stem)
     except StopIteration:
         raise Exit(
             f'File "{file}" not found. Available files: {", ".join(p.stem for p in UI_FILES)}'
         )
 
-    c.run(f'pyside6-designer {ui_file_path}', asynchronous=True)
+    # The invoke command below doesn't work:
+    # c.run(f'pyside6-designer {ui_file_path}', asynchronous=True)
+
+    import subprocess
+
+    try:
+        result = subprocess.run(f'pyside6-designer {ui_file_path}', shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        raise Exit(f'Process failed with return code {e.returncode}\n{e}')
+
+    if result.returncode != 0:
+        raise Exit(f'Process failed with return code {result.returncode}')
+
+    if convert:
+        ui_py(c, file=ui_file_path.stem)
 
 
 @task
