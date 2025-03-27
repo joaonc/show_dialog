@@ -718,22 +718,37 @@ def ui_rc(c, file=None):
 
 @task(
     help={
-        'file': f'`.ui` file to be edited. Available files: {", ".join(p.stem for p in UI_FILES)}.'
+        'file': f'`.ui` file to be edited. Available files: {", ".join(p.stem for p in UI_FILES)}.',
+        'convert': 'Process the `.ui` file to `.py` after editing.',
     }
 )
-def ui_edit(c, file):
+def ui_edit(c, file, convert: bool = True):
     """
     Edit a file in QT Designer.
     """
     file_stem = file[:-3] if file.lower().endswith('.ui') else file
     try:
-        ui_file_path = next(p for p in UI_FILES if p.stem == file_stem)
+        ui_file_path: Path = next(p for p in UI_FILES if p.stem == file_stem)
     except StopIteration:
         raise Exit(
             f'File "{file}" not found. Available files: {", ".join(p.stem for p in UI_FILES)}'
         )
 
-    c.run(f'pyside6-designer {ui_file_path}', asynchronous=True)
+    # The invoke command below doesn't work:
+    # c.run(f'pyside6-designer {ui_file_path}', asynchronous=True)
+
+    import subprocess
+
+    try:
+        result = subprocess.run(f'pyside6-designer {ui_file_path}', shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        raise Exit(f'Process failed with return code {e.returncode}\n{e}')
+
+    if result.returncode != 0:
+        raise Exit(f'Process failed with return code {result.returncode}')
+
+    if convert:
+        ui_py(c, file=ui_file_path.stem)
 
 
 @task
@@ -773,11 +788,22 @@ def test_unit(c):
     c.run('python -m pytest')
 
 
-@task(help=REQUIREMENTS_TASK_HELP)
-def pip_compile(c, requirements=None):
+@task(
+    help=REQUIREMENTS_TASK_HELP
+    | {
+        'clean': 'Clean (delete) existing `.txt` requirements files, which forces recalculation '
+        'of all the dependencies. Default is `False`.'
+    }
+)
+def pip_compile(c, requirements=None, clean: bool = False):
     """
     Compile requirements file(s).
     """
+    if clean:
+        for f_out in _get_requirements_files(requirements, 'txt'):
+            if os.path.exists(f_out):
+                os.remove(f_out)
+
     for filename in _get_requirements_files(requirements, 'in'):
         c.run(f'pip-compile {filename}')
 
@@ -809,6 +835,17 @@ def pip_upgrade(c, requirements):
     """
     for filename in _get_requirements_files(requirements, 'in'):
         c.run(f'pip-compile --upgrade {filename}')
+
+
+@task(help=REQUIREMENTS_TASK_HELP)
+def pip_install(c, requirements=None):
+    """
+    Equivalent to ``pip install <requirements*.txt>``, but for the current OS.
+
+    Does not require ``pip-tools``.
+    """
+    requirements_files = _get_requirements_files(requirements, 'txt')
+    c.run(f'pip install -r {" -r ".join(requirements_files)} ')
 
 
 @task
@@ -887,6 +924,7 @@ lint_collection.add_task(lint_mypy, 'mypy')
 
 pip_collection = Collection('pip')
 pip_collection.add_task(pip_compile, 'compile')
+pip_collection.add_task(pip_install, 'install')
 pip_collection.add_task(pip_package, 'package')
 pip_collection.add_task(pip_sync, 'sync')
 pip_collection.add_task(pip_upgrade, 'upgrade')

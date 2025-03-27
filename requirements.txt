@@ -6,15 +6,15 @@
 #
 markdown==3.7
     # via -r requirements.in
-mashumaro==3.13.1
+mashumaro==3.15
     # via -r requirements.in
-packaging==24.1
+packaging==24.2
     # via qtpy
-pyside6==6.7.2
+pyside6==6.8.3
     # via -r requirements.in
-pyside6-addons==6.7.2
+pyside6-addons==6.8.3
     # via pyside6
-pyside6-essentials==6.7.2
+pyside6-essentials==6.8.3
     # via
     #   pyside6
     #   pyside6-addons
@@ -22,12 +22,12 @@ pyyaml==6.0.2
     # via -r requirements.in
 qdarkstyle==3.2.3
     # via -r requirements.in
-qtpy==2.4.1
+qtpy==2.4.3
     # via qdarkstyle
-shiboken6==6.7.2
+shiboken6==6.8.3
     # via
     #   pyside6
     #   pyside6-addons
     #   pyside6-essentials
-typing-extensions==4.12.2
+typing-extensions==4.13.0
     # via mashumaro
