@@ -42,7 +42,10 @@ class ShowDialog(QDialog, Ui_ShowDialog):
 
         self.title_label.setText(self.inputs.title)
         if self.inputs.description_md:
-            description = markdown.markdown(self.inputs.description)
+            if self.inputs.description_md_nl2br:
+                description = markdown.markdown(self.inputs.description, extensions=['nl2br'])
+            else:
+                description = markdown.markdown(self.inputs.description)
             logging.debug(f'Description converted to HTML:\n{description}')
         else:
             description = self.inputs.description

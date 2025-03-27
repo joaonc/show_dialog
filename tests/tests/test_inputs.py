@@ -100,14 +100,15 @@ class TestInputs:
         assert isinstance(new, Inputs)
         assert new == Inputs(title='Foo', description='Baz', dialog_title='qux')
 
-    def test_create_with_boolean(self):
+    @params('base_value', [('True', True), ('False', False)])
+    def test_create_with_boolean(self, base_value):
         """
-        Boolean fields are not taken into consideration when creating new instances with the current
-        instance as defaults.
+        Boolean fields are not taken into consideration when creating new instances
+        and maintain the base value.
         """
-        base = Inputs(description_md=True)
+        base = Inputs(description_md=base_value)
         new_inputs = Inputs()
         assert new_inputs.description_md is False
         new = base.create(new_inputs)
 
-        assert new.description_md is False
+        assert new.description_md is base_value
