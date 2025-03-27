@@ -788,11 +788,22 @@ def test_unit(c):
     c.run('python -m pytest')
 
 
-@task(help=REQUIREMENTS_TASK_HELP)
-def pip_compile(c, requirements=None):
+@task(
+    help=REQUIREMENTS_TASK_HELP
+    | {
+        'clean': 'Clean (delete) existing `.txt` requirements files, which forces recalculation '
+        'of all the dependencies. Default is `False`.'
+    }
+)
+def pip_compile(c, requirements=None, clean: bool = False):
     """
     Compile requirements file(s).
     """
+    if clean:
+        for f_out in out_files:
+            if os.path.exists(f_out):
+                os.remove(f_out)
+
     for filename in _get_requirements_files(requirements, 'in'):
         c.run(f'pip-compile {filename}')
 
