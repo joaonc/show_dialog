@@ -800,7 +800,7 @@ def pip_compile(c, requirements=None, clean: bool = False):
     Compile requirements file(s).
     """
     if clean:
-        for f_out in out_files:
+        for f_out in _get_requirements_files(requirements, 'txt'):
             if os.path.exists(f_out):
                 os.remove(f_out)
 
