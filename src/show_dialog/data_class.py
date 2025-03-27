@@ -83,6 +83,8 @@ class DefaultsMixin(DataClassDictMixin):
         Note that boolean fields are never updated.
         """
         defaults = self.to_dict()
-        new_values = {k: v for k, v in new_instance.to_dict().items() if v or isinstance(v, bool)}
+        new_values = {
+            k: v for k, v in new_instance.to_dict().items() if v and not isinstance(v, bool)
+        }
 
         return self.__class__.from_dict(defaults | new_values)
