@@ -25,7 +25,7 @@ class MessageId:
     """
 
     _num_random_chars = 2
-    """Additional random chars in case ID's are generated with the exact same timestamp."""
+    """Additional random chars in case IDs are generated with the exact same timestamp."""
 
     def __init__(self, id: str = ''):
         if id:
