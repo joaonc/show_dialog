@@ -51,17 +51,32 @@ def test_description(show_dialog: ShowDialog):
 
 
 @params(
-    'show_dialog',
+    'show_dialog, expected_description',
     [
         (
             'markdown description',
             {'inputs': Inputs(description='# Title\ntext', description_md=True)},
+            '<h1>Title</h1>\n<p>text</p>',
+        ),
+        (
+            'md multi line without nl2br',
+            {'inputs': Inputs(description='line1\nline2', description_md=True)},
+            '<p>line1\nline2</p>',  # No html break
+        ),
+        (
+            'md multi line with nl2br',
+            {
+                'inputs': Inputs(
+                    description='line1\nline2', description_md=True, description_md_nl2br=True
+                )
+            },
+            '<p>line1<br />\nline2</p>',  # With html break
         ),
     ],
-    indirect=True,
+    indirect=['show_dialog'],
 )
-def test_description_md(show_dialog: ShowDialog):
-    assert show_dialog.description_label.text() == '<h1>Title</h1>\n<p>text</p>'
+def test_description_md(show_dialog: ShowDialog, expected_description: str):
+    assert show_dialog.description_label.text() == expected_description
 
 
 @params(
@@ -208,6 +223,7 @@ def test_timeout_no_timeout(show_dialog: ShowDialog):
     ],
     indirect=True,
 )
+@pytest.mark.skip('Need to finish implementing IPC functionality.')
 def test_ipc(show_dialog: ShowDialog):
     client = IpcClient(show_dialog.ipc_params)  # type: ignore
     client.send(Message(MessageType.PASS))

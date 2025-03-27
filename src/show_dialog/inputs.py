@@ -68,6 +68,15 @@ class Inputs(JSONFileMixin, DefaultsMixin):
     Text in ``description`` can be plain text or HTML.
     """
 
+    description_md_nl2br: bool = False
+    """
+    If ``description_md`` is ``True``, each new line is a line break, ie,
+    convert newlines to ``<br>`` tags.
+
+    If this option is not set, you can still add a new line by using the ``<br>`` tag or
+    leaving two spaces at the end of a line.
+    """
+
     timeout: int = 0
     """
     Timeout in seconds for the dialog to be automatically dismissed.

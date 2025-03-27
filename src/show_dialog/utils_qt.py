@@ -47,6 +47,5 @@ def set_layout_visibility(layout: QLayout, visible: bool) -> None:
         if isinstance(item, QLayout):
             set_layout_visibility(item, visible)
         else:
-            widget = item.widget()
-            if widget is not None:
+            if item is not None and ((widget := item.widget()) is not None):
                 widget.setVisible(visible)

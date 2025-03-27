@@ -39,7 +39,7 @@ disable_error_code = 'annotation-unchecked'
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
-module = ['invoke', 'pytest_params', 'qdarkstyle.*', 'PySide6']
+module = ['invoke', 'pytest_params', 'qdarkstyle.*']
 
 [tool.pytest.ini_options]
 markers = ['pri_1', 'flaky', 'nightly', 'performance', 'manual']
@@ -52,7 +52,7 @@ build-backend = 'flit_core.buildapi'
 
 [project]
 name = 'qt-show-dialog'
-version = '0.8.1'
+version = '0.9.0'
 description = 'Easily show a dialog window for miscellaneous purposes.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]

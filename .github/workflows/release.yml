@@ -8,7 +8,7 @@
 # 3. Publish to Pypi.
 #
 # At this point, does not add assets to the release.
-# Use the `build-asset` action.
+# Use the `build-app` action.
 #
 # Requires the Pypi token in the `PYPI_TOKEN` secret.
 name: Release
