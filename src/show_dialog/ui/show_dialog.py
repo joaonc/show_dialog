@@ -200,9 +200,10 @@ class ShowDialog(QDialog, Ui_ShowDialog):
         self.timeout_progress_bar.setValue(new_value)
 
     def pass_clicked(self):
-        # Equivalent to `self.close()` and `self.done(0)`.
         # Using `QApplication.exit(0)` to enable testing exit code.
+        self.close()
         self.exit(ExitCode.Pass)
 
     def fail_clicked(self, exit_code: ExitCode):
+        self.close()
         self.exit(exit_code)
