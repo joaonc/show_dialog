@@ -20,10 +20,20 @@ sections = 'FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER'
 skip = ['src/show_dialog/ui/forms']
 skip_glob = ['**/.venv*', '**/venv*', '/build']
 
-# flake8 not working with pyproject.toml
-#[tool.flake8]
-#max-line-length = 100
-#extend-exclude = 'src/show_dialog/ui/forms,.venv*,venv*,assets,docs,site,__pycache__'
+[tool.flake8]
+max-line-length = 100
+extend-exclude = [
+  'src/show_dialog/ui/forms', 'tests/libs/resources_rc.py',
+  '.venv*', 'venv*', '.git', '.github', 'assets', 'build', 'dist', 'docs', 'site', '__pycache__'
+]
+# Errors being ignored:
+# E203 is not PEP8 compliant and clashes with black
+# E701,E704 multiple statements on one line (colon)
+#   Conflict with `black`, where empty class definitions (with Ellipsis) are formatted to be in
+#   one line in `black`, ex `class FileUpdateError(Exception): ...`
+# W503 line break before binary operator clashes with black
+# F811 redefinition of unused import happens when importing pytest fixtures in test modules
+ignore = ['E203','E701','E704','W503','F811']
 
 [tool.mypy]
 # Technical notes on exclusions:
