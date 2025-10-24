@@ -59,7 +59,7 @@ mkdocs==1.6.1
     #   mkdocs-material
 mkdocs-get-deps==0.2.0
     # via mkdocs
-mkdocs-glightbox==0.5.1
+mkdocs-glightbox==0.5.2
     # via -r requirements-docs.in
 mkdocs-material==9.6.22
     # via -r requirements-docs.in
@@ -100,7 +100,7 @@ requests==2.32.5
     # via
     #   -c requirements-dev.txt
     #   mkdocs-material
-selectolax==0.3.29
+selectolax==0.4.0
     # via mkdocs-glightbox
 six==1.17.0
     # via python-dateutil

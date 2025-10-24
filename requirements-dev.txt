@@ -135,6 +135,7 @@ pytest==8.4.2
     #   -r requirements-dev.in
     #   pytest-params
     #   pytest-qt
+    #   typer-invoke
 pytest-params==0.3.0
     # via -r requirements-dev.in
 pytest-qt==4.5.0
@@ -176,6 +177,8 @@ tomli==2.3.0
     #   pytest
 tomli-w==1.2.0
     # via flit
+typer-invoke==0.0.1
+    # via -r requirements-dev.in
 types-markdown==3.9.0.20250906
     # via -r requirements-dev.in
 types-pyyaml==6.0.12.20250915
