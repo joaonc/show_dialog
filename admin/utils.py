@@ -40,7 +40,7 @@ def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | Non
     defaults = dict(cwd=PROJECT_ROOT, capture_output=False, text=True, check=True)
     final_kwargs = defaults | kwargs
     try:
-        return subprocess.run(final_args, **final_kwargs)  # type: ignore[arg-type]
+        return subprocess.run(final_args, **final_kwargs)  # type: ignore
     except subprocess.CalledProcessError as e:
         message = str(e)
         if e.stdout:

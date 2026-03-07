@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import Enum
 from pathlib import Path
 from typing import Annotated
 
@@ -12,13 +12,13 @@ REQUIREMENTS_DIR = PROJECT_ROOT / 'admin' / 'requirements'
 app = typer.Typer(no_args_is_help=True, add_completion=False)
 
 
-class Requirements(StrEnum):
+class Requirements(str, Enum):
     MAIN = 'requirements'
     DEV = 'requirements-dev'
     DOCS = 'requirements-docs'
 
 
-class RequirementsType(StrEnum):
+class RequirementsType(str, Enum):
     IN = 'in'
     OUT = 'txt'
 
