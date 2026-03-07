@@ -1,12 +1,22 @@
 import logging
+import os
 import subprocess
+import sys
+from dataclasses import dataclass
+from enum import Enum
 from itertools import chain
-from pathlib import Path
 from typing import Annotated
 
 import typer
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.text import Text
 
 from admin import PROJECT_ROOT
+
+EMPTY_STR = object()
+"""Sentinel object to represent an empty string."""
+
 
 DryAnnotation = Annotated[
     bool,
@@ -17,50 +27,224 @@ DryAnnotation = Annotated[
 ]
 
 
-def get_logger() -> logging.Logger:
-    logger = logging.getLogger('typer-invoke')
-    logger.setLevel(logging.INFO)
-    logger.handlers.clear()
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter('%(message)s'))
-    logger.addHandler(handler)
-    logger.propagate = False
-    return logger
+class OS(str, Enum):
+    """Operating System."""
+
+    Linux = 'linux'
+    MacOS = 'mac'
+    Windows = 'win'
 
 
-logger = get_logger()
+class NoHighlightRichHandler(RichHandler):
+    """Custom RichHandler that completely disables highlighting."""
+
+    def render_message(self, record, message):
+        """Override to disable auto-highlighting while keeping markup."""
+        from rich.text import Text
+
+        # Process markup but don't apply highlighting
+        if self.markup:
+            return Text.from_markup(message)
+        return Text(message)
+
+
+@dataclass
+class StripOutput:
+    strip_ansi: bool = True
+    normal_strip: bool = True
+    extra_chars: str | None = None
+
+    def strip(self, text: str) -> str:
+        if self.strip_ansi:
+            text = strip_ansi(text)
+        if self.normal_strip:
+            text = text.strip()
+        if self.extra_chars:
+            text = text.strip(self.extra_chars)
+
+        return text
+
+
+def get_os() -> OS:
+    """
+    Similar to ``sys.platform`` and ``platform.system()``, but less ambiguous by returning an Enum
+    instead of a string.
+
+    Doesn't make granular distinctions of linux variants, OS versions, etc.
+    """
+    if sys.platform == 'darwin':
+        return OS.MacOS
+    if sys.platform == 'win32':
+        return OS.Windows
+    return OS.Linux
 
 
 def run(
-    *args: object,
+    *args,
     dry: bool = False,
-    cwd: Path = PROJECT_ROOT,
-    capture_output: bool = False,
-    check: bool = True,
-) -> subprocess.CompletedProcess[str] | None:
-    final_args = [str(arg) for arg in args if arg not in ['', None]]
-    logger.info(' '.join(f'"{a}"' if (' ' in a) else a for a in final_args))
+    extra_env: dict[str, str] | None = None,
+    strip_output: StripOutput | None = StripOutput(),
+    **kwargs,
+) -> subprocess.CompletedProcess | None:
+    """
+    Run a CLI command synchronously (i.e., wait for the command to finish) and return the result.
+
+    This function is a wrapper around ``subprocess.run(...)``.
+
+    If you need access to the output, add the ``capture_output=True`` argument and do
+    ``.stdout`` to get the output as a string.
+
+    Notes:
+
+    * Args are converted to strings using ``str(...)``.
+    * Empty strings and ``None`` are removed from the command.
+      If you want to explicitly include an empty string, use ``EMPTY_STR`` instead.
+    * ``stdout`` and ``stderr`` will be stripped of ANSI escape sequences by default.
+    """
+    final_args: list[str] = []
+    for arg in args:
+        if arg in ['', None]:
+            continue
+        if arg == EMPTY_STR:
+            final_args.append('')
+        else:
+            final_args.append(str(arg))
+    logger.info(' '.join(f'"{a}"' if (not a or ' ' in a) else a for a in final_args))
 
     if dry:
         return None
 
+    defaults = dict(
+        cwd=PROJECT_ROOT,
+        capture_output=False,
+        text=True,
+        check=True,
+        env=os.environ.copy() | (extra_env or {}),
+    )
+    final_kwargs = defaults | kwargs
+
     try:
-        return subprocess.run(
-            final_args,
-            cwd=cwd,
-            capture_output=capture_output,
-            text=True,
-            check=check,
-        )
+        result = subprocess.run(final_args, **final_kwargs)  # type: ignore
     except subprocess.CalledProcessError as e:
-        message = str(e)
+        msg = str(e)
         if e.stdout:
-            message += f'\nSTDOUT:\n{e.stdout}'
+            msg += f'\nSTDOUT:\n{e.stdout}'
         if e.stderr:
-            message += f'\nSTDERR:\n{e.stderr}'
-        logger.error(message)
+            msg += f'\nSTDERR:\n{e.stderr}'
+        logger.error(msg)
+        raise typer.Exit(1)
+
+    if final_kwargs.get('capture_output') and strip_output:
+        result.stdout = strip_output.strip(result.stdout)
+        result.stderr = strip_output.strip(result.stderr)
+
+    return result  # type: ignore
+
+
+def run_async(*args, dry: bool = False, **kwargs) -> subprocess.Popen | None:
+    """
+    Starts the process and continues code execution.
+
+    Use the following checks::
+
+        process.poll()              # Returns None if still running, else return code
+        process.wait()              # Wait for completion (blocking)
+        process.terminate()         # Send SIGTERM (graceful)
+        process.kill()              # Send SIGKILL (force)
+        process.returncode          # Access return code after completion
+
+    See ``subprocess.Popen(...)`` for more details.
+    """
+    logger.info(' '.join(map(str, args)))
+
+    if dry:
+        return None
+
+    defaults = dict(
+        cwd=PROJECT_ROOT,
+    )
+
+    try:
+        return subprocess.Popen(args, **(defaults | kwargs))
+    except subprocess.CalledProcessError as e:
+        logger.error(e)
+        raise typer.Exit(1)
+
+
+def is_package_installed(package_name: str) -> bool:
+    """Check if a Python package is installed."""
+    import importlib.util
+
+    if importlib.util.find_spec(package_name) is not None:
+        return True
+
+    try:
+        import importlib.metadata as metadata
+
+        metadata.version(package_name)
+        return True
+    except Exception:  # noqa
+        return False
+
+
+def install_package(
+    package: str,
+    package_install: str | None = None,
+    exit_if_install: bool = True,
+    dry: bool = False,
+):
+    """
+    Install a Python package if not already installed.
+
+    :param package: Name of the package to check/install.
+    :param package_install: Name of the package to install, if different from the name to check.
+    :param exit_if_install: Exit the program if the package is installed and `dry` is False.
+    :param dry: Show the command that would be run without running it.
+    """
+    if is_package_installed(package):
+        logger.debug(f'Package `{package}` is already installed.')
+        return
+
+    run(sys.executable, '-m', 'pip', 'install', package_install or package, dry=dry)
+
+    if exit_if_install and not dry:
+        logger.info(f'Package `{package}` installed successfully.\nRe-run the command.')
         raise typer.Exit(1)
 
 
 def multiple_parameters(parameter: str, *options) -> list[str]:
     return list(chain.from_iterable(zip([parameter] * len(options), map(str, options))))
+
+
+def strip_ansi(text: str) -> str:
+    return Text.from_ansi(text).plain
+
+
+def get_logger(name: str | None = 'typer-invoke', level=logging.DEBUG) -> logging.Logger:
+    """Set up logging configuration with Rich handler and custom formatting."""
+
+    _logger = logging.getLogger(name)
+    _logger.setLevel(level)
+    _logger.handlers.clear()
+
+    console = Console(markup=True)
+
+    handler = NoHighlightRichHandler(
+        level=level,
+        console=console,
+        show_time=False,
+        show_level=True,
+        show_path=False,
+        markup=True,
+        rich_tracebacks=False,
+    )
+
+    formatter = logging.Formatter(fmt='%(message)s', datefmt='[%X]')
+    handler.setFormatter(formatter)
+    _logger.addHandler(handler)
+    _logger.propagate = False
+
+    return _logger
+
+
+logger = get_logger()
