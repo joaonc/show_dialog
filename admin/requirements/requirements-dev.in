@@ -12,7 +12,6 @@ ruff                # Linter and formatter
 mypy                # Code inspector
 types-markdown      # Mypy type hints
 types-pyyaml        # Mypy type hints
-types-setuptools    # Mypy type hints
 
 # Test
 pytest              # Test framework

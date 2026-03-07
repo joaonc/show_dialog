@@ -134,8 +134,6 @@ types-markdown==3.10.2.20260211
     # via -r requirements-dev.in
 types-pyyaml==6.0.12.20250915
     # via -r requirements-dev.in
-types-setuptools==82.0.0.20260210
-    # via -r requirements-dev.in
 typing-extensions==4.15.0
     # via
     #   -r requirements.txt
