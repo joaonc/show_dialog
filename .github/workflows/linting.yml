@@ -7,6 +7,9 @@ on:
 jobs:
   linting:
     runs-on: ubuntu-latest
+    env:
+      UV_SYSTEM_PYTHON: '1'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -16,14 +19,13 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install requirements
-        run: pip install -r requirements-dev.txt
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
-      - name: isort
-        run: isort .
-      - name: black
-        run: black .
-      - name: flake8
-        run: flake8 .
-      - name: mypy
-        run: mypy .
+      - name: Install requirements
+        run: |
+          uv pip install typer-invoke
+          inv pip install requirements-dev
+
+      - name: Lint and type check
+        run: inv lint all --check
