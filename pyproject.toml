@@ -30,7 +30,7 @@ quote-style = 'single'
 # 1 The regex for all folders needs to be in a one line string.
 # 2 The `.` doesn't need to be escaped. Escape with `\\.` for a fully compatible regex.
 exclude = '^venv*|^.venv*|.git|.eggs|build|dist|.cache|.pytest_cache|.mypy_cache|.vscode|.idea|src/show_dialog/ui/forms'
-python_version = '3.10'
+python_version = '3.12'
 warn_return_any = true
 warn_unused_configs = true
 # Disable the warning below, from type hinting variables in a function.
