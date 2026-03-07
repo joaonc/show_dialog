@@ -73,4 +73,3 @@ Documentation = 'https://joaonc.github.io/show_dialog'
 
 [project.scripts]
 show_dialog = 'show_dialog.main:main'
-
