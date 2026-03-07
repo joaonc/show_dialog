@@ -53,6 +53,9 @@ modules = ['admin.build', 'admin.lint', 'admin.pip', 'admin.test']
 requires = ['uv_build>=0.10.4,<0.11.0']
 build-backend = 'uv_build'
 
+[tool.uv.build-backend]
+module-name = 'show_dialog'
+
 [project]
 name = 'qt-show-dialog'
 version = '0.10.0'
