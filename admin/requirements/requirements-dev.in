@@ -20,8 +20,5 @@ pytest-params       # Easier test case parameters
 pytest-qt           # Qt plugin to allow user interaction
 exceptiongroup; python_version < '3.11'  # pytest 8.2+ dependency
 
-# Build and publish
-uv-build            # Build backend for uv
-
 # Installer
 pyinstaller         # Installer framework
