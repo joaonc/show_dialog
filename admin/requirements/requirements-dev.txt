@@ -1,10 +1,10 @@
-altgraph==0.17.4
+altgraph==0.17.5
     # via pyinstaller
 annotated-doc==0.0.4
     # via typer
-bandit==1.8.6
-    # via -r admin/requirements/requirements-dev.in
-cfgv==3.4.0
+bandit==1.9.4
+    # via -r requirements-dev.in
+cfgv==3.5.0
     # via pre-commit
 click==8.3.1
     # via typer
@@ -15,126 +15,134 @@ colorama==0.4.6
     #   pytest
 distlib==0.4.0
     # via virtualenv
-filelock==3.20.0
-    # via virtualenv
-identify==2.6.15
+filelock==3.25.0
+    # via
+    #   python-discovery
+    #   virtualenv
+identify==2.6.17
     # via pre-commit
 iniconfig==2.3.0
     # via pytest
-markdown==3.9
-    # via -r admin/requirements/requirements.txt
+librt==0.8.1
+    # via mypy
+markdown==3.10.2
+    # via -r requirements.txt
 markdown-it-py==4.0.0
     # via rich
-mashumaro==3.17
-    # via -r admin/requirements/requirements.txt
+mashumaro==3.20
+    # via -r requirements.txt
 mdurl==0.1.2
     # via markdown-it-py
-mypy==1.18.2
-    # via -r admin/requirements/requirements-dev.in
+mypy==1.19.1
+    # via -r requirements-dev.in
 mypy-extensions==1.1.0
     # via mypy
-nodeenv==1.9.1
+nodeenv==1.10.0
     # via pre-commit
-packaging==25.0
+packaging==26.0
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   pyinstaller
     #   pyinstaller-hooks-contrib
     #   pytest
     #   qtpy
-pathspec==0.12.1
+pathspec==1.0.4
     # via mypy
-pefile==2023.2.7
+pefile==2024.8.26
     # via pyinstaller
-platformdirs==4.5.0
-    # via virtualenv
+platformdirs==4.9.4
+    # via
+    #   python-discovery
+    #   virtualenv
 pluggy==1.6.0
     # via
     #   pytest
     #   pytest-qt
-pre-commit==4.3.0
-    # via -r admin/requirements/requirements-dev.in
+pre-commit==4.5.1
+    # via -r requirements-dev.in
 pygments==2.19.2
     # via
     #   pytest
     #   rich
-pyinstaller==6.16.0
-    # via -r admin/requirements/requirements-dev.in
-pyinstaller-hooks-contrib==2025.9
+pyinstaller==6.19.0
+    # via -r requirements-dev.in
+pyinstaller-hooks-contrib==2026.2
     # via pyinstaller
-pyside6==6.10.0
-    # via -r admin/requirements/requirements.txt
-pyside6-addons==6.10.0
+pyside6==6.10.2
+    # via -r requirements.txt
+pyside6-addons==6.10.2
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   pyside6
-pyside6-essentials==6.10.0
+pyside6-essentials==6.10.2
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   pyside6
     #   pyside6-addons
-pytest==8.4.2
+pytest==9.0.2
     # via
-    #   -r admin/requirements/requirements-dev.in
+    #   -r requirements-dev.in
     #   pytest-params
     #   pytest-qt
-    #   typer-invoke
 pytest-params==0.3.0
-    # via -r admin/requirements/requirements-dev.in
+    # via -r requirements-dev.in
 pytest-qt==4.5.0
-    # via -r admin/requirements/requirements-dev.in
+    # via -r requirements-dev.in
+python-discovery==1.1.1
+    # via virtualenv
 pywin32-ctypes==0.2.3
     # via pyinstaller
 pyyaml==6.0.3
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   bandit
     #   pre-commit
 qdarkstyle==3.2.3
-    # via -r admin/requirements/requirements.txt
+    # via -r requirements.txt
 qtpy==2.4.3
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   qdarkstyle
-rich==14.2.0
+rich==14.3.3
     # via
     #   bandit
     #   typer
+    #   typer-invoke
 ruff==0.15.5
-    # via -r admin/requirements/requirements-dev.in
+    # via -r requirements-dev.in
 setuptools==82.0.0
     # via
     #   pyinstaller
     #   pyinstaller-hooks-contrib
 shellingham==1.5.4
     # via typer
-shiboken6==6.10.0
+shiboken6==6.10.2
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   pyside6
     #   pyside6-addons
     #   pyside6-essentials
-stevedore==5.5.0
+stevedore==5.7.0
     # via bandit
 typer==0.24.1
-    # via -r admin/requirements/requirements-dev.in
-typer-invoke==0.0.1
-    # via -r admin/requirements/requirements-dev.in
-types-markdown==3.9.0.20250906
-    # via -r admin/requirements/requirements-dev.in
+    # via
+    #   -r requirements-dev.in
+    #   typer-invoke
+typer-invoke==0.5.0
+    # via -r requirements-dev.in
+types-markdown==3.10.2.20260211
+    # via -r requirements-dev.in
 types-pyyaml==6.0.12.20250915
-    # via -r admin/requirements/requirements-dev.in
-types-setuptools==80.9.0.20250822
-    # via -r admin/requirements/requirements-dev.in
+    # via -r requirements-dev.in
+types-setuptools==82.0.0.20260210
+    # via -r requirements-dev.in
 typing-extensions==4.15.0
     # via
-    #   -r admin/requirements/requirements.txt
+    #   -r requirements.txt
     #   mashumaro
     #   mypy
     #   pytest-qt
 uv==0.10.9
-    # via -r admin/requirements/requirements-dev.in
-uv-build==0.10.9
-    # via -r admin/requirements/requirements-dev.in
-virtualenv==20.35.3
+    # via -r requirements-dev.in
+virtualenv==21.1.0
     # via pre-commit
