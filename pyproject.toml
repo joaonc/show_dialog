@@ -20,7 +20,7 @@ exclude = [
 
 [tool.ruff.lint]
 select = ['E', 'F', 'W', 'I']
-extend-ignore = ['E203', 'E701', 'E704', 'W503', 'F811']
+extend-ignore = ['E203', 'E701', 'F811']
 
 [tool.ruff.format]
 quote-style = 'single'

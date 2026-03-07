@@ -126,7 +126,8 @@ def publish(
     if not upload:
         return
 
-    if yes or input(f'Publishing version `{_get_project_version()}` to PyPI. Press Y to confirm. ').strip().lower() == 'y':
+    msg = f'Publishing version `{_get_project_version()}` to PyPI. Press Y to confirm. '
+    if yes or input(msg).strip().lower() == 'y':
         run('uv', 'publish', dry=dry)
     else:
         logger.info('Package not published to PyPI.')
@@ -150,7 +151,8 @@ def release(
         args.extend(['--notes', notes])
     if notes_file:
         args.extend(['--notes-file', notes_file])
-    if yes or input(f'Creating GitHub release `{release_name}`. Press Y to confirm. ').strip().lower() == 'y':
+    msg = f'Creating GitHub release `{release_name}`. Press Y to confirm. '
+    if yes or input(msg).strip().lower() == 'y':
         run(*args, dry=dry)
 
 

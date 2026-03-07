@@ -63,7 +63,9 @@ def _get_requirements_files(
 
 
 @app.command(name='compile')
-def pip_compile(requirements: RequirementsAnnotation = None, clean: bool = False, dry: DryAnnotation = False):
+def pip_compile(
+    requirements: RequirementsAnnotation = None, clean: bool = False, dry: DryAnnotation = False
+):
     if clean and not dry:
         for filename in _get_requirements_files(requirements, RequirementsType.OUT):
             filename.unlink(missing_ok=True)
