@@ -83,7 +83,7 @@ def _parse_args():
         type=str,
         default=config.DEFAULT_STYLE,
         help=f'Path to CSS file to apply. Can be a path to an external file or one of the included '
-        f'{", ".join("`"+file+"`" for file in list_resources(":/stylesheets"))}',
+        f'{", ".join("`" + file + "`" for file in list_resources(":/stylesheets"))}',
     )
     parser.add_argument(
         '--ipc',

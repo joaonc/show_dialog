@@ -41,7 +41,7 @@ if __name__ == '__main__':
     from argparse import ArgumentParser, RawTextHelpFormatter
 
     parser = ArgumentParser(
-        description="IPC client for show-dialog.", formatter_class=RawTextHelpFormatter
+        description='IPC client for show-dialog.', formatter_class=RawTextHelpFormatter
     )
     parser.add_argument(
         '--ipc',
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     client = IpcClient(ipc_params)
 
     commands = {'0': 'Exit client'}
-    commands |= {f'{i+1}': message_type for i, message_type in enumerate(MessageType)}
+    commands |= {f'{i + 1}': message_type for i, message_type in enumerate(MessageType)}
     print('Select one of the commands:\n' + '\n'.join(f'{k}: {v}' for k, v in commands.items()))
     while (command := input('> ').strip()) != '0':
         message = Message(commands[command])
