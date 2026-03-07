@@ -1,3 +1,7 @@
+"""
+Build and deploy the app.
+"""
+
 from pathlib import Path
 from typing import Annotated
 
@@ -6,7 +10,12 @@ import typer
 from admin import PROJECT_ROOT, SOURCE_DIR
 from admin.utils import DryAnnotation, logger, run
 
-app = typer.Typer()
+app = typer.Typer(
+    help=__doc__,
+    no_args_is_help=True,
+    add_completion=False,
+    rich_markup_mode='markdown',
+)
 
 BUILD_DIST_DIR = PROJECT_ROOT / 'dist'
 BUILD_WORK_DIR = PROJECT_ROOT / 'build'
