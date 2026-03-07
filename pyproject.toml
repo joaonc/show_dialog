@@ -56,6 +56,9 @@ markers = ['pri_1', 'flaky', 'nightly', 'performance', 'manual']
 testpaths = ['tests']
 pythonpath = 'src'
 
+[tool.typer-invoke]
+modules =['admin.build']
+
 [build-system]
 requires = ['flit_core >=3.2,<4']
 build-backend = 'flit_core.buildapi'
