@@ -39,20 +39,17 @@ def _get_requirements_file(
         reqs = requirements
     else:
         try:
-            reqs = Requirements[requirements.upper()]
-        except KeyError:
-            try:
-                reqs = Requirements(requirements.lower())
-            except ValueError:
-                logger.error(f'`{requirements}` is an unknown requirements file.')
-                raise typer.Exit(1)
+            reqs = Requirements(requirements.lower())
+        except ValueError:
+            logger.error(f'`{requirements}` is an unknown requirements file.')
+            raise typer.Exit(1)
 
     reqs_type = (
         requirements_type
         if isinstance(requirements_type, RequirementsType)
         else RequirementsType(requirements_type.lstrip('.').lower())
     )
-    return REQUIREMENTS_DIR / f'{reqs}.{reqs_type}'
+    return REQUIREMENTS_DIR / f'{reqs.value}.{reqs_type.value}'
 
 
 def _get_requirements_files(

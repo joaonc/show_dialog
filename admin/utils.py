@@ -1,6 +1,7 @@
 import logging
 import subprocess
 from itertools import chain
+from pathlib import Path
 from typing import Annotated
 
 import typer
@@ -30,17 +31,27 @@ def get_logger() -> logging.Logger:
 logger = get_logger()
 
 
-def run(*args, dry: bool = False, **kwargs) -> subprocess.CompletedProcess | None:
+def run(
+    *args: object,
+    dry: bool = False,
+    cwd: Path = PROJECT_ROOT,
+    capture_output: bool = False,
+    check: bool = True,
+) -> subprocess.CompletedProcess[str] | None:
     final_args = [str(arg) for arg in args if arg not in ['', None]]
     logger.info(' '.join(f'"{a}"' if (' ' in a) else a for a in final_args))
 
     if dry:
         return None
 
-    defaults = dict(cwd=PROJECT_ROOT, capture_output=False, text=True, check=True)
-    final_kwargs = defaults | kwargs
     try:
-        return subprocess.run(final_args, **final_kwargs)  # type: ignore
+        return subprocess.run(
+            final_args,
+            cwd=cwd,
+            capture_output=capture_output,
+            text=True,
+            check=check,
+        )
     except subprocess.CalledProcessError as e:
         message = str(e)
         if e.stdout:
