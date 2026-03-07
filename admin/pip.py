@@ -77,7 +77,7 @@ def _get_requirements_file(
     else:
         reqs_type = RequirementsType(requirements_type.lstrip('.').lower())
 
-    return REQUIREMENTS_DIR / f'{reqs}.{reqs_type}'
+    return REQUIREMENTS_DIR / f'{reqs.value}.{reqs_type.value}'
 
 
 def _get_requirements_files(
