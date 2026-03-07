@@ -55,7 +55,7 @@ build-backend = 'uv_build'
 
 [project]
 name = 'qt-show-dialog'
-version = '0.9.1'
+version = '0.9.2'
 description = 'Easily show a dialog window for miscellaneous purposes.'
 readme = 'README.md'
 authors = [{name = 'Joao Coelho'}]
