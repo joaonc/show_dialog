@@ -7,7 +7,7 @@ Docstrings are in [reStructuredText](https://docutils.sourceforge.io/rst.html) f
 ## Contributing
 ### Requirements
 ```
-pip install -r requirements-dev.txt
+uv pip install -r admin/requirements/requirements-dev.txt
 ```
 
 [PySide6](https://pypi.org/project/PySide6/) ([docs](https://wiki.qt.io/Qt_for_Python)) has a few
@@ -50,15 +50,15 @@ You can authenticate in other ways, see
 Linting and unit tests are done as actions in GitHub, but should be executed locally with the
 following commands:
 ```
-inv lint.all
+inv lint all
 ```
 ```
-inv test.unit
+inv test unit
 ```
 If using an IDE such as PyCharm or VS Code, the tests can be executed from within the IDE.
 
 Note that pytest options are in `pyproject.toml`, in the `[tool.pytest.ini_options]` section and
-linting options are also in `pyproject.toml` and `setup.cfg`.
+linting options are also in `pyproject.toml`.
 
 ### Running
 Running the code from the CLI or from the IDE needs be done as a module.  
@@ -90,7 +90,7 @@ This section goes over how to build the app, create a release in GitHub and publ
 ### Manually
 1. Bump version
    ```
-   inv build.version --mode pr
+   inv build version --mode pr
    ```
    This will:
    1. Update the necessary files to the new version.
@@ -99,7 +99,7 @@ This section goes over how to build the app, create a release in GitHub and publ
 
 2. Create release in GitHub
    ```
-   inv build.release
+   inv build release
    ```
    Releases are published in GitHub, under the
    [Releases](https://github.com/joaonc/show_dialog/releases) page.  
@@ -113,12 +113,12 @@ This section goes over how to build the app, create a release in GitHub and publ
       you should be ok).
 
       ```
-      inv build.release --notes-file release_notes.md
+      inv build release --notes-file release_notes.md
       ```
 
 3. Publish to Pypi
    ```
-   inv build.publish
+   inv build publish
    ```
 
   !!! Note
@@ -132,8 +132,8 @@ This section goes over how to build the app, create a release in GitHub and publ
 
    This step is optional, but recommended. Each build (one per OS) is close to 50MB.
    ```
-   inv build.app
-   inv build.upload
+   inv build app
+   inv build upload
    ```
    You can also use the _Build app_ GitHub action to create the app in any OS. See the
    [CI/CD](#cicd) section below.
